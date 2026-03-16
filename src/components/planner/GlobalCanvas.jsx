@@ -202,30 +202,85 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         className="w-full h-full touch-pan-y touch-pan-x"
         style={{ background: "transparent", display: "block" }}
       />
-      {textInput.visible && (
-        <input
-          ref={inputRef}
-          type="text"
-          value={textInput.text}
-          onChange={(e) => setTextInput({ ...textInput, text: e.target.value })}
-          onBlur={commitText}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') commitText();
-          }}
-          className="absolute bg-transparent border-b border-blue-500 outline-none"
-          style={{
-            left: textInput.x,
-            top: textInput.y - 10,
-            fontSize: '16px',
-            color: '#1e293b',
-            minWidth: '200px',
-            fontFamily: 'sans-serif'
-          }}
-          placeholder="Type here..."
+      {texts.map(textObj => (
+        <TextItem 
+          key={textObj.id} 
+          textObj={textObj} 
+          updateText={(id, updated) => saveTexts(texts.map(t => t.id === id ? updated : t))}
+          deleteText={(id) => saveTexts(texts.filter(t => t.id !== id))}
         />
-      )}
+      ))}
     </div>
   );
 });
+
+const TextItem = ({ textObj, updateText, deleteText }) => {
+  const [isEditing, setIsEditing] = useState(textObj.isEditing);
+  const [val, setVal] = useState(textObj.text);
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleBlur = () => {
+    if (!val.trim()) {
+      deleteText(textObj.id);
+    } else {
+      setIsEditing(false);
+      updateText(textObj.id, { ...textObj, text: val, isEditing: false });
+    }
+  };
+
+  return (
+    <div 
+      className="absolute group flex items-start z-50"
+      style={{ 
+        left: textObj.x, 
+        top: textObj.y, 
+        width: `calc(100% - ${textObj.x}px - 40px)`, 
+        minWidth: '200px' 
+      }}
+      onPointerDown={(e) => e.stopPropagation()}
+    >
+      <textarea
+        ref={textareaRef}
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        onBlur={handleBlur}
+        onClick={() => setIsEditing(true)}
+        className="w-full bg-transparent outline-none resize-none overflow-hidden"
+        style={{
+          lineHeight: '32px',
+          fontSize: '18px',
+          fontFamily: "'Playfair Display', serif",
+          color: '#1e293b',
+          border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
+          minHeight: '32px',
+          height: `${Math.max(1, val.split('\\n').length) * 32}px`,
+          padding: 0,
+          margin: 0
+        }}
+        placeholder={isEditing ? "Type here..." : ""}
+      />
+      {!isEditing && (
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteText(textObj.id);
+          }}
+          className="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-50 rounded ml-2 shrink-0 transition-opacity"
+          title="Delete text"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+};
 
 export default GlobalCanvas;
