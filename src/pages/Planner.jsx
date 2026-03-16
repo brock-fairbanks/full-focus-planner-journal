@@ -76,12 +76,12 @@ export default function Planner() {
       <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
 
       {/* Layer 0: Substrate (Static Background) */}
-      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 pointer-events-none">
+      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 pointer-events-none z-10">
         <TemplateRenderer template={activeTemplate} date={selectedDate} />
       </div>
 
       {/* Layer 2: Global Canvas (Drawing) */}
-      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0" style={{ touchAction: "none", pointerEvents: "auto" }}>
+      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 z-20" style={{ touchAction: "none", pointerEvents: "auto" }}>
         <GlobalCanvas
           ref={canvasRef}
           onSave={handleSaveInk}
