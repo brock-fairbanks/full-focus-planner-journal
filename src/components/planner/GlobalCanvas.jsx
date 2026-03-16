@@ -384,6 +384,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
         if (onSave) onSave(dataUrl);
       }
+      saveTimeout.current = null;
     }, 1500); 
   };
 
