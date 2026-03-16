@@ -5,6 +5,9 @@ export default function InkCanvas({ savedImageData, onSave }) {
   const isDrawing = useRef(false);
   const saveTimeout = useRef(null);
   const ctxRef = useRef(null);
+  // Store strokes in memory so we can redraw after resize
+  const strokes = useRef([]);
+  const currentStroke = useRef([]);
 
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -20,8 +23,7 @@ export default function InkCanvas({ savedImageData, onSave }) {
     canvas.style.width = rect.width + "px";
     canvas.style.height = rect.height + "px";
 
-    const ctx = canvas.getContext("2d", { desynchronized: true });
-    // Reset transform before scaling to avoid compounding
+    const ctx = canvas.getContext("2d");
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -31,54 +33,84 @@ export default function InkCanvas({ savedImageData, onSave }) {
     return ctx;
   }, []);
 
-  const loadImage = useCallback((ctx) => {
-    if (!savedImageData) return;
+  const redrawStrokes = useCallback((ctx) => {
+    if (!ctx) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      ctx.restore();
-    };
-    img.src = savedImageData;
-  }, [savedImageData]);
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.width / dpr;
+    const h = canvas.height / dpr;
+    ctx.clearRect(0, 0, w, h);
+    strokes.current.forEach((stroke) => {
+      if (stroke.length < 2) return;
+      ctx.beginPath();
+      ctx.moveTo(stroke[0].x, stroke[0].y);
+      for (let i = 1; i < stroke.length; i++) {
+        ctx.lineTo(stroke[i].x, stroke[i].y);
+      }
+      ctx.stroke();
+    });
+  }, []);
 
   const debouncedSave = useCallback(() => {
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
       const canvas = canvasRef.current;
       if (!canvas || !onSave) return;
-      onSave(canvas.toDataURL("image/png"));
+      // Composite ink onto white background for saving
+      const offscreen = document.createElement("canvas");
+      offscreen.width = canvas.width;
+      offscreen.height = canvas.height;
+      const offCtx = offscreen.getContext("2d");
+      offCtx.fillStyle = "#FAF9F6";
+      offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
+      offCtx.drawImage(canvas, 0, 0);
+      onSave(offscreen.toDataURL("image/png"));
     }, 1000);
   }, [onSave]);
 
-  // Initial setup + load image
+  // Load saved image as background strokes reference (only on mount / tab switch)
   useEffect(() => {
+    strokes.current = [];
+    currentStroke.current = [];
     const ctx = setupCanvas();
     if (!ctx) return;
-    loadImage(ctx);
-  }, [savedImageData]); // re-run when tab changes (savedImageData changes)
 
-  // Event listeners (stable, only mount/unmount once)
+    if (savedImageData) {
+      // Draw the saved image onto canvas directly (it includes the cream bg)
+      // But we make it transparent by drawing on a cleared canvas
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const dpr = window.devicePixelRatio || 1;
+        ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      };
+      img.src = savedImageData;
+    }
+  }, [savedImageData]);
+
+  // Event listeners
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const getCtx = () => ctxRef.current;
 
     const handlePointerDown = (e) => {
       if (e.pointerType !== "pen" && e.pointerType !== "mouse") return;
       e.preventDefault();
       isDrawing.current = true;
       const rect = canvas.getBoundingClientRect();
-      const ctx = getCtx();
+      const pt = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      currentStroke.current = [pt];
+      const ctx = ctxRef.current;
       if (!ctx) return;
       ctx.beginPath();
-      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.moveTo(pt.x, pt.y);
     };
 
     const handlePointerMove = (e) => {
@@ -86,36 +118,30 @@ export default function InkCanvas({ savedImageData, onSave }) {
       if (e.pointerType !== "pen" && e.pointerType !== "mouse") return;
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
-      const ctx = getCtx();
+      const pt = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      currentStroke.current.push(pt);
+      const ctx = ctxRef.current;
       if (!ctx) return;
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.lineTo(pt.x, pt.y);
       ctx.stroke();
     };
 
     const handlePointerUp = (e) => {
       if (!isDrawing.current) return;
       isDrawing.current = false;
-      const ctx = getCtx();
+      const ctx = ctxRef.current;
       if (ctx) ctx.closePath();
+      if (currentStroke.current.length > 0) {
+        strokes.current.push([...currentStroke.current]);
+        currentStroke.current = [];
+      }
       debouncedSave();
     };
 
     const handleResize = () => {
-      const canvas = canvasRef.current;
-      if (!canvas || !canvas.width || !canvas.height) return;
-      // Snapshot current ink
-      const snap = canvas.toDataURL("image/png");
       const ctx = setupCanvas();
       if (!ctx) return;
-      // Restore ink after resize
-      const img = new Image();
-      img.onload = () => {
-        ctx.save();
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
-      };
-      img.src = snap;
+      redrawStrokes(ctx);
     };
 
     canvas.addEventListener("pointerdown", handlePointerDown);
@@ -132,7 +158,7 @@ export default function InkCanvas({ savedImageData, onSave }) {
       window.removeEventListener("resize", handleResize);
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
     };
-  }, [setupCanvas, debouncedSave]);
+  }, [setupCanvas, redrawStrokes, debouncedSave]);
 
   return (
     <canvas
