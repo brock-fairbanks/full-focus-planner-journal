@@ -375,11 +375,28 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
   const [val, setVal] = useState(textObj.text);
   const textareaRef = useRef(null);
 
+  const resizeTextarea = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
   useEffect(() => {
     if (isEditing && textareaRef.current) {
       textareaRef.current.focus();
     }
+    resizeTextarea();
   }, [isEditing]);
+
+  const handleInput = (e) => {
+    setVal(e.target.value);
+    resizeTextarea();
+  };
+
+  useEffect(() => {
+    resizeTextarea();
+  }, [val]);
 
   const handleBlur = () => {
     if (!val.trim()) {
@@ -390,13 +407,15 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
     }
   };
 
+  const lh = textObj.lineHeight || 32;
+
   return (
     <div 
       className="absolute group flex items-start z-50"
       style={{ 
         left: textObj.x, 
         top: textObj.y, 
-        width: `calc(100% - ${textObj.x}px - 40px)`, 
+        width: textObj.width || `calc(100% - ${textObj.x}px - 40px)`, 
         minWidth: '200px' 
       }}
       onPointerDown={(e) => e.stopPropagation()}
@@ -404,18 +423,17 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
       <textarea
         ref={textareaRef}
         value={val}
-        onChange={(e) => setVal(e.target.value)}
+        onChange={handleInput}
         onBlur={handleBlur}
         onClick={() => setIsEditing(true)}
         className="w-full bg-transparent outline-none resize-none overflow-hidden"
         style={{
-          lineHeight: '32px',
+          lineHeight: `${lh}px`,
           fontSize: '18px',
           fontFamily: "'Playfair Display', serif",
           color: '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
-          minHeight: '32px',
-          height: `${Math.max(1, val.split('\\n').length) * 32}px`,
+          minHeight: `${lh}px`,
           padding: 0,
           margin: 0
         }}
