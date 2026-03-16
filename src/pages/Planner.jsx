@@ -24,10 +24,38 @@ export default function Planner() {
   const [activeTemplate, setActiveTemplate] = useState(getTemplateFromPath(location.pathname));
   const [subSection, setSubSection] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const pointerStartRef = useRef(null);
 
   useEffect(() => {
     setActiveTemplate(getTemplateFromPath(location.pathname));
   }, [location.pathname, getTemplateFromPath]);
+
+  const handlePointerDown = (e) => {
+    // Only allow swipe navigation with finger (touch), not stylus/pen or mouse
+    if (e.pointerType !== 'touch') return;
+    pointerStartRef.current = {
+      x: e.clientX,
+      y: e.clientY
+    };
+  };
+
+  const handlePointerUp = (e) => {
+    if (!pointerStartRef.current || e.pointerType !== 'touch') return;
+    
+    const dx = pointerStartRef.current.x - e.clientX;
+    const dy = pointerStartRef.current.y - e.clientY;
+    
+    // Swipe requires at least 80px distance and mostly horizontal movement
+    if (Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx > 0) {
+        setSelectedDate(prev => addDays(prev, 1)); // Swipe left -> Next day
+      } else {
+        setSelectedDate(prev => addDays(prev, -1)); // Swipe right -> Prev day
+      }
+    }
+    
+    pointerStartRef.current = null;
+  };
 
   const handleTabChange = (templateId) => {
     const pathMap = {
