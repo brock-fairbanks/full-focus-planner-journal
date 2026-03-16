@@ -66,9 +66,17 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     <>
       {/* Primary Navigation */}
       <div 
-        className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-50 overflow-y-auto no-scrollbar border-r border-black/20" 
+        className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center pt-4 pb-4 pointer-events-auto z-50 overflow-y-auto no-scrollbar border-r border-black/20" 
         style={{background: "#1A120B"}}
       >
+        <div className="w-14 h-14 mb-4 rounded-xl overflow-hidden border border-[#8B7355]/30 shrink-0 shadow-lg relative group">
+          <img 
+            src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/8fdb2cd49_Gemini_Generated_Image_u8sxr4u8sxr4u8sx1920x1080.png" 
+            alt="Fairbanks Builders" 
+            className="w-full h-full object-cover scale-[1.3] transition-transform duration-500 group-hover:scale-[1.5]"
+          />
+          <div className="absolute inset-0 bg-[#F97316]/10 mix-blend-overlay pointer-events-none" />
+        </div>
         <div className="w-full flex-1 flex flex-col">
           <Reorder.Group axis="y" values={tabs} onReorder={handleReorder} className="w-full">
             {tabs.map((tab) => {

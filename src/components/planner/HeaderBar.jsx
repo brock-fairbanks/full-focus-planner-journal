@@ -10,12 +10,16 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
     <div className="fixed top-0 left-20 right-0 h-16 flex items-center justify-between px-8 pointer-events-auto z-50 border-b" style={{background: "#2C1F14", borderColor: "#1A120B"}}>
       {/* Left: Logo and Title */}
       <div className="flex items-center gap-3 min-w-[100px]">
-        <div className="flex items-center justify-center w-8 h-8 rounded bg-[#1A120B] border border-[#3e2d1d] shrink-0">
-          <Compass size={18} style={{ color: "#B8956A" }} />
+        <div className="flex items-center justify-center w-12 h-8 rounded bg-[#1A120B] border border-[#3e2d1d] shrink-0 overflow-hidden shadow-sm">
+          <img 
+            src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/8fdb2cd49_Gemini_Generated_Image_u8sxr4u8sxr4u8sx1920x1080.png" 
+            alt="Fairbanks Builders" 
+            className="w-full h-full object-cover scale-150"
+          />
         </div>
         <div className="flex flex-col">
           <span className="text-[#f5deb3] font-serif font-bold text-lg leading-tight tracking-wide whitespace-nowrap">
-            Full Focus
+            Fairbanks Builders
           </span>
           <span 
             className="text-[10px] uppercase tracking-widest font-bold leading-none"
