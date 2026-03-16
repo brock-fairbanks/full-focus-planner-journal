@@ -113,7 +113,20 @@ export default function Planner() {
     navigate(pathMap[templateId] || "/today");
   };
 
-  const pageKey = `${activeTemplate}${(activeTemplate === "DAILY" || activeTemplate === "JOURNAL") && subSection ? `_${subSection}` : ''}_${selectedDate.toISOString().split('T')[0]}`;
+  let datePart = selectedDate.toISOString().split('T')[0];
+  if (activeTemplate === "JOURNAL" && subSection) {
+    if (subSection.startsWith("ANNUAL_")) {
+      datePart = selectedDate.getFullYear().toString();
+    } else if (subSection.startsWith("MONTHLY_")) {
+      datePart = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}`;
+    } else if (subSection.startsWith("WEEKEND_")) {
+      const d = new Date(selectedDate);
+      const day = d.getDay(); // 0 is Sunday, 6 is Saturday
+      if (day === 0) d.setDate(d.getDate() - 1); // Group Sunday with Saturday
+      datePart = d.toISOString().split('T')[0];
+    }
+  }
+  const pageKey = `${activeTemplate}${(activeTemplate === "DAILY" || activeTemplate === "JOURNAL") && subSection ? `_${subSection}` : ''}_${datePart}`;
 
   return (
     <div 

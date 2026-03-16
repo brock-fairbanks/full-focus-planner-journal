@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Trash2, MapPin, CloudSun } from "lucide-react";
+import { Trash2, MapPin, CloudSun, History, Compass, Sparkles, Mail } from "lucide-react";
 import { format, isWeekend, endOfMonth, differenceInDays } from "date-fns";
 
 export default function JournalSpread({ date, onSubSectionChange, onClearCanvas }) {
@@ -28,7 +28,7 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
     DAILY: ["The Story", "Processing", "Gratitude", "Insights"],
     WEEKEND: ["Life Balance", "Relationships", "Rejuvenation"],
     MONTHLY: ["Goal Progress", "Habit Tracker", "Monthly Wins"],
-    ANNUAL: ["Year in Review", "Biggest Lessons", "Vision Forward"]
+    ANNUAL: ["Year in Review", "The Life Compass", "The Big Vision", "Letter to Self"]
   };
 
   const [activeSubSection, setActiveSubSection] = useState(LAYOUT_TABS["DAILY"][0]);
@@ -42,6 +42,46 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
       onSubSectionChange(`${layoutMode}_${activeSubSection}`);
     }
   }, [activeSubSection, layoutMode, onSubSectionChange]);
+
+  const getTabIcon = (tab) => {
+    if (tab === "Year in Review") return <History size={16} className="mr-2 inline" />;
+    if (tab === "The Life Compass") return <Compass size={16} className="mr-2 inline" />;
+    if (tab === "The Big Vision") return <Sparkles size={16} className="mr-2 inline" />;
+    if (tab === "Letter to Self") return <Mail size={16} className="mr-2 inline" />;
+    return null;
+  };
+
+  const renderCompass = () => {
+    const domains = ['Spiritual', 'Intellectual', 'Emotional', 'Physical', 'Marital', 'Parental', 'Social', 'Vocational', 'Financial', 'Avocational'];
+    return (
+      <div className="mt-2 h-full flex flex-col pointer-events-auto">
+        <h2 className="text-4xl font-serif font-bold mb-8" style={{ color: "#1e293b" }}>The Life Compass</h2>
+        <div className="flex flex-col gap-12 pb-20">
+          {domains.map(domain => (
+            <div key={domain} className="flex flex-col">
+              <div className="flex flex-wrap items-center justify-between mb-4 gap-4">
+                <h3 className="text-2xl font-serif italic" style={{ color: "#1e293b" }}>{domain}</h3>
+                <div className="flex gap-1 md:gap-2">
+                   {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                      <div key={n} className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-[#cbd5e1] flex items-center justify-center text-xs text-[#94a3b8]">{n}</div>
+                   ))}
+                </div>
+              </div>
+              <p className="text-[#64748b] font-serif italic mb-4">What is the current state of this domain, and where do I want it to be?</p>
+              <div
+                className="w-full min-h-[250px]"
+                style={{
+                  backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #E2E8F0 40px)`,
+                  backgroundSize: "100% 40px",
+                  backgroundPosition: "0 0",
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   const renderSection = (title, prompts) => (
     <div className="mt-2 h-full flex flex-col">
@@ -92,12 +132,13 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
             <button
               key={tab}
               onClick={() => setActiveSubSection(tab)}
-              className={`text-sm md:text-base font-serif font-bold transition-all px-4 py-2 rounded-lg select-none shadow-sm ${
+              className={`text-sm md:text-base font-serif font-bold transition-all px-4 py-2 rounded-lg select-none shadow-sm flex items-center ${
                 activeSubSection === tab 
                   ? "bg-[#1e293b] text-white border border-[#1e293b]" 
                   : "bg-white text-[#94a3b8] border border-[#E2E8F0] hover:bg-[#f8fafc] hover:text-[#1e293b]"
               }`}
             >
+              {layoutMode === "ANNUAL" && getTabIcon(tab)}
               {tab}
             </button>
           ))}
@@ -147,9 +188,10 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
           {layoutMode === "MONTHLY" && activeSubSection === "Habit Tracker" && renderSection("Habit Tracker", ["Review habit consistency for the month."])}
           {layoutMode === "MONTHLY" && activeSubSection === "Monthly Wins" && renderSection("Monthly Wins", ["What are the 3 biggest accomplishments this month?"])}
 
-          {layoutMode === "ANNUAL" && activeSubSection === "Year in Review" && renderSection("Year in Review", ["What were my proudest achievements this year?", "How did I grow personally and professionally?"])}
-          {layoutMode === "ANNUAL" && activeSubSection === "Biggest Lessons" && renderSection("Biggest Lessons", ["What were the hardest challenges I faced?", "What did those challenges teach me?"])}
-          {layoutMode === "ANNUAL" && activeSubSection === "Vision Forward" && renderSection("Vision Forward", ["What do I want to leave behind in the old year?", "What is my central focus or 'word' for the new year?"])}
+          {layoutMode === "ANNUAL" && activeSubSection === "Year in Review" && renderSection("Year in Review", ["What were my 10 biggest wins?", "What were my 10 biggest lessons?", "What did I not achieve that I wanted to?"])}
+          {layoutMode === "ANNUAL" && activeSubSection === "The Life Compass" && renderCompass()}
+          {layoutMode === "ANNUAL" && activeSubSection === "The Big Vision" && renderSection("The Big Vision", ["What is my overarching theme for this year?", "If this year were a movie, what would the title be and what happens in the final scene?"])}
+          {layoutMode === "ANNUAL" && activeSubSection === "Letter to Self" && renderSection("Letter to Self", ["Write a letter to your future self to be read at the end of this year."])}
         </div>
       </div>
     </div>
