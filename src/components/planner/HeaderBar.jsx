@@ -15,15 +15,20 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
     }}>
       {/* Left: Logo and Title */}
       <div className="flex items-center h-full min-w-[280px]">
-        <div className="flex items-center justify-center h-full shrink-0 ml-4 mr-3 py-2 w-56 relative">
-          {/* Soft backlight to make the dark logo pop against the leather without a hard box */}
-          <div className="absolute inset-0 bg-[#f5deb3] opacity-20 blur-[12px] rounded-[100%] scale-x-[1.2] scale-y-[0.8] mix-blend-screen"></div>
+        <div 
+          className="flex items-center justify-center h-full shrink-0 ml-4 mr-3 w-56 relative overflow-hidden"
+          style={{
+            maskImage: "radial-gradient(ellipse 90% 90% at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)",
+            WebkitMaskImage: "radial-gradient(ellipse 90% 90% at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)"
+          }}
+        >
           <img 
-            src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/6bc2ee721_fb_textured_bg_1920_1080_1-removebg-preview.png"
+            src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/ff31a883f_unnamed2.jpg"
             alt="Fairbanks Builders"
-            className="w-full h-full object-contain relative z-10 scale-110"
+            className="w-full h-full object-cover scale-[1.2]"
             style={{ 
-              filter: "drop-shadow(0px 1px 1px rgba(255,255,255,0.6)) brightness(1.2) contrast(1.1)"
+              mixBlendMode: "screen",
+              filter: "contrast(1.2) brightness(1.1)"
             }}
           />
         </div>
