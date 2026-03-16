@@ -285,6 +285,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         onPointerMove={draw}
         onPointerUp={endDrawing}
         onPointerOut={endDrawing}
+        onDoubleClick={(e) => handleDoubleClickAction(e.clientX, e.clientY, 'mouse')}
         className="w-full h-full touch-pan-y touch-pan-x"
         style={{ background: "transparent", display: "block" }}
       />
