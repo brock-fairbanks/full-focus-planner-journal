@@ -121,8 +121,12 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const draw = (e) => {
     if (!isDrawing.current || e.pointerType !== 'pen') return;
     const rect = canvasRef.current.getBoundingClientRect();
-    ctxRef.current.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-    ctxRef.current.stroke();
+    if (isErasing.current) {
+      ctxRef.current.clearRect(e.clientX - rect.left - 10, e.clientY - rect.top - 10, 20, 20);
+    } else {
+      ctxRef.current.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctxRef.current.stroke();
+    }
   };
 
   const endDrawing = () => {
