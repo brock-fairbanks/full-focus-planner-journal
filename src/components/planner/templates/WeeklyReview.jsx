@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function WeeklyReview() {
+export default function WeeklyReview({ date }) {
   const pages = [
     {
       title: "Biggest Wins",
@@ -21,7 +21,7 @@ export default function WeeklyReview() {
   ];
 
   return (
-    <div className="grid grid-cols-2 h-full gap-0" style={{ background: "#FAF9F6" }}>
+    <div className="grid grid-cols-2 h-full gap-0 overflow-auto" style={{ background: "#FAF9F6" }}>
       {pages.map((page, idx) => (
         <div
           key={idx}
