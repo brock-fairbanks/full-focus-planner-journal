@@ -16,22 +16,23 @@ export default function Planner() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // 🛠️ Map URL path to your Template keys
+  // 🛠️ Mapping URLs to Template IDs
   const getTemplateFromPath = useCallback((path) => {
     const p = path.toLowerCase();
     if (p.includes("today")) return "DAILY";
+    if (p.includes("ideal-week")) return "IDEAL_WEEK";
+    if (p.includes("goals")) return "QUARTERLY_GOALS";
     if (p.includes("rituals")) return "RITUALS";
-    if (p.includes("weekly-review")) return "WEEKLY";
+    if (p.includes("weekly")) return "WEEKLY";
     return "DAILY";
   }, []);
 
   const [activeTemplate, setActiveTemplate] = useState(getTemplateFromPath(location.pathname));
   const [selectedDate, setSelectedDate] = useState(new Date());
-  
   const canvasRef = useRef(null);
   const localInkMemory = useRef({});
 
-  // 🛠️ Sync template state if URL changes (back button / manual nav)
+  // 🛠️ Keep state in sync with URL
   useEffect(() => {
     setActiveTemplate(getTemplateFromPath(location.pathname));
   }, [location.pathname, getTemplateFromPath]);
@@ -41,7 +42,6 @@ export default function Planner() {
   const { data: drawings = [] } = useQuery({
     queryKey: ["pageDrawing", pageKey],
     queryFn: () => base44.entities.PageDrawing.filter({ page_key: pageKey }),
-    staleTime: 60000,
   });
 
   const existingDrawing = drawings[0];
@@ -71,57 +71,43 @@ export default function Planner() {
     saveMutation.mutate(dataUrl);
   }, [pageKey, existingDrawing, saveMutation]);
 
-  const handleClearInk = () => {
-    if (window.confirm("Clear all ink from this page?")) {
-      localInkMemory.current[pageKey] = null;
-      if (existingDrawing?.id) {
-        base44.entities.PageDrawing.delete(existingDrawing.id).catch(() => {});
-        queryClient.invalidateQueries({ queryKey: ["pageDrawing", pageKey] });
-      }
-      canvasRef.current?.clear?.();
-    }
-  };
-
-  // 🛠️ When a tab is clicked, update the URL (this fixes the "Black Screen" navigation)
-  const handleTemplateChange = (newTemplate) => {
+  // 🛠️ Changing tabs now updates the URL
+  const handleTemplateChange = (newTemplateId) => {
     const pathMap = {
       DAILY: "/today",
+      IDEAL_WEEK: "/ideal-week",
+      QUARTERLY_GOALS: "/goals",
       RITUALS: "/rituals",
-      WEEKLY: "/weekly-review"
+      WEEKLY: "/weekly"
     };
-    navigate(pathMap[newTemplate] || "/today");
+    navigate(pathMap[newTemplateId] || "/today");
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden" style={{background: "#F4EFE4"}}>
+    <div className="fixed inset-0 overflow-hidden bg-[#F4EFE4]">
       <PortraitOverlay />
-
       <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTemplateChange} />
       
       <div className="fixed top-20 right-6 z-50 pointer-events-auto">
-        <button
-          onClick={handleClearInk}
-          className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded transition-colors"
-          style={{color: "#b8956a"}}
-        >
-          <Trash2 size={20} />
-        </button>
+        <button onClick={() => {
+          if(window.confirm("Clear ink?")) {
+            localInkMemory.current[pageKey] = null;
+            canvasRef.current?.clear?.();
+          }
+        }} style={{color: "#b8956a"}}><Trash2 size={20} /></button>
       </div>
 
       <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
 
-      {/* Template Layout */}
       <div className="fixed left-20 right-0 top-16 bottom-0 z-10 pointer-events-none">
         <TemplateRenderer template={activeTemplate} date={selectedDate} />
       </div>
 
-      {/* Drawing Canvas */}
       <div className="fixed left-20 right-0 top-16 bottom-0 z-20 pointer-events-auto">
         <GlobalCanvas
           ref={canvasRef}
           activeTemplate={activeTemplate}
           onSave={handleSaveInk}
-          onClear={() => canvasRef.current?.clear?.()}
           savedImageData={currentImageData}
           pageKey={pageKey}
         />
