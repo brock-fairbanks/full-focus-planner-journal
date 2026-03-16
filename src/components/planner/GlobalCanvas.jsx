@@ -423,6 +423,7 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
       <textarea
         ref={textareaRef}
         value={val}
+        rows={1}
         onChange={handleInput}
         onBlur={handleBlur}
         onClick={() => setIsEditing(true)}
