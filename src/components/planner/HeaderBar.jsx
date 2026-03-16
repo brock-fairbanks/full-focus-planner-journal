@@ -9,19 +9,26 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
   return (
     <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between pr-8 pointer-events-auto z-50 border-b" style={{
       backgroundColor: "#1A120B",
-      backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.2)), url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E\")",
+      backgroundImage: "linear-gradient(to bottom, rgba(26,18,11,0.6), rgba(15,10,6,0.95)), url('https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/ce1273b14_unnamed1.jpg')",
+      backgroundSize: "800%",
+      backgroundPosition: "bottom right",
       borderColor: "#3e2d1d",
       boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
     }}>
       {/* Left: Logo and Title */}
-      <div className="flex items-center h-full min-w-[280px]">
-        <div className="flex items-center justify-center w-12 h-full shrink-0 ml-4 mr-2">
-          <Compass size={32} style={{ color: "#f5deb3", dropShadow: "0 2px 4px rgba(0,0,0,0.5)" }} />
+      <div className="flex items-center h-full min-w-[340px]">
+        <div className="flex items-center justify-center w-64 h-full shrink-0 relative overflow-hidden ml-4 mr-2">
+          <img 
+            src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/ce1273b14_unnamed1.jpg" 
+            alt="Fairbanks Builders Logo" 
+            className="w-full h-full object-cover object-left"
+            style={{ 
+              maskImage: "linear-gradient(to right, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)",
+              WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)"
+            }}
+          />
         </div>
-        <div className="flex flex-col z-10">
-          <span className="text-[#f5deb3] font-serif font-bold text-xl leading-tight tracking-wide whitespace-nowrap drop-shadow-md">
-            Full Focus
-          </span>
+        <div className="flex flex-col ml-[-10px] z-10">
           <span 
             className="text-[10px] uppercase tracking-widest font-bold leading-none"
             style={{
