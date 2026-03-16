@@ -39,6 +39,7 @@ export default function BrandCompass() {
         <nav className="flex items-center gap-1">
           {[
             { label: "Compass", to: "/BrandCompass" },
+            { label: "Daily Plan", to: "/DailyPlan" },
             { label: "Planner", to: "/Planner" },
             { label: "Weekly Wizard", to: "/WeeklyPreviewWizard" },
           ].map(n => (
