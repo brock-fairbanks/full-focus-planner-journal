@@ -45,7 +45,7 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
                 <h3 className="text-2xl font-serif italic" style={{ color: "#1e293b" }}>{domain}</h3>
                 <div className="flex gap-1 md:gap-2">
                    {[1,2,3,4,5,6,7,8,9,10].map(n => (
-                      <div key={n} className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-[#cbd5e1] flex items-center justify-center text-xs text-[#94a3b8]">{n}</div>
+                      <div key={n} className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#94a3b8] flex items-center justify-center text-xs text-[#94a3b8]">{n}</div>
                    ))}
                 </div>
               </div>
@@ -53,7 +53,7 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
               <div
                 className="w-full min-h-[250px]"
                 style={{
-                  backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #E2E8F0 40px)`,
+                  backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 38px, #cbd5e1 40px)`,
                   backgroundSize: "100% 40px",
                   backgroundPosition: "0 0",
                 }}
@@ -79,7 +79,7 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
             <div
               className="flex-1 w-full"
               style={{
-                backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #E2E8F0 40px)`,
+                backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 38px, #cbd5e1 40px)`,
                 backgroundSize: "100% 40px",
                 backgroundPosition: "0 0",
               }}
@@ -131,11 +131,11 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
         </div>
         <div className="flex flex-col flex-1 min-w-[200px]">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1 flex items-center gap-1"><MapPin size={12}/> Location</span>
-          <div className="border-b border-[#E2E8F0] h-7 w-full max-w-[300px]"></div>
+          <div className="border-b-2 border-[#cbd5e1] h-7 w-full max-w-[300px]"></div>
         </div>
         <div className="flex flex-col">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1 flex items-center gap-1"><CloudSun size={12}/> Weather</span>
-          <div className="border-b border-[#E2E8F0] h-7 w-32"></div>
+          <div className="border-b-2 border-[#cbd5e1] h-7 w-32"></div>
         </div>
       </div>
 

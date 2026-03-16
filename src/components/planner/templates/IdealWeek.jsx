@@ -31,12 +31,12 @@ export default function IdealWeek({ date, onClearCanvas }) {
 
         {/* Day columns */}
         {DAYS.map((day) => (
-          <div key={day} className="flex-1 border-l" style={{ borderColor: "#bfdbfe" }}>
+          <div key={day} className="flex-1 border-l-2" style={{ borderColor: "#93c5fd" }}>
             <div className="h-8 flex items-center font-bold" style={{ color: "#1e293b" }}>
               {day}
             </div>
             {HOURS.map((hour) => (
-              <div key={`${day}-${hour}`} className="h-10 border-b" style={{ borderColor: "#bfdbfe" }} />
+              <div key={`${day}-${hour}`} className="h-10 border-b-2" style={{ borderColor: "#93c5fd" }} />
             ))}
           </div>
         ))}

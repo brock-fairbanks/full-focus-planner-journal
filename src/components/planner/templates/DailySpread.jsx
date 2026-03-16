@@ -85,11 +85,11 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
                     <span className="text-4xl font-bold w-10 text-right leading-none" style={{ color: "#f59e0b" }}>
                       {n}.
                     </span>
-                    <div className="flex-1 border-b-2" style={{ borderColor: "#E2E8F0" }} />
+                    <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1" }} />
                   </div>
                   <div className="flex items-end gap-6">
                     <span className="w-10 text-right"></span>
-                    <div className="flex-1 border-b-2" style={{ borderColor: "#E2E8F0" }} />
+                    <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1" }} />
                   </div>
                 </div>
               ))}
@@ -107,11 +107,11 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
                     <span className="text-xl font-bold w-20 text-right leading-none" style={{ color: "#94a3b8" }}>
                       {hour === 12 ? 12 : hour > 12 ? hour - 12 : hour}{hour >= 12 ? "PM" : "AM"}
                     </span>
-                    <div className="flex-1 border-b-2" style={{ borderColor: "#E2E8F0" }} />
+                    <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1" }} />
                   </div>
                   <div className="flex gap-6 items-end mt-8">
                     <span className="w-20 text-right text-sm text-slate-300 pr-1 leading-none">:30</span>
-                    <div className="flex-1 border-b border-dashed" style={{ borderColor: "#E2E8F0" }} />
+                    <div className="flex-1 border-b-2 border-dashed" style={{ borderColor: "#cbd5e1" }} />
                   </div>
                 </div>
               ))}
@@ -125,8 +125,8 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
               </h2>
               {Array.from({ length: 20 }).map((_, i) => (
                 <div key={i} className="flex items-end gap-6 mb-10">
-                  <div className="w-8 h-8 rounded-full border-[3px] shrink-0 mb-1" style={{ borderColor: "#E2E8F0" }} />
-                  <div className="flex-1 border-b-2" style={{ borderColor: "#E2E8F0" }} />
+                  <div className="w-8 h-8 rounded-full border-[4px] shrink-0 mb-1" style={{ borderColor: "#cbd5e1" }} />
+                  <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1" }} />
                 </div>
               ))}
             </div>
@@ -140,7 +140,7 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
               <div
                 className="flex-1 min-h-[800px]"
                 style={{
-                  backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #E2E8F0 40px)`,
+                  backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 38px, #cbd5e1 40px)`,
                   backgroundSize: "100% 40px",
                   backgroundPosition: "0 0",
                 }}

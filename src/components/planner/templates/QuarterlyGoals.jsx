@@ -19,15 +19,15 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
       {Array.from({ length: 8 }).map((_, i) => (
         <div
           key={i}
-          className="border rounded-lg p-6"
-          style={{ borderColor: "#E2E8F0", background: "#ffffff" }}
+          className="border-2 rounded-lg p-6"
+          style={{ borderColor: "#cbd5e1", background: "#ffffff" }}
         >
           {/* Goal Name */}
           <div className="mb-4">
             <p className="text-xs font-bold uppercase mb-2" style={{ color: "#94a3b8" }}>
               Goal {i + 1}
             </p>
-            <div className="border-b" style={{ borderColor: "#E2E8F0", height: "24px" }} />
+            <div className="border-b-2" style={{ borderColor: "#cbd5e1", height: "24px" }} />
           </div>
 
           {/* Key Motivations */}
@@ -36,7 +36,7 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
               Motivations
             </p>
             {[1, 2, 3].map((n) => (
-              <div key={n} className="border-b mb-2" style={{ borderColor: "#E2E8F0", height: "20px" }} />
+              <div key={n} className="border-b-2 mb-2" style={{ borderColor: "#cbd5e1", height: "20px" }} />
             ))}
           </div>
 
@@ -48,7 +48,7 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
             {[1, 2].map((n) => (
               <div key={n} className="flex items-center gap-2 mb-2">
                 <input type="checkbox" className="w-4 h-4" disabled />
-                <div className="flex-1 border-b" style={{ borderColor: "#E2E8F0", height: "18px" }} />
+                <div className="flex-1 border-b-2" style={{ borderColor: "#cbd5e1", height: "18px" }} />
               </div>
             ))}
           </div>

@@ -34,7 +34,7 @@ export default function WeeklyReview({ date, onClearCanvas }) {
       {pages.map((page, idx) => (
         <div
           key={idx}
-          className="flex flex-col border border-[#E2E8F0] bg-white p-8"
+          className="flex flex-col border-2 border-[#cbd5e1] bg-white p-8"
         >
           <h2 className="text-2xl font-serif font-bold mb-2" style={{ color: "#1e293b" }}>
             {page.title}
@@ -47,7 +47,7 @@ export default function WeeklyReview({ date, onClearCanvas }) {
           <div
             className="flex-1 mt-2"
             style={{
-              backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 31px, #E2E8F0 32px)`,
+              backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 30px, #cbd5e1 32px)`,
               backgroundSize: "100% 32px",
               backgroundPosition: "0 0",
             }}
