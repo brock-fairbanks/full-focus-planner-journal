@@ -83,6 +83,8 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     let snappedY = Math.round((clickY - 16) / 32) * 32;
 
     let startX = clientX - rect.left;
+    let lineHeight = 32;
+    let width = `calc(100% - ${startX}px - 40px)`;
 
     // Smart Line Snapping: Find the nearest line-like element
     const lineElements = Array.from(document.querySelectorAll(
@@ -113,16 +115,42 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
 
     if (bestLine) {
       const bestRect = bestLine.getBoundingClientRect();
-      startX = bestRect.left - rect.left + 2; // +2px padding from line start
+      startX = bestRect.left - rect.left + 2; 
+      width = `${bestRect.width - 4}px`;
       
-      // Snap Y precisely to the line if it's a discrete border line
       if (bestLine.className && typeof bestLine.className === 'string' && bestLine.className.includes('border')) {
-        snappedY = (bestRect.bottom - rect.top) - 28; // Aligns text baseline nicely on the border
+        // Find line height by looking for the next line
+        const siblingLines = lineElements.filter(el => {
+           if (el === bestLine) return false;
+           const r = el.getBoundingClientRect();
+           return Math.abs(r.left - bestRect.left) < 20 && r.top > bestRect.top;
+        });
+        
+        if (siblingLines.length > 0) {
+           siblingLines.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+           const nextRect = siblingLines[0].getBoundingClientRect();
+           lineHeight = nextRect.top - bestRect.top;
+           if (lineHeight < 20 || lineHeight > 80) lineHeight = 32;
+        } else {
+           lineHeight = 32; // fallback
+        }
+        
+        // Align text baseline to sit perfectly on the border line
+        snappedY = (bestRect.bottom - rect.top) - lineHeight + 6; 
+      } else if (bestLine.style.backgroundSize) {
+         // It's a grid/lines background
+         const match = bestLine.style.backgroundSize.match(/(\d+)px/g);
+         if (match && match.length > 0) {
+             lineHeight = parseInt(match[match.length - 1]);
+             const relativeY = clientY - bestRect.top;
+             const gridY = Math.floor(relativeY / lineHeight) * lineHeight;
+             snappedY = gridY + bestRect.top - rect.top - 4; // slight visual offset
+         }
       }
     }
 
     updateTextsState(prev => {
-      const existingTextIndex = prev.findIndex(t => Math.abs(t.y - snappedY) < 10);
+      const existingTextIndex = prev.findIndex(t => Math.abs(t.y - snappedY) < 10 && Math.abs(t.x - startX) < 10);
       if (existingTextIndex !== -1) {
         const updated = [...prev];
         updated[existingTextIndex] = { ...updated[existingTextIndex], isEditing: true };
@@ -133,7 +161,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
           x: startX,
           y: snappedY,
           text: '',
-          isEditing: true
+          isEditing: true,
+          lineHeight,
+          width
         };
         return [...prev, newText];
       }
