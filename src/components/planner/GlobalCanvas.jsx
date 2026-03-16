@@ -77,7 +77,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const pointsRef = useRef([]);
   const preStrokeStateRef = useRef(null);
 
-  const handleDoubleClickAction = (clientX, clientY) => {
+  const handleDoubleClickAction = (clientX, clientY, pointerType) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const clickY = clientY - rect.top;
     const snappedY = Math.round((clickY - 16) / 32) * 32;
@@ -100,7 +100,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       }
     });
     
-    if (preStrokeStateRef.current && ctxRef.current) {
+    if (pointerType !== 'touch' && preStrokeStateRef.current && ctxRef.current) {
       ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
     }
     isDrawing.current = false;
@@ -111,15 +111,15 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const startDrawing = (e) => {
     const isPen = e.pointerType === 'pen';
     const now = Date.now();
-    const DOUBLE_TAP_DELAY = 400; 
+    const DOUBLE_TAP_DELAY = 500; 
 
     // Only check double tap if it's not a pen, or if it's a mouse/touch that hasn't moved much
     const dx = Math.abs(e.clientX - lastTapPosRef.current.x);
     const dy = Math.abs(e.clientY - lastTapPosRef.current.y);
-    const isSameSpot = dx < 20 && dy < 20;
+    const isSameSpot = dx < 40 && dy < 40;
 
     if (!isPen && isSameSpot && now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      handleDoubleClickAction(e.clientX, e.clientY);
+      handleDoubleClickAction(e.clientX, e.clientY, e.pointerType);
       lastTapRef.current = 0;
       return;
     }
