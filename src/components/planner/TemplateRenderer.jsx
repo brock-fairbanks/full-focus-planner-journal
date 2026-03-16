@@ -4,6 +4,7 @@ import IdealWeek from "./templates/IdealWeek.jsx";
 import QuarterlyGoals from "./templates/QuarterlyGoals.jsx";
 import Rituals from "./templates/Rituals.jsx";
 import WeeklyReview from "./templates/WeeklyReview.jsx";
+import JournalSpread from "./templates/JournalSpread.jsx";
 
 export default function TemplateRenderer({ template, date, onSubSectionChange, onClearCanvas }) {
   const templates = {
@@ -12,6 +13,7 @@ export default function TemplateRenderer({ template, date, onSubSectionChange, o
     QUARTERLY_GOALS: <QuarterlyGoals date={date} onClearCanvas={onClearCanvas} />,
     RITUALS: <Rituals date={date} onClearCanvas={onClearCanvas} />,
     WEEKLY: <WeeklyReview date={date} onClearCanvas={onClearCanvas} />,
+    JOURNAL: <JournalSpread date={date} onSubSectionChange={onSubSectionChange} onClearCanvas={onClearCanvas} />,
   };
 
   const component = templates[template];

@@ -18,6 +18,7 @@ export default function Planner() {
     if (p.includes("weekly-review")) return "WEEKLY";
     if (p.includes("ideal-week")) return "IDEAL_WEEK";
     if (p.includes("goals")) return "QUARTERLY_GOALS";
+    if (p.includes("journal")) return "JOURNAL";
     return "DAILY";
   }, []);
 
@@ -106,12 +107,13 @@ export default function Planner() {
       RITUALS: "/rituals",
       WEEKLY: "/weekly-review",
       IDEAL_WEEK: "/ideal-week",
-      QUARTERLY_GOALS: "/goals"
+      QUARTERLY_GOALS: "/goals",
+      JOURNAL: "/journal"
     };
     navigate(pathMap[templateId] || "/today");
   };
 
-  const pageKey = `${activeTemplate}${activeTemplate === "DAILY" && subSection ? `_${subSection}` : ''}_${selectedDate.toISOString().split('T')[0]}`;
+  const pageKey = `${activeTemplate}${(activeTemplate === "DAILY" || activeTemplate === "JOURNAL") && subSection ? `_${subSection}` : ''}_${selectedDate.toISOString().split('T')[0]}`;
 
   return (
     <div 
@@ -139,7 +141,7 @@ export default function Planner() {
           </div>
           
           {/* Drawing Layer (z-20) */}
-          <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-auto" style={{ top: activeTemplate === "DAILY" ? "72px" : "0px" }}>
+          <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-auto" style={{ top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px" }}>
             <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} />
           </div>
         </div>

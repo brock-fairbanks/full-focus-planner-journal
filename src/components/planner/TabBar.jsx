@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Target, Moon, TrendingUp } from "lucide-react";
+import { Calendar, Target, Moon, TrendingUp, BookOpen } from "lucide-react";
 import { Reorder } from "framer-motion";
 
 const WeeklyIcon = ({ size = 24, ...props }) => (
@@ -26,6 +26,7 @@ const WeeklyIcon = ({ size = 24, ...props }) => (
 
 const DEFAULT_TABS = [
   { id: "DAILY", label: "Today", icon: Calendar },
+  { id: "JOURNAL", label: "Journal", icon: BookOpen },
   { id: "IDEAL_WEEK", label: "Ideal Week", icon: TrendingUp },
   { id: "QUARTERLY_GOALS", label: "Goals", icon: Target },
   { id: "RITUALS", label: "Rituals", icon: Moon },
@@ -34,6 +35,7 @@ const DEFAULT_TABS = [
 
 const ICONS_MAP = {
   DAILY: Calendar,
+  JOURNAL: BookOpen,
   IDEAL_WEEK: TrendingUp,
   QUARTERLY_GOALS: Target,
   RITUALS: Moon,
