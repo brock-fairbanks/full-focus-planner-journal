@@ -73,6 +73,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     setTextInput({ visible: false, x: 0, y: 0, text: '' });
   };
 
+  const pointsRef = useRef([]);
+  const preStrokeStateRef = useRef(null);
+
   const startDrawing = (e) => {
     if (textInput.visible) return;
 
@@ -93,26 +96,89 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     }
     lastTapRef.current = now;
 
-    if (!ctxRef.current) return;
+    if (!ctxRef.current || !canvasRef.current) return;
+    
+    // Save canvas state for potential stroke replacement (scratch out / strike through)
+    preStrokeStateRef.current = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+    
     isDrawing.current = true;
     const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    pointsRef.current = [{x, y}];
+    
     ctxRef.current.strokeStyle = '#1e293b';
     ctxRef.current.lineWidth = 2.2;
     ctxRef.current.lineCap = 'round';
     ctxRef.current.beginPath();
-    ctxRef.current.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctxRef.current.moveTo(x, y);
   };
 
   const draw = (e) => {
     if (!isDrawing.current || !ctxRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
-    ctxRef.current.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    pointsRef.current.push({x, y});
+    
+    ctxRef.current.lineTo(x, y);
     ctxRef.current.stroke();
   };
 
   const endDrawing = () => {
     if (!isDrawing.current) return;
     isDrawing.current = false;
+    
+    const pts = pointsRef.current;
+    if (pts.length > 5 && ctxRef.current && canvasRef.current) {
+      let minX = pts[0].x, maxX = pts[0].x;
+      let minY = pts[0].y, maxY = pts[0].y;
+      let xReversals = 0;
+      let lastDir = 0;
+
+      for (let i = 1; i < pts.length; i++) {
+        minX = Math.min(minX, pts[i].x);
+        maxX = Math.max(maxX, pts[i].x);
+        minY = Math.min(minY, pts[i].y);
+        maxY = Math.max(maxY, pts[i].y);
+        
+        let dx = pts[i].x - pts[i-1].x;
+        if (Math.abs(dx) > 2) {
+          let dir = dx > 0 ? 1 : -1;
+          if (lastDir !== 0 && dir !== lastDir) xReversals++;
+          lastDir = dir;
+        }
+      }
+
+      const width = maxX - minX;
+      const height = maxY - minY;
+
+      // Scratch-out detection (zigzag back and forth)
+      if (xReversals >= 3 && width > 20 && height > 10) {
+        if (preStrokeStateRef.current) {
+          ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+        }
+        // Erase the bounded area plus a small buffer
+        ctxRef.current.clearRect(minX - 10, minY - 10, width + 20, height + 20);
+      } 
+      // Strike-through detection (mostly horizontal, straight line)
+      else if (width > 60 && height < 20 && xReversals <= 1) {
+        if (preStrokeStateRef.current) {
+          ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+        }
+        // Replace with a perfectly straight strike-through line
+        ctxRef.current.beginPath();
+        const avgY = (pts[0].y + pts[pts.length-1].y) / 2;
+        ctxRef.current.moveTo(minX, avgY);
+        ctxRef.current.lineTo(maxX, avgY);
+        ctxRef.current.strokeStyle = '#1e293b';
+        ctxRef.current.lineWidth = 3;
+        ctxRef.current.stroke();
+      }
+    }
+
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
       if (canvasRef.current && onSave) {
