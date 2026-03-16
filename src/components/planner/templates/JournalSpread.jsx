@@ -10,24 +10,21 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
   const isYearEnd = currentDate.getMonth() === 11 && currentDate.getDate() >= 25; // Last week of December
   const isWknd = isWeekend(currentDate);
 
-  const [layoutMode, setLayoutMode] = useState("DAILY"); // DAILY, WEEKEND, MONTHLY, ANNUAL
+  const [layoutMode, setLayoutMode] = useState("DAILY"); // DAILY, WEEKEND, ANNUAL
   
   useEffect(() => {
     if (isYearEnd) {
       setLayoutMode("ANNUAL");
-    } else if (isMonthEnd) {
-      setLayoutMode("MONTHLY");
     } else if (isWknd) {
       setLayoutMode("WEEKEND");
     } else {
       setLayoutMode("DAILY");
     }
-  }, [currentDate, isMonthEnd, isYearEnd, isWknd]);
+  }, [currentDate, isYearEnd, isWknd]);
 
   const LAYOUT_TABS = {
     DAILY: ["The Story", "Processing", "Gratitude", "Insights"],
     WEEKEND: ["Life Balance", "Relationships", "Rejuvenation"],
-    MONTHLY: ["Goal Progress", "Habit Tracker", "Monthly Wins"],
     ANNUAL: ["Year in Review", "The Life Compass", "The Big Vision", "Letter to Self"]
   };
 
@@ -113,12 +110,11 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
       {/* Mode Switcher Banner */}
       <div className="bg-[#1e293b] text-white px-8 md:px-12 py-3 flex flex-wrap gap-4 justify-between items-center text-sm font-medium z-40 relative shadow-md">
         <span>
-          {isYearEnd ? "It's the end of the year." : isMonthEnd ? "It's the end of the month." : isWknd ? "It's the weekend." : "Journal Mode"} What would you like to reflect on?
+          {isYearEnd ? "It's the end of the year." : isWknd ? "It's the weekend." : "Journal Mode"} What would you like to reflect on?
         </span>
         <div className="flex gap-2">
           <button onClick={() => setLayoutMode("DAILY")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "DAILY" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Daily</button>
           <button onClick={() => setLayoutMode("WEEKEND")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "WEEKEND" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Weekend</button>
-          <button onClick={() => setLayoutMode("MONTHLY")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "MONTHLY" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Monthly</button>
           <button onClick={() => setLayoutMode("ANNUAL")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "ANNUAL" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Annual</button>
         </div>
       </div>
@@ -181,10 +177,6 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
           {layoutMode === "WEEKEND" && activeSubSection === "Life Balance" && renderSection("Life Balance", ["How is my sleep, movement, and nutrition?"])}
           {layoutMode === "WEEKEND" && activeSubSection === "Relationships" && renderSection("Relationships", ["Who did I connect with this weekend?"])}
           {layoutMode === "WEEKEND" && activeSubSection === "Rejuvenation" && renderSection("Rejuvenation", ["What did I do to refuel my tank?"])}
-
-          {layoutMode === "MONTHLY" && activeSubSection === "Goal Progress" && renderSection("Goal Progress", ["Which of my Quarterly Goals am I making progress on?"])}
-          {layoutMode === "MONTHLY" && activeSubSection === "Habit Tracker" && renderSection("Habit Tracker", ["Review habit consistency for the month."])}
-          {layoutMode === "MONTHLY" && activeSubSection === "Monthly Wins" && renderSection("Monthly Wins", ["What are the 3 biggest accomplishments this month?"])}
 
           {layoutMode === "ANNUAL" && activeSubSection === "Year in Review" && renderSection("Year in Review", ["What were my 10 biggest wins?", "What were my 10 biggest lessons?", "What did I not achieve that I wanted to?"])}
           {layoutMode === "ANNUAL" && activeSubSection === "The Life Compass" && renderCompass()}
