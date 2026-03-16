@@ -8,10 +8,10 @@ import WeeklyReview from "./templates/WeeklyReview.jsx";
 export default function TemplateRenderer({ template, date, onSubSectionChange, onClearCanvas }) {
   const templates = {
     DAILY: <DailySpread date={date} onSubSectionChange={onSubSectionChange} onClearCanvas={onClearCanvas} />,
-    IDEAL_WEEK: <IdealWeek date={date} />,
-    QUARTERLY_GOALS: <QuarterlyGoals date={date} />,
-    RITUALS: <Rituals date={date} />,
-    WEEKLY: <WeeklyReview date={date} />,
+    IDEAL_WEEK: <IdealWeek date={date} onClearCanvas={onClearCanvas} />,
+    QUARTERLY_GOALS: <QuarterlyGoals date={date} onClearCanvas={onClearCanvas} />,
+    RITUALS: <Rituals date={date} onClearCanvas={onClearCanvas} />,
+    WEEKLY: <WeeklyReview date={date} onClearCanvas={onClearCanvas} />,
   };
 
   const component = templates[template];

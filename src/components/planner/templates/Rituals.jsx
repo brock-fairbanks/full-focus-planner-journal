@@ -1,9 +1,17 @@
 import React from "react";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Trash2 } from "lucide-react";
 
-export default function Rituals({ date }) {
+export default function Rituals({ date, onClearCanvas }) {
   return (
-    <div className="flex flex-col md:flex-row min-h-full w-full gap-8 md:gap-0 p-4 md:p-8 bg-[#FAF9F6]">
+    <div className="relative flex flex-col md:flex-row min-h-full w-full gap-8 md:gap-0 p-4 md:p-8 bg-[#FAF9F6]">
+      <button 
+        onClick={onClearCanvas}
+        className="absolute top-4 right-4 md:top-6 md:right-6 z-30 flex items-center gap-1.5 text-sm font-medium text-[#94a3b8] hover:text-red-500 transition-colors bg-white/80 backdrop-blur-sm border border-[#E2E8F0] px-3 py-1.5 rounded-md hover:bg-red-50 shadow-sm"
+        title="Clear entire page"
+      >
+        <Trash2 size={16} />
+        <span>Clear Page</span>
+      </button>
       {/* Morning Startup */}
       <div className="flex-1 flex flex-col md:border-r border-[#E2E8F0] md:pr-8">
         <div className="flex items-center gap-3 mb-8">

@@ -1,8 +1,17 @@
 import React from "react";
+import { Trash2 } from "lucide-react";
 
-export default function QuarterlyGoals() {
+export default function QuarterlyGoals({ date, onClearCanvas }) {
   return (
-    <div className="w-full min-h-full p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8" style={{ background: "#FAF9F6" }}>
+    <div className="relative w-full min-h-full p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8" style={{ background: "#FAF9F6" }}>
+      <button 
+        onClick={onClearCanvas}
+        className="absolute top-4 right-4 md:top-6 md:right-6 z-30 flex items-center gap-1.5 text-sm font-medium text-[#94a3b8] hover:text-red-500 transition-colors bg-white/80 backdrop-blur-sm border border-[#E2E8F0] px-3 py-1.5 rounded-md hover:bg-red-50 shadow-sm"
+        title="Clear entire page"
+      >
+        <Trash2 size={16} />
+        <span>Clear Page</span>
+      </button>
       <h1 className="col-span-2 text-3xl font-serif font-bold" style={{ color: "#1e293b" }}>
         Quarterly Goals
       </h1>
