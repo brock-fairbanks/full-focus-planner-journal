@@ -465,10 +465,11 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
 
   const lh = textObj.lineHeight || 32;
 
+  const charsPerLine = textObj.width ? Math.max(12, parseInt(textObj.width) / 7) : 15;
   const estimatedLines = activeTemplate === 'IDEAL_WEEK' 
-    ? Math.max(val.split('\n').length, Math.ceil(val.length / 16)) || 1
+    ? Math.max(val.split('\n').length, Math.ceil(val.length / charsPerLine)) || 1
     : 1;
-  const idealWeekFontSize = Math.max(9, Math.min(16, Math.floor((lh - 8) / (1.2 * estimatedLines))));
+  const idealWeekFontSize = Math.max(13, Math.min(22, Math.floor(lh / (1.1 * estimatedLines))));
 
   return (
     <div 
