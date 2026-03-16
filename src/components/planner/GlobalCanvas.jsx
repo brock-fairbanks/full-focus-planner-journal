@@ -118,7 +118,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   };
 
   const draw = (e) => {
-    if (!isDrawing.current || e.pointerType !== 'pen') return;
+    if (!isDrawing.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
     if (isErasing.current) {
       ctxRef.current.clearRect(e.clientX - rect.left - 10, e.clientY - rect.top - 10, 20, 20);
