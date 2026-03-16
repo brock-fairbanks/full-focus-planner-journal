@@ -7,6 +7,7 @@ import PortraitOverlay from "../components/planner/PortraitOverlay.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
 import TabBar from "../components/planner/TabBar.jsx";
 import HeaderBar from "../components/planner/HeaderBar.jsx";
+import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 
 export default function Planner() {
   const [activeTemplate, setActiveTemplate] = useState("DAILY");
