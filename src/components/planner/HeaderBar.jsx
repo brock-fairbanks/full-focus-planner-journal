@@ -15,14 +15,12 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
     }}>
       {/* Left: Logo and Title */}
       <div className="flex items-center h-full min-w-[280px]">
-        <div className="flex items-center justify-center h-full shrink-0 ml-4 mr-3 py-2 w-48">
+        <div className="flex items-center justify-center h-[46px] shrink-0 ml-4 mr-3 px-3 bg-[#FAF9F6] rounded-md shadow-[0_2px_8px_rgba(0,0,0,0.5)] border border-white/10">
           <img 
             src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/6bc2ee721_fb_textured_bg_1920_1080_1-removebg-preview.png"
             alt="Fairbanks Builders"
-            className="w-full h-full object-contain"
-            style={{ 
-              filter: "drop-shadow(0px 1px 4px rgba(255,255,255,0.4)) brightness(1.2)"
-            }}
+            className="h-full w-auto object-contain py-1 scale-110"
+            style={{ maxWidth: "200px" }}
           />
         </div>
         <div className="flex flex-col z-10 justify-center">
