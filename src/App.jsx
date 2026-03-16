@@ -6,6 +6,9 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Planner from './pages/Planner';
+import BrandCompass from './pages/BrandCompass';
+import WeeklyPreviewWizard from './pages/WeeklyPreviewWizard';
+import DailyPlan from './pages/DailyPlan';
 // Add page imports here
 
 const AuthenticatedApp = () => {
