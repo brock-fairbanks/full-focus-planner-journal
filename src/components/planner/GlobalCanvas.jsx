@@ -99,7 +99,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       };
       img.src = savedImageData;
     }
-  }, [pageKey, savedImageData]);
+  }, [pageKey, savedImageData, activeTemplate]);
 
   const startDrawing = (e) => {
     if (e.pointerType !== 'pen') return;
