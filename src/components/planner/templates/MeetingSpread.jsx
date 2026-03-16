@@ -15,9 +15,18 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Use webm format as it's widely supported for web recording
-      const options = { mimeType: 'audio/webm' };
+      // Check for mp4 support first, then fallback to webm
+      let mimeType = 'audio/webm';
+      if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        mimeType = 'audio/mp4';
+      } else if (MediaRecorder.isTypeSupported('audio/mp3')) {
+        mimeType = 'audio/mp3';
+      }
+      
+      const options = { mimeType };
       const mediaRecorder = new MediaRecorder(stream, options);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
       setAudioUrl(null);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
@@ -41,12 +50,16 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       mediaRecorderRef.current.onstop = async () => {
         setIsProcessing(true);
         setIsRecording(false);
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        
+        const actualMimeType = mediaRecorderRef.current.mimeType || 'audio/webm';
+        const extension = actualMimeType.split('/')[1].split(';')[0]; // Extract mp4, webm, mp3 etc
+        
+        const audioBlob = new Blob(audioChunksRef.current, { type: actualMimeType });
         const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
+        setAudioUrl({ url, extension });
         
         try {
-          const file = new File([audioBlob], "meeting_audio.webm", { type: "audio/webm" });
+          const file = new File([audioBlob], `meeting_audio.${extension}`, { type: actualMimeType });
           const uploadRes = await base44.integrations.Core.UploadFile({ file });
           
           const text = await base44.integrations.Core.InvokeLLM({
@@ -139,14 +152,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
           {audioUrl && !isRecording && !isProcessing && (
             <div className="flex items-center gap-4 mt-2">
-              <audio controls src={audioUrl} className="h-10" />
+              <audio controls src={audioUrl.url} className="h-10" />
               <a 
-                href={audioUrl} 
-                download="meeting_recording.webm"
+                href={audioUrl.url} 
+                download={`meeting_recording.${audioUrl.extension}`}
                 className="flex items-center gap-2 text-sm font-medium text-[#1e293b] hover:text-[#F97316] bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition-colors"
               >
                 <Download size={16} />
-                Download Audio
+                Download (.{audioUrl.extension})
               </a>
             </div>
           )}
