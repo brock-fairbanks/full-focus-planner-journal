@@ -4,11 +4,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Check, Zap } from "lucide-react";
 
-import PortraitOverlay from "../components/planner/PortraitOverlay";
-import GlobalCanvas from "../components/planner/GlobalCanvas";
-import TemplateRenderer from "../components/planner/TemplateRenderer";
-import TabBar from "../components/planner/TabBar";
-import HeaderBar from "../components/planner/HeaderBar";
+import PortraitOverlay from "../components/planner/PortraitOverlay.jsx";
+import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
+import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
+import TabBar from "../components/planner/TabBar.jsx";
+import HeaderBar from "../components/planner/HeaderBar.jsx";
 
 const TEMPLATES = {
   DAILY: "DAILY",
