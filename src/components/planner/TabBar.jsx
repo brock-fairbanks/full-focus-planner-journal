@@ -91,23 +91,23 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                     className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
                     title={tab.label}
                     style={{
-                      color: isActive ? "#ff8c00" : "#d32f2f",
+                      color: isActive ? "#f97316" : "#b91c1c",
                       backgroundColor: "transparent",
                       textShadow: isActive 
-                        ? "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.2)" 
-                        : "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.15)",
+                        ? "-1px -1px 2px rgba(0,0,0,0.9), 1px 1px 1px rgba(255,255,255,0.3)" 
+                        : "-1px -1px 2px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.2)",
                     }}
                   >
                     <Icon size={22} style={{ 
                       filter: isActive 
-                        ? "drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.2))" 
-                        : "drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.15))" 
+                        ? "drop-shadow(-1px -1px 1px rgba(0,0,0,0.9)) drop-shadow(1px 1px 1px rgba(255,255,255,0.3))" 
+                        : "drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.2))" 
                     }} />
                     <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
                     {isActive && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{
-                        background: "#ff8c00",
-                        boxShadow: "0 0 8px 1px rgba(255, 140, 0, 0.5)"
+                        background: "#f97316",
+                        boxShadow: "0 0 8px 1px rgba(249, 115, 22, 0.5)"
                       }} />
                     )}
                   </button>
