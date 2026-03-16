@@ -103,7 +103,6 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   }, [pageKey, savedImageData, activeTemplate]);
 
   const startDrawing = (e) => {
-    if (e.pointerType !== 'pen') return;
     isDrawing.current = true;
     isErasing.current = e.buttons === 32; // Secondary button (eraser)
     const rect = canvasRef.current.getBoundingClientRect();
