@@ -1,11 +1,21 @@
 import React, { useEffect, useRef, forwardRef } from "react";
 
-const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTemplate }, ref) => {
+const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTemplate, onClear }, ref) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
   const saveTimeout = useRef(null);
   const isErasing = useRef(false);
+
+  useImperativeHandle(ref, () => ({
+    clear: () => {
+      if (canvasRef.current && ctxRef.current) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        ctxRef.current.clearRect(0, 0, rect.width, rect.height);
+        onClear?.();
+      }
+    }
+  }));
 
 
 
