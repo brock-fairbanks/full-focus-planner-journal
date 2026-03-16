@@ -30,7 +30,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       
-      // FIX: Removed desynchronized: true to prevent black screen rendering bugs on some browsers
+      // 🛠️ FIX 3: Removed desynchronized: true which causes the Canvas to render as an opaque black screen on some platforms
       const ctx = canvas.getContext('2d', { alpha: true });
       if (!ctx) return;
       
