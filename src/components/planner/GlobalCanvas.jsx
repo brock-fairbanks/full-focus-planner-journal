@@ -81,15 +81,23 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     const clickY = clientY - rect.top;
     const snappedY = Math.round((clickY - 16) / 32) * 32;
 
-    const newText = {
-      id: Date.now().toString(),
-      x: clientX - rect.left,
-      y: snappedY,
-      text: '',
-      isEditing: true
-    };
-    
-    updateTextsState(prev => [...prev, newText]);
+    updateTextsState(prev => {
+      const existingTextIndex = prev.findIndex(t => t.y === snappedY);
+      if (existingTextIndex !== -1) {
+        const updated = [...prev];
+        updated[existingTextIndex] = { ...updated[existingTextIndex], isEditing: true };
+        return updated;
+      } else {
+        const newText = {
+          id: Date.now().toString(),
+          x: clientX - rect.left,
+          y: snappedY,
+          text: '',
+          isEditing: true
+        };
+        return [...prev, newText];
+      }
+    });
     
     if (preStrokeStateRef.current && ctxRef.current) {
       ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
