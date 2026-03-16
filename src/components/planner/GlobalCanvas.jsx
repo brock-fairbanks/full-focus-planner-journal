@@ -87,13 +87,29 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
 
     let startX = clientX - rect.left;
     let lineHeight = 32;
-    let width = `calc(100% - ${startX}px - 40px)`;
+    let width = `200px`;
+
+    // Find layout bounds using elementsFromPoint as fallback
+    const elementsAtPoint = document.elementsFromPoint(clientX, clientY);
+    const container = elementsAtPoint.find(el => 
+      el.tagName === 'DIV' && 
+      el !== canvasRef.current && 
+      !el.className.includes('absolute') && 
+      !el.className.includes('pointer-events-auto') &&
+      el.getBoundingClientRect().width > 50
+    );
+
+    if (container) {
+       const containerRect = container.getBoundingClientRect();
+       width = `${containerRect.right - clientX - 16}px`;
+    } else {
+       width = `${rect.right - clientX - 40}px`;
+    }
 
     // Smart Line Snapping: Find the nearest line-like element
     const lineElements = Array.from(document.querySelectorAll(
       '.border-b, .border-b-2, .border-b-4, .border-b-dashed, [style*="gradient"]'
     )).filter(el => {
-       // Filter out structural containers that just happen to have a bottom border
        if (el.children.length > 0 && !el.style.backgroundImage) return false;
        if (el.tagName.toLowerCase() === 'button' || el.closest('button')) return false;
        return true;
@@ -114,10 +130,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       if (clientY < elRect.top - 10) vDist = elRect.top - 10 - clientY;
       else if (clientY > elRect.bottom + 10) vDist = clientY - (elRect.bottom + 10);
 
-      // Prioritize vertical proximity heavily. Horizontal distance is used as a tie-breaker between columns.
       let dist = vDist * 10 + hDist;
 
-      if (dist < minDistance) {
+      if (dist < minDistance && dist < 600) {
         minDistance = dist;
         bestLine = el;
       }
@@ -125,8 +140,14 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
 
     if (bestLine) {
       const bestRect = bestLine.getBoundingClientRect();
-      startX = bestRect.left - rect.left + 2; 
-      width = `${bestRect.width - 4}px`;
+      
+      if (bestLine.style.backgroundImage && bestLine.style.backgroundImage.includes('radial-gradient')) {
+         startX = clientX - rect.left;
+         width = `${bestRect.right - clientX - 16}px`;
+      } else {
+         startX = bestRect.left - rect.left + 2; 
+         width = `${bestRect.width - 4}px`;
+      }
       
       if (bestLine.className && typeof bestLine.className === 'string' && bestLine.className.includes('border')) {
         // Find line height by looking for the next line
