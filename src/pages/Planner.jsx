@@ -31,8 +31,14 @@ function getDateLabel(tab) {
 
 export default function Planner() {
   const [activeTab, setActiveTab] = useState("today");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [mobilePage, setMobilePage] = useState("left");
   const localInkMemory = useRef({});
   const queryClient = useQueryClient();
+
+  const handleDateChange = (days) => {
+    setSelectedDate((d) => addDays(d, days));
+  };
 
   const pageKey = getPageKey(activeTab);
   const dateLabel = getDateLabel(activeTab);
