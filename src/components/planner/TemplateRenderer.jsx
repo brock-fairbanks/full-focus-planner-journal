@@ -11,7 +11,7 @@ export default function TemplateRenderer({ template, date }) {
     IDEAL_WEEK: <IdealWeek date={date} />,
     QUARTERLY_GOALS: <QuarterlyGoals date={date} />,
     RITUALS: <Rituals date={date} />,
-    WEEKLY_REVIEW: <WeeklyReview date={date} />,
+    WEEKLY: <WeeklyReview date={date} />,
   };
 
   return templates[template] || null;

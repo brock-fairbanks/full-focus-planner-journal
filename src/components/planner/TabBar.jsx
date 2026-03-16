@@ -6,7 +6,7 @@ const TABS = [
   { id: "IDEAL_WEEK", label: "Ideal Week", icon: TrendingUp },
   { id: "QUARTERLY_GOALS", label: "Goals", icon: Target },
   { id: "RITUALS", label: "Rituals", icon: Moon },
-  { id: "WEEKLY_REVIEW", label: "Weekly", icon: BookOpen },
+  { id: "WEEKLY", label: "Weekly", icon: BookOpen },
 ];
 
 export default function TabBar({ activeTemplate, onTemplateChange }) {
