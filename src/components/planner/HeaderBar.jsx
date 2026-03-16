@@ -19,8 +19,8 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
             alt="Fairbanks Builders Logo" 
             className="w-full h-full object-contain scale-[1.3]"
             style={{ 
-              mixBlendMode: "color-dodge",
-              filter: "contrast(2.5) brightness(0.6) grayscale(0.5)"
+              mixBlendMode: "screen",
+              filter: "contrast(1.8) brightness(1.2) drop-shadow(0 0 2px rgba(249,115,22,0.3))"
             }}
           />
         </div>
