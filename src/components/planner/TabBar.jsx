@@ -66,14 +66,17 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     <>
       {/* Primary Navigation */}
       <div 
-        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar" 
-        style={{
-          backgroundColor: "#5a3522",
-          backgroundImage: "linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url('https://www.transparenttextures.com/patterns/leather.png')",
-          borderRight: "1px solid rgba(0,0,0,0.6)",
-          boxShadow: "inset -2px 0 10px rgba(0,0,0,0.6), 4px 0 20px rgba(0,0,0,0.5)"
-        }}
+        className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center pt-4 pb-4 pointer-events-auto z-50 overflow-y-auto no-scrollbar border-r border-black/20" 
+        style={{background: "#1A120B"}}
       >
+        <div className="w-14 h-14 mb-4 rounded-xl overflow-hidden border border-[#8B7355]/30 shrink-0 shadow-lg relative group">
+          <img 
+            src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/8fdb2cd49_Gemini_Generated_Image_u8sxr4u8sxr4u8sx1920x1080.png" 
+            alt="Fairbanks Builders" 
+            className="w-full h-full object-cover scale-[1.3] transition-transform duration-500 group-hover:scale-[1.5]"
+          />
+          <div className="absolute inset-0 bg-[#F97316]/10 mix-blend-overlay pointer-events-none" />
+        </div>
         <div className="w-full flex-1 flex flex-col">
           <Reorder.Group axis="y" values={tabs} onReorder={handleReorder} className="w-full">
             {tabs.map((tab) => {
@@ -91,23 +94,17 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                     className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
                     title={tab.label}
                     style={{
-                      color: isActive ? "#f97316" : "#b91c1c",
-                      backgroundColor: "transparent",
-                      textShadow: isActive 
-                        ? "-1px -1px 2px rgba(0,0,0,0.9), 1px 1px 1px rgba(255,255,255,0.3)" 
-                        : "-1px -1px 2px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.2)",
+                      color: isActive ? "#F97316" : "#8B7355",
+                      backgroundColor: isActive ? "rgba(249, 115, 22, 0.1)" : "transparent",
+                      textShadow: isActive ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
                     }}
                   >
-                    <Icon size={22} style={{ 
-                      filter: isActive 
-                        ? "drop-shadow(-1px -1px 1px rgba(0,0,0,0.9)) drop-shadow(1px 1px 1px rgba(255,255,255,0.3))" 
-                        : "drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.2))" 
-                    }} />
+                    <Icon size={22} style={{ filter: isActive ? "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" : "none" }} />
                     <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
                     {isActive && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{
-                        background: "#f97316",
-                        boxShadow: "0 0 8px 1px rgba(249, 115, 22, 0.5)"
+                        background: "#F97316",
+                        boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)"
                       }} />
                     )}
                   </button>
