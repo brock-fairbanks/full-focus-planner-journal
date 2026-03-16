@@ -69,9 +69,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
         className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar border-r" 
         style={{
           backgroundColor: "#1A120B",
-          backgroundImage: "linear-gradient(to right, rgba(26,18,11,0.7), rgba(15,10,6,0.95)), url('https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/ce1273b14_unnamed1.jpg')",
-          backgroundSize: "1000%",
-          backgroundPosition: "bottom right",
+          backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.02), rgba(0,0,0,0.2)), url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E\")",
           borderColor: "#3e2d1d",
           boxShadow: "4px 0 20px rgba(0,0,0,0.5)"
         }}
