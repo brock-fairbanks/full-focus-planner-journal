@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Check, Zap } from "lucide-react";
 
 import PortraitOverlay from "../components/planner/PortraitOverlay.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
@@ -27,7 +26,6 @@ export default function Planner() {
 
   const pageKey = `${activeTemplate}_${format(selectedDate, "yyyy-MM-dd")}`;
 
-  // Fetch saved drawing
   const { data: drawings = [] } = useQuery({
     queryKey: ["pageDrawing", pageKey],
     queryFn: () => base44.entities.PageDrawing.filter({ page_key: pageKey }),
@@ -37,7 +35,6 @@ export default function Planner() {
   const existingDrawing = drawings[0];
   const currentImageData = localInkMemory.current[pageKey] || existingDrawing?.image_url;
 
-  // Save ink mutation with debounce
   const saveMutation = useMutation({
     mutationFn: async (dataUrl) => {
       const res = await fetch(dataUrl);
@@ -61,29 +58,28 @@ export default function Planner() {
   const handleSaveInk = useCallback((dataUrl) => {
     localInkMemory.current[pageKey] = dataUrl;
     saveMutation.mutate(dataUrl);
-  }, [pageKey, saveMutation]);
-
-  const handleTemplateChange = (template) => {
-    setActiveTemplate(template);
-  };
+  }, [pageKey, existingDrawing]);
 
   return (
-    <div className="fixed inset-0 overflow-hidden" style={{ background: "#FAF9F6" }}>
+    <div className="fixed inset-0 overflow-hidden bg-[#FAF9F6]">
       <PortraitOverlay />
 
-      {/* Layer 1: Active Anchors (Navigation UI) */}
-      <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTemplateChange} />
-      <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
-
-      {/* Layer 0: Substrate (Static Background) */}
-      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 pointer-events-none z-10 overflow-hidden">
-        <div className="w-full h-full">
-          <TemplateRenderer template={activeTemplate} date={selectedDate} />
-        </div>
+      {/* Layer 1: Navigation (Top) */}
+      <div className="relative z-50">
+        <TabBar activeTemplate={activeTemplate} onTemplateChange={setActiveTemplate} />
+        <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
       </div>
 
-      {/* Layer 2: Global Canvas (Drawing) */}
-      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 z-20" style={{ touchAction: "none", pointerEvents: "auto" }}>
+      {/* Layer 0: The Paper (Bottom) */}
+      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 z-0 pointer-events-none overflow-hidden bg-[#FAF9F6]">
+        <TemplateRenderer template={activeTemplate} date={selectedDate} />
+      </div>
+
+      {/* Layer 2: The Ink (Middle - Transparent) */}
+      <div 
+        className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 z-10 bg-transparent" 
+        style={{ touchAction: "none" }}
+      >
         <GlobalCanvas
           ref={canvasRef}
           onSave={handleSaveInk}
