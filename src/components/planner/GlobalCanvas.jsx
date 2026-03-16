@@ -54,44 +54,45 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   }, [pageKey, savedImageData]);
 
   const lastTapRef = useRef(0);
-  const [textInput, setTextInput] = useState({ visible: false, x: 0, y: 0, text: '' });
-  const inputRef = useRef(null);
+  const [texts, setTexts] = useState([]);
 
-  const commitText = () => {
-    if (textInput.text.trim() && ctxRef.current && canvasRef.current) {
-      const ctx = ctxRef.current;
-      ctx.font = '16px sans-serif';
-      ctx.fillStyle = '#1e293b';
-      ctx.textBaseline = 'top';
-      ctx.fillText(textInput.text, textInput.x, textInput.y - 10);
-
-      if (saveTimeout.current) clearTimeout(saveTimeout.current);
-      if (canvasRef.current && onSave) {
-        onSave(canvasRef.current.toDataURL("image/png"));
-      }
+  useEffect(() => {
+    const saved = localStorage.getItem(`planner_texts_${pageKey}`);
+    if (saved) {
+      try { setTexts(JSON.parse(saved)); } catch (e) { setTexts([]); }
+    } else {
+      setTexts([]);
     }
-    setTextInput({ visible: false, x: 0, y: 0, text: '' });
+  }, [pageKey]);
+
+  const saveTexts = (newTexts) => {
+    setTexts(newTexts);
+    localStorage.setItem(`planner_texts_${pageKey}`, JSON.stringify(newTexts));
   };
 
   const pointsRef = useRef([]);
   const preStrokeStateRef = useRef(null);
 
   const startDrawing = (e) => {
-    if (textInput.visible) return;
-
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       const rect = canvasRef.current.getBoundingClientRect();
-      setTextInput({
-        visible: true,
+      // Snap to approximate 32px line height. The -16 vertically centers it over the click.
+      const clickY = e.clientY - rect.top;
+      const snappedY = Math.round((clickY - 16) / 32) * 32;
+
+      const newText = {
+        id: Date.now().toString(),
         x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-        text: ''
-      });
+        y: snappedY,
+        text: '',
+        isEditing: true
+      };
+      saveTexts([...texts, newText]);
+      
       isDrawing.current = false;
       lastTapRef.current = 0;
-      setTimeout(() => inputRef.current?.focus(), 50);
       return;
     }
     lastTapRef.current = now;
