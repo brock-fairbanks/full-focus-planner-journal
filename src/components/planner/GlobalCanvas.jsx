@@ -215,8 +215,10 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
 
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
-      if (canvasRef.current && onSave) {
-        onSave(canvasRef.current.toDataURL("image/png"));
+      if (canvasRef.current) {
+        const dataUrl = canvasRef.current.toDataURL("image/png");
+        localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
+        if (onSave) onSave(dataUrl);
       }
     }, 1500); 
   };
