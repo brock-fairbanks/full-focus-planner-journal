@@ -15,12 +15,16 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
     }}>
       {/* Left: Logo and Title */}
       <div className="flex items-center h-full min-w-[280px]">
-        <div className="flex items-center justify-center h-[46px] shrink-0 ml-4 mr-3 px-3 bg-[#FAF9F6] rounded-md shadow-[0_2px_8px_rgba(0,0,0,0.5)] border border-white/10">
+        <div className="flex items-center justify-center h-full shrink-0 ml-4 mr-3 py-2 w-56 relative">
+          {/* Soft backlight to make the dark logo pop against the leather without a hard box */}
+          <div className="absolute inset-0 bg-[#f5deb3] opacity-20 blur-[12px] rounded-[100%] scale-x-[1.2] scale-y-[0.8] mix-blend-screen"></div>
           <img 
             src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/6bc2ee721_fb_textured_bg_1920_1080_1-removebg-preview.png"
             alt="Fairbanks Builders"
-            className="h-full w-auto object-contain py-1 scale-110"
-            style={{ maxWidth: "200px" }}
+            className="w-full h-full object-contain relative z-10 scale-110"
+            style={{ 
+              filter: "drop-shadow(0px 1px 1px rgba(255,255,255,0.6)) brightness(1.2) contrast(1.1)"
+            }}
           />
         </div>
         <div className="flex flex-col z-10 justify-center">
