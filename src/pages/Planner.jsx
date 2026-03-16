@@ -190,7 +190,7 @@ export default function Planner() {
               {activeTab === "WEEKLY"  && <WeeklyPage  subTab={subTab} dark={dark} />}
               {activeTab === "MONTHLY" && <MonthlyPage subTab={subTab} dark={dark} selectedDate={selectedDate} />}
               {activeTab === "GOALS"   && <GoalsPage   subTab={subTab} dark={dark} />}
-              {activeTab === "INDEX"   && <IndexPage   subTab={subTab} dark={dark} />}
+
             </div>
           </div>
 
