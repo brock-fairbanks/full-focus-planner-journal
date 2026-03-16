@@ -66,8 +66,14 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     <>
       {/* Primary Navigation */}
       <div 
-        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar border-r border-black/20" 
-        style={{background: "#1A120B"}}
+        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar border-r" 
+        style={{
+          backgroundImage: "linear-gradient(to bottom, rgba(26,18,11,0.6), rgba(15,10,6,0.95)), url('https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/8fdb2cd49_Gemini_Generated_Image_u8sxr4u8sxr4u8sx1920x1080.png')",
+          backgroundSize: "500%",
+          backgroundPosition: "bottom left",
+          borderColor: "#3e2d1d",
+          boxShadow: "4px 0 20px rgba(0,0,0,0.5)"
+        }}
       >
         <div className="w-full flex-1 flex flex-col">
           <Reorder.Group axis="y" values={tabs} onReorder={handleReorder} className="w-full">
