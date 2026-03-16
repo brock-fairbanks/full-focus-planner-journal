@@ -10,8 +10,6 @@ import TodayPage from "../components/planner/pages/TodayPage";
 import WeeklyPage from "../components/planner/pages/WeeklyPage";
 import MonthlyPage from "../components/planner/pages/MonthlyPage";
 import GoalsPage from "../components/planner/pages/GoalsPage";
-import IndexPage from "../components/planner/pages/IndexPage";
-
 // Each binder tab with its sub-tabs
 const BINDER_TABS = [
   { key: "TODAY",   label: "TODAY",   subTabs: ["schedule", "big3", "braindump"] },
