@@ -9,8 +9,8 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
   return (
     <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between pr-8 pointer-events-auto z-50 border-b" style={{
       backgroundImage: "linear-gradient(to right, rgba(26,18,11,0.6), rgba(15,10,6,0.95)), url('https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/8fdb2cd49_Gemini_Generated_Image_u8sxr4u8sxr4u8sx1920x1080.png')",
-      backgroundSize: "500%",
-      backgroundPosition: "top left",
+      backgroundSize: "800%",
+      backgroundPosition: "bottom right",
       borderColor: "#3e2d1d",
       boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
     }}>
