@@ -4,7 +4,8 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* 1. We change background to transparent so it doesn't block Layer 0 */
+    --background: 0 0% 100% / 0; 
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
@@ -34,11 +35,12 @@ html, body, #root {
   overscroll-behavior: none !important;
   -webkit-overflow-scrolling: none;
   position: fixed;
-  width: 100% !important;
-  height: 100% !important;
+  width: 100vw !important; /* Changed to vw/vh for stricter sizing */
+  height: 100vh !important;
   margin: 0;
   padding: 0;
-  background-color: #FAF9F6 !important; /* Premium Paper Color */
+  /* This is the only solid background allowed in the entire app */
+  background-color: #FAF9F6 !important; 
 }
 
 @layer base {
@@ -48,14 +50,25 @@ html, body, #root {
   }
 
   body {
-    @apply bg-background text-foreground;
+    /* FIX: Removed @apply bg-background. It was creating an opaque white wall. */
+    @apply text-foreground;
+    background: transparent !important; 
     -webkit-user-select: none;
     user-select: none;
   }
 }
 
-/* Force Canvas Transparency */
+/* 🖋️ THE GHOST CLASS
+   Apply this to Rituals and Weekly Review components */
+.template-ghost {
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+/* 🖋️ FORCE CANVAS TRANSPARENCY */
 canvas {
   background-color: transparent !important;
   display: block;
+  /* Prevents GPU artifacts on mobile */
+  transform: translateZ(0); 
 }
