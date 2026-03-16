@@ -51,6 +51,12 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced }) {
         >
           <ChevronRight size={28} />
         </button>
+
+        {user?.email && (
+          <div className="hidden lg:block absolute left-1/2 ml-[170px] text-sm font-medium" style={{color: "#8B7355", fontFamily: "'Playfair Display', serif"}}>
+            {user.email}
+          </div>
+        )}
       </div>
 
       {/* Right: Sync Status */}
