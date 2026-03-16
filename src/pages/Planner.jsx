@@ -101,43 +101,62 @@ export default function Planner() {
   return (
     <div
       className="fixed inset-0 flex flex-col"
-      style={{
-        touchAction: "none",
-        overflow: "hidden",
-        background: "#1a120b",
-      }}
+      style={{ touchAction: "none", overflow: "hidden", background: "linear-gradient(160deg, #2c1f14 0%, #3d2b1a 30%, #2e2015 70%, #1e1409 100%)" }}
     >
       <PortraitOverlay />
-      <BinderHeader
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        dateLabel={dateLabel}
-      />
+
+      {/* Three-zone header */}
+      <BinderHeader dateLabel={dateLabel} onDateChange={handleDateChange} />
 
       {/* Binder body */}
-      <div className="flex flex-1 min-h-0 relative">
-        {/* Left Page */}
-        <div className="flex-1 min-w-0 h-full">
-          <LeftPage />
+      <div className="flex flex-1 min-h-0 px-4 py-4">
+        <div
+          className="flex flex-1 rounded-2xl overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, #3d2b1a 0%, #4a3520 50%, #3d2b1a 100%)",
+            boxShadow: "0 24px 80px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.08)",
+            border: "2px solid #6b4226",
+          }}
+        >
+          {/* Vertical Tab Strip */}
+          <TabStrip activeTab={activeTab} onSelect={handleTabChange} />
+
+          {/* Content area */}
+          <div className="flex-1 flex flex-col overflow-hidden rounded-r-2xl">
+            <PageSelector
+              leftLabel="Schedule"
+              rightLabel="Tasks"
+              currentPage={mobilePage}
+              onPageChange={setMobilePage}
+            />
+
+            {/* Pages */}
+            <div className="flex-1 flex min-h-0 relative"
+              style={{
+                background: "#FAF9F6",
+                backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E\")",
+              }}
+            >
+              {mobilePage === "left" ? (
+                <div className="flex-1 h-full overflow-hidden">
+                  <LeftPage />
+                </div>
+              ) : (
+                <div className="flex-1 h-full overflow-hidden">
+                  <RightPage />
+                </div>
+              )}
+
+              <InkCanvas
+                key={`ink-${pageKey}`}
+                savedImageData={currentImageData}
+                onSave={handleSave}
+              />
+            </div>
+          </div>
         </div>
-
-        {/* Spine */}
-        <BinderSpine />
-
-        {/* Right Page */}
-        <div className="flex-1 min-w-0 h-full">
-          <RightPage />
-        </div>
-
-        {/* Ink canvas spans the full binder, above both pages */}
-        <InkCanvas
-          key={`ink-${pageKey}`}
-          savedImageData={currentImageData}
-          onSave={handleSave}
-        />
       </div>
 
-      {/* Save indicator */}
       {saveMutation.isPending && (
         <div
           className="fixed bottom-4 right-4 px-3 py-1 rounded-full text-xs font-medium"
