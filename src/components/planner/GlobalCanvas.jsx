@@ -65,33 +65,43 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     }
   }, [pageKey]);
 
-  const saveTexts = (newTexts) => {
-    setTexts(newTexts);
-    localStorage.setItem(`planner_texts_${pageKey}`, JSON.stringify(newTexts));
+  const updateTextsState = (action) => {
+    setTexts(prev => {
+      const updated = typeof action === 'function' ? action(prev) : action;
+      localStorage.setItem(`planner_texts_${pageKey}`, JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const pointsRef = useRef([]);
   const preStrokeStateRef = useRef(null);
 
+  const handleDoubleClickAction = (clientX, clientY) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const clickY = clientY - rect.top;
+    const snappedY = Math.round((clickY - 16) / 32) * 32;
+
+    const newText = {
+      id: Date.now().toString(),
+      x: clientX - rect.left,
+      y: snappedY,
+      text: '',
+      isEditing: true
+    };
+    
+    updateTextsState(prev => [...prev, newText]);
+    
+    if (preStrokeStateRef.current && ctxRef.current) {
+      ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+    }
+    isDrawing.current = false;
+  };
+
   const startDrawing = (e) => {
     const now = Date.now();
-    const DOUBLE_TAP_DELAY = 300;
+    const DOUBLE_TAP_DELAY = 400; // Increased delay to make double click easier
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      // Snap to approximate 32px line height. The -16 vertically centers it over the click.
-      const clickY = e.clientY - rect.top;
-      const snappedY = Math.round((clickY - 16) / 32) * 32;
-
-      const newText = {
-        id: Date.now().toString(),
-        x: e.clientX - rect.left,
-        y: snappedY,
-        text: '',
-        isEditing: true
-      };
-      saveTexts([...texts, newText]);
-      
-      isDrawing.current = false;
+      handleDoubleClickAction(e.clientX, e.clientY);
       lastTapRef.current = 0;
       return;
     }
