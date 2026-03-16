@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, forwardRef, useImperativeHandle, useState } from "react";
+import { base44 } from "@/api/base44Client";
 
 const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTemplate, onClear }, ref) => {
   const canvasRef = useRef(null);
@@ -333,6 +334,13 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
                           pts[pts.length-1].y < pts[0].y + 10 && // ends higher or near where it started
                           width < 100 && height > 10;
 
+      const isCircle = xReversals >= 1 && xReversals <= 6 && 
+                       yReversals >= 1 && yReversals <= 6 &&
+                       Math.abs(pts[0].x - pts[pts.length-1].x) < Math.max(40, width * 0.4) &&
+                       Math.abs(pts[0].y - pts[pts.length-1].y) < Math.max(40, height * 0.4) &&
+                       width > 40 && height > 20 && 
+                       pts.length > 15;
+
       // Scratch-out detection (zigzag back and forth)
       // Increased thresholds significantly to prevent mistaking cursive handwriting for a scratch-out
       if (xReversals >= 12 && width > 30 && height > 10 && pts.length > 100) {
@@ -387,6 +395,67 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         ctxRef.current.lineCap = 'round';
         ctxRef.current.lineJoin = 'round';
         ctxRef.current.stroke();
+      }
+      // Circle detection -> extract text using AI
+      else if (isCircle) {
+        if (preStrokeStateRef.current) {
+          ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+        }
+        
+        const tempCanvas = document.createElement('canvas');
+        const pad = 10;
+        const cropX = Math.max(0, minX - pad);
+        const cropY = Math.max(0, minY - pad);
+        const cropW = width + pad * 2;
+        const cropH = height + pad * 2;
+        
+        tempCanvas.width = cropW;
+        tempCanvas.height = cropH;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.fillStyle = '#ffffff';
+        tempCtx.fillRect(0, 0, cropW, cropH);
+        tempCtx.drawImage(canvasRef.current, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+        
+        const dataUrl = tempCanvas.toDataURL('image/png');
+        ctxRef.current.clearRect(cropX, cropY, cropW, cropH);
+        
+        const loadingId = Date.now().toString();
+        updateTextsState(prev => [...prev, {
+          id: loadingId,
+          x: cropX,
+          y: cropY,
+          text: "Translating...",
+          isEditing: false,
+          lineHeight: 32,
+          width: `${Math.max(200, cropW)}px`,
+          isLoading: true
+        }]);
+
+        (async () => {
+          try {
+            const response = await fetch(dataUrl);
+            const blob = await response.blob();
+            const file = new File([blob], "handwriting.png", { type: "image/png" });
+            
+            const uploadRes = await base44.integrations.Core.UploadFile({ file });
+            
+            const extractedText = await base44.integrations.Core.InvokeLLM({
+              prompt: "Extract the handwritten text from this image. Return ONLY the extracted text, nothing else. Do not use quotes or markdown formatting. Just the raw text. If there's no text, return empty string.",
+              file_urls: [uploadRes.file_url],
+              model: "gemini_3_flash"
+            });
+            
+            updateTextsState(prev => prev.map(t => {
+              if (t.id === loadingId) {
+                return { ...t, text: extractedText.trim() || "", isLoading: false, isEditing: true };
+              }
+              return t;
+            }));
+          } catch (e) {
+            console.error(e);
+            updateTextsState(prev => prev.filter(t => t.id !== loadingId));
+          }
+        })();
       }
     }
 
@@ -494,15 +563,16 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
           lineHeight: activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`,
           fontSize: activeTemplate === 'IDEAL_WEEK' ? `${idealWeekFontSize}px` : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
           fontFamily: "'Caveat', cursive",
-          color: '#1e293b',
+          color: textObj.isLoading ? '#94a3b8' : '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
           minHeight: `${lh}px`,
           padding: activeTemplate === 'IDEAL_WEEK' ? '4px 4px 4px 8px' : 0,
           margin: 0
         }}
         placeholder={isEditing ? "Type here..." : ""}
+        readOnly={textObj.isLoading}
       />
-      {!isEditing && (
+      {!isEditing && !textObj.isLoading && (
         <button 
           onClick={(e) => {
             e.stopPropagation();
