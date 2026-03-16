@@ -99,7 +99,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                   dragConstraints={{ top: 0, bottom: 0 }}
                 >
                   <button
-                    onClick={() => onTemplateChange(tab.id)}
+                    onDoubleClick={() => onTemplateChange(tab.id)}
                     className="relative flex flex-col items-center justify-center w-full flex-1 min-h-0 transition-all duration-200 gap-1 select-none py-1"
                     title={tab.label}
                     style={{
@@ -124,7 +124,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
         </div>
         <div className="w-full flex flex-col items-center justify-center pt-2 mt-auto border-t border-[#3e2d1d]/50 shrink-0">
           <button
-            onClick={() => base44.auth.logout()}
+            onDoubleClick={() => base44.auth.logout()}
             className="flex flex-col items-center justify-center w-full h-12 transition-all duration-200 gap-1 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
             title="Logout"
           >
@@ -138,7 +138,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
       {activeTemplate === "JOURNAL" && (
         <div className="fixed left-20 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-white border-r border-[#E2E8F0] shadow-sm gap-4">
           <button
-            onClick={() => onJournalModeChange("DAILY")}
+            onDoubleClick={() => onJournalModeChange("DAILY")}
             className={`flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-200 gap-1.5 select-none ${
               journalMode === "DAILY" 
                 ? "bg-[#1e293b] text-white shadow-md" 
@@ -150,7 +150,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
           </button>
           
           <button
-            onClick={() => onJournalModeChange("WEEKEND")}
+            onDoubleClick={() => onJournalModeChange("WEEKEND")}
             className={`flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-200 gap-1.5 select-none ${
               journalMode === "WEEKEND" 
                 ? "bg-[#1e293b] text-white shadow-md" 
@@ -162,7 +162,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
           </button>
 
           <button
-            onClick={() => onJournalModeChange("ANNUAL")}
+            onDoubleClick={() => onJournalModeChange("ANNUAL")}
             className={`flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-200 gap-1.5 select-none ${
               journalMode === "ANNUAL" 
                 ? "bg-[#1e293b] text-white shadow-md" 
