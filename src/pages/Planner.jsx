@@ -198,7 +198,8 @@ export default function Planner() {
                 </>
               )}
             </svg>
-          </button>
+            </button>
+          </div>
 
           {/* Template Layer */}
           <div className="flex-1 w-full pointer-events-auto">
