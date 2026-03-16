@@ -17,7 +17,7 @@ export default function TemplateRenderer({ template, date, onSubSectionChange })
   const component = templates[template];
   
   return (
-    <div className="w-full h-full overflow-hidden bg-[#FAF9F6]">
+    <div className="w-full min-h-full bg-[#FAF9F6]">
       {component || <div className="p-10 text-slate-400">Template Loading...</div>}
     </div>
   );

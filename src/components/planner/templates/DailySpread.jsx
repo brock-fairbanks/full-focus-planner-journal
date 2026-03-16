@@ -27,13 +27,13 @@ export default function DailySpread({ date, onSubSectionChange }) {
   }, [activeSubSection, onSubSectionChange]);
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#FAF9F6]">
+    <div className="flex flex-col w-full min-h-full bg-[#FAF9F6]">
       {/* Secondary Navigation Bar */}
       <Reorder.Group 
         axis="x" 
         values={tabs} 
         onReorder={handleReorder}
-        className="flex border-b border-[#E2E8F0] px-8 pt-4 md:px-12 md:pt-6 gap-8 h-[64px] md:h-[72px] shrink-0"
+        className="sticky top-0 z-30 flex border-b border-[#E2E8F0] px-8 pt-4 md:px-12 md:pt-6 gap-8 h-[64px] md:h-[72px] shrink-0 bg-[#FAF9F6]"
       >
         {tabs.map(tab => (
           <Reorder.Item 
@@ -57,7 +57,7 @@ export default function DailySpread({ date, onSubSectionChange }) {
       </Reorder.Group>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-y-auto p-6 md:p-10 flex justify-center">
+      <div className="flex-1 p-6 md:p-10 flex justify-center">
         <div className="w-full max-w-4xl">
           {activeSubSection === "Big 3" && (
             <div className="mt-2">

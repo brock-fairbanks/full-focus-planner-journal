@@ -124,16 +124,17 @@ export default function Planner() {
       />
 
       {/* Content Area */}
-      <div className="fixed left-20 right-0 top-16 bottom-0 bg-[#FAF9F6]">
-        {/* Template Layer (z-10) */}
-        <div className="absolute inset-0 z-10 pointer-events-none [&_button]:pointer-events-auto">
-          <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} />
-        </div>
-        
-        {/* Drawing Layer (z-20) */}
-        <div className={`absolute inset-x-0 bottom-0 z-20 pointer-events-auto ${activeTemplate === "DAILY" ? "top-[72px]" : "top-0"}`}>
-          {/* FIXED: Using standard 'ref' instead of 'ref__' */}
-          <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} />
+      <div className="fixed left-20 right-0 top-16 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-hidden">
+        <div className="relative min-h-full w-full flex flex-col">
+          {/* Template Layer (z-10) */}
+          <div className="flex-1 w-full z-10 pointer-events-auto">
+            <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} />
+          </div>
+          
+          {/* Drawing Layer (z-20) */}
+          <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-auto" style={{ top: activeTemplate === "DAILY" ? "72px" : "0px" }}>
+            <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} />
+          </div>
         </div>
       </div>
     </div>
