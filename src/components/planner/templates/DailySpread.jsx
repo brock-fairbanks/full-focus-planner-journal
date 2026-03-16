@@ -4,7 +4,7 @@ export default function DailySpread() {
   const HOURS = Array.from({ length: 15 }, (_, i) => 6 + i); // 6 AM to 8 PM
 
   return (
-    <div className="flex h-full gap-0">
+    <div className="flex h-full w-full gap-0">
       {/* LEFT PAGE: Big 3 + Schedule */}
       <div className="flex-1 flex flex-col border-r p-8" style={{ borderColor: "#E2E8F0", background: "#FAF9F6" }}>
         {/* Big 3 Section */}
