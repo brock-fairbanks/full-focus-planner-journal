@@ -10,17 +10,17 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
     <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between pr-8 pointer-events-auto z-50 border-b shadow-md" style={{background: "#1A120B", borderColor: "#3e2d1d"}}>
       {/* Left: Logo and Title */}
       <div className="flex items-center h-full min-w-[280px]">
-        <div className="flex items-center justify-center w-56 h-full shrink-0 relative overflow-hidden" style={{
-           maskImage: "linear-gradient(to right, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
-           WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
+        <div className="flex items-center justify-center w-32 h-full shrink-0 relative overflow-hidden ml-6 mr-2" style={{
+           maskImage: "linear-gradient(to right, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%)",
+           WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%)"
         }}>
           <img 
             src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/8fdb2cd49_Gemini_Generated_Image_u8sxr4u8sxr4u8sx1920x1080.png" 
-            alt="Fairbanks Builders" 
-            className="absolute w-[180%] h-[300%] object-cover object-center max-w-none"
+            alt="Fairbanks Builders Logo" 
+            className="w-full h-full object-contain scale-[2]"
             style={{ 
-              mixBlendMode: "screen",
-              filter: "contrast(1.3) brightness(0.9) saturate(1.2)"
+              mixBlendMode: "color-dodge",
+              filter: "contrast(2.5) brightness(0.6) grayscale(0.5)"
             }}
           />
         </div>
