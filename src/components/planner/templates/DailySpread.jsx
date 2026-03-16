@@ -140,8 +140,8 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
               <div
                 className="flex-1 min-h-[800px]"
                 style={{
-                  backgroundImage: `radial-gradient(circle, #E2E8F0 2px, transparent 2px)`,
-                  backgroundSize: "40px 40px",
+                  backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #E2E8F0 40px)`,
+                  backgroundSize: "100% 40px",
                   backgroundPosition: "0 0",
                 }}
               />
