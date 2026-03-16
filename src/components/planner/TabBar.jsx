@@ -47,7 +47,6 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
   const { user } = useAuth();
   
   const firstName = user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || "User";
-  const initial = firstName.charAt(0).toUpperCase();
 
   const [tabs, setTabs] = useState(() => {
     const saved = localStorage.getItem("planner_tabs_order");
@@ -76,10 +75,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
         style={{background: "#1A120B"}}
       >
         <div className="w-full flex flex-col items-center justify-center pb-4 mb-2 border-b border-[#3e2d1d]/50 shrink-0">
-          <div className="w-8 h-8 rounded-full bg-[#2C1F14] border border-[#3e2d1d] flex items-center justify-center mb-1.5 text-[#f5deb3] font-serif text-sm">
-            {initial}
-          </div>
-          <span className="text-[9px] text-[#b8956a] font-medium tracking-wider uppercase text-center px-1 w-full overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="text-[10px] text-[#f5deb3] font-medium tracking-widest uppercase text-center px-2 w-full overflow-hidden text-ellipsis whitespace-nowrap">
             {firstName}
           </span>
         </div>
