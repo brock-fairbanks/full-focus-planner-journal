@@ -83,7 +83,7 @@ export default function Planner() {
       <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
 
       {/* Template Layout */}
-      <div className="fixed left-20 right-0 top-16 bottom-0 z-10 overflow-hidden pointer-events-none">
+      <div className="fixed left-20 right-0 top-16 bottom-0 z-10 pointer-events-none">
         <TemplateRenderer template={activeTemplate} date={selectedDate} />
       </div>
 
