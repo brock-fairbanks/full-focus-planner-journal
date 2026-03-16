@@ -11,7 +11,6 @@ import Planner from './pages/Planner.jsx';
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-[#FAF9F6]">
@@ -20,11 +19,9 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
   if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
+    if (authError.type === 'user_not_registered') return <UserNotRegisteredError />;
+    if (authError.type === 'auth_required') {
       navigateToLogin();
       return null;
     }
@@ -32,16 +29,16 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
-      {/* Root redirects to /today or /Planner */}
       <Route path="/" element={<Navigate to="/today" replace />} />
       
-      {/* 🛠️ All template paths now point to the Planner component */}
+      {/* 🛠️ Registering all tab paths to point to Planner */}
       <Route path="/Planner" element={<Planner />} />
       <Route path="/today" element={<Planner />} />
+      <Route path="/ideal-week" element={<Planner />} />
+      <Route path="/goals" element={<Planner />} />
       <Route path="/rituals" element={<Planner />} />
-      <Route path="/weekly-review" element={<Planner />} />
+      <Route path="/weekly" element={<Planner />} />
       
-      {/* Fallback to prevent black screen */}
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
