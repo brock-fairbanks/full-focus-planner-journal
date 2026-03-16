@@ -21,7 +21,7 @@ export default function WeeklyReview({ date }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 h-full gap-0 w-full bg-transparent">
+    <div className="grid grid-cols-2 h-screen gap-0 w-full bg-transparent">
       {pages.map((page, idx) => (
         <div
           key={idx}
