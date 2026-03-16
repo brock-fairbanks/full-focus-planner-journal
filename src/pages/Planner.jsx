@@ -102,23 +102,24 @@ export default function Planner() {
       {/* Binder body */}
       <div className="flex flex-1 min-h-0 relative">
         {/* Left Page */}
-        <div className="flex-1 relative min-w-0">
+        <div className="flex-1 min-w-0">
           <LeftPage />
-          <InkCanvas
-            key={`ink-left-${pageKey}`}
-            savedImageData={currentImageData}
-            onSave={handleSave}
-          />
         </div>
 
         {/* Spine */}
         <BinderSpine />
 
         {/* Right Page */}
-        <div className="flex-1 relative min-w-0">
+        <div className="flex-1 min-w-0">
           <RightPage />
-          {/* Right side shares same canvas overlay — ink flows across both pages */}
         </div>
+
+        {/* Ink canvas spans the full binder, above both pages */}
+        <InkCanvas
+          key={`ink-${pageKey}`}
+          savedImageData={currentImageData}
+          onSave={handleSave}
+        />
       </div>
 
       {/* Save indicator */}
