@@ -14,5 +14,11 @@ export default function TemplateRenderer({ template, date }) {
     WEEKLY: <WeeklyReview date={date} />,
   };
 
-  return templates[template] || null;
+  const component = templates[template];
+  
+  return (
+    <div className="w-full h-full overflow-hidden pointer-events-none">
+      {component}
+    </div>
+  );
 }

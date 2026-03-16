@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TabBar from "../components/planner/TabBar.jsx";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
@@ -7,8 +7,9 @@ import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
 export default function Planner() {
   const location = useLocation();
   const navigate = useNavigate();
+  const canvasRef = useRef(null);
 
-  // 1. Precise Mapping
+  // Map URL path to template
   const getTemplateFromPath = useCallback((path) => {
     const p = path.toLowerCase();
     if (p.includes("today")) return "DAILY";
@@ -21,14 +22,14 @@ export default function Planner() {
 
   const [activeTemplate, setActiveTemplate] = useState(getTemplateFromPath(location.pathname));
 
-  // 2. Sync URL to State
+  // Sync URL to state
   useEffect(() => {
     const newTemplate = getTemplateFromPath(location.pathname);
     setActiveTemplate(newTemplate);
   }, [location.pathname, getTemplateFromPath]);
 
-  // 3. Tab Click Handler
-  const handleTabChange = (id) => {
+  // Handle tab navigation
+  const handleTabChange = (templateId) => {
     const pathMap = {
       DAILY: "/today",
       RITUALS: "/rituals",
@@ -36,21 +37,24 @@ export default function Planner() {
       IDEAL_WEEK: "/ideal-week",
       QUARTERLY_GOALS: "/goals"
     };
-    navigate(pathMap[id] || "/today");
+    navigate(pathMap[templateId] || "/today");
   };
 
+  const pageKey = `${activeTemplate}_${new Date().toISOString().split('T')[0]}`;
+
   return (
-    /* 🛠️ FORCE CREAM BACKGROUND HERE TO KILL THE BLACK SCREEN */
-    <div className="fixed inset-0 w-full h-full bg-[#F4EFE4]" style={{ backgroundColor: "#F4EFE4" }}>
-      
+    <div className="fixed inset-0 w-full h-full" style={{ backgroundColor: "#F4EFE4" }}>
+      {/* Sidebar Navigation */}
       <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTabChange} />
 
-      <div className="fixed left-20 right-0 top-16 bottom-0 z-10">
+      {/* Template Content */}
+      <div className="fixed left-20 right-0 top-0 bottom-0 z-10 flex flex-col">
         <TemplateRenderer template={activeTemplate} date={new Date()} />
       </div>
 
-      <div className="fixed left-20 right-0 top-16 bottom-0 z-20 pointer-events-auto">
-        <GlobalCanvas activeTemplate={activeTemplate} pageKey={`${activeTemplate}_page`} />
+      {/* Drawing Canvas Overlay */}
+      <div className="fixed left-20 right-0 top-0 bottom-0 z-20 pointer-events-auto">
+        <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} />
       </div>
     </div>
   );
