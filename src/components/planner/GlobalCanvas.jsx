@@ -171,6 +171,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       let minY = pts[0].y, maxY = pts[0].y;
       let xReversals = 0;
       let lastDir = 0;
+      let yReversals = 0;
+      let lastYDir = 0;
+      let maxYIdx = 0;
 
       for (let i = 1; i < pts.length; i++) {
         minX = Math.min(minX, pts[i].x);
@@ -184,10 +187,28 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
           if (lastDir !== 0 && dir !== lastDir) xReversals++;
           lastDir = dir;
         }
+
+        let dy = pts[i].y - pts[i-1].y;
+        if (Math.abs(dy) > 2) {
+          let dir = dy > 0 ? 1 : -1;
+          if (lastYDir !== 0 && dir !== lastYDir) yReversals++;
+          lastYDir = dir;
+        }
+
+        if (pts[i].y > pts[maxYIdx].y) {
+          maxYIdx = i;
+        }
       }
 
       const width = maxX - minX;
       const height = maxY - minY;
+
+      const isCheckmark = xReversals <= 1 && yReversals === 1 && 
+                          (pts[maxYIdx].y - pts[0].y) > 2 && 
+                          (pts[maxYIdx].y - pts[pts.length-1].y) > 5 &&
+                          pts[pts.length-1].x > pts[0].x &&
+                          pts[pts.length-1].y < pts[0].y + 10 && // ends higher or near where it started
+                          width < 100 && height > 10;
 
       // Scratch-out detection (zigzag back and forth)
       // Increased thresholds significantly to prevent mistaking cursive handwriting for a scratch-out
