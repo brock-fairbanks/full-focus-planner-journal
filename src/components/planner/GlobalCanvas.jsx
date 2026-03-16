@@ -437,8 +437,8 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
         className="w-full bg-transparent outline-none resize-none overflow-hidden"
         style={{
           lineHeight: `${lh}px`,
-          fontSize: '18px',
-          fontFamily: "'Playfair Display', serif",
+          fontSize: '26px',
+          fontFamily: "'Caveat', cursive",
           color: '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
           minHeight: `${lh}px`,
