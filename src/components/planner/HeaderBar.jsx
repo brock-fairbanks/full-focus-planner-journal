@@ -17,7 +17,13 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
           <span className="text-[#f5deb3] font-serif font-bold text-lg leading-tight tracking-wide whitespace-nowrap">
             Full Focus
           </span>
-          <span className="text-[#8B7355] text-[10px] uppercase tracking-widest font-semibold leading-none">
+          <span 
+            className="text-[10px] uppercase tracking-widest font-bold leading-none"
+            style={{
+              color: "#F97316",
+              textShadow: "0 0 8px rgba(249, 115, 22, 0.6)"
+            }}
+          >
             {activeTemplate === "JOURNAL" ? "Journal" : "Planner"}
           </span>
         </div>
