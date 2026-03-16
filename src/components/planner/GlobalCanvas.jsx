@@ -77,6 +77,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const preStrokeStateRef = useRef(null);
 
   const startDrawing = (e) => {
+    // Prevent drawing with finger (touch), allow stylus/pen and mouse
+    if (e.pointerType === 'touch') return;
+    
     if (textInput.visible) return;
 
     const now = Date.now();
