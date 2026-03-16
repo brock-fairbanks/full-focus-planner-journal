@@ -72,9 +72,17 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     <>
       {/* Primary Navigation */}
       <div 
-        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar border-r border-black/20" 
+        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-4 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar border-r border-black/20" 
         style={{background: "#1A120B"}}
       >
+        <div className="w-full flex flex-col items-center justify-center pb-4 mb-2 border-b border-[#3e2d1d]/50 shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[#2C1F14] border border-[#3e2d1d] flex items-center justify-center mb-1.5 text-[#f5deb3] font-serif text-sm">
+            {initial}
+          </div>
+          <span className="text-[9px] text-[#b8956a] font-medium tracking-wider uppercase text-center px-1 w-full overflow-hidden text-ellipsis whitespace-nowrap">
+            {firstName}
+          </span>
+        </div>
         <div className="w-full flex-1 flex flex-col">
           <Reorder.Group axis="y" values={tabs} onReorder={handleReorder} className="w-full">
             {tabs.map((tab) => {
