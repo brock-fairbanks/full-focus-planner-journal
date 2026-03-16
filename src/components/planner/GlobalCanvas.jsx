@@ -458,7 +458,7 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
 
   return (
     <div 
-      className="absolute group flex items-start z-50"
+      className="absolute group z-50"
       style={{ 
         left: textObj.x, 
         top: textObj.y, 
@@ -474,7 +474,7 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
         onChange={handleInput}
         onBlur={handleBlur}
         onClick={() => setIsEditing(true)}
-        className="w-full bg-transparent outline-none resize-none overflow-hidden"
+        className="w-full bg-transparent outline-none resize-none overflow-hidden pr-8"
         style={{
           lineHeight: `${lh}px`,
           fontSize: activeTemplate === 'IDEAL_WEEK' ? `${Math.max(12, Math.min(22, Math.round(lh * 0.6)))}px` : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
@@ -493,7 +493,7 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
             e.stopPropagation();
             deleteText(textObj.id);
           }}
-          className="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-50 rounded ml-2 shrink-0 transition-opacity"
+          className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-50 rounded transition-opacity"
           title="Delete text"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
