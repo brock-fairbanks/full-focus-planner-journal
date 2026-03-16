@@ -110,7 +110,7 @@ export default function Planner() {
       {/* Binder body */}
       <div className="flex flex-1 min-h-0 relative">
         {/* Left Page */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 h-full">
           <LeftPage />
         </div>
 
@@ -118,7 +118,7 @@ export default function Planner() {
         <BinderSpine />
 
         {/* Right Page */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 h-full">
           <RightPage />
         </div>
 
