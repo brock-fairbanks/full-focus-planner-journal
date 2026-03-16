@@ -78,14 +78,18 @@ export default function TabBar({ activeTemplate, onTemplateChange }) {
                 className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
                 title={tab.label}
                 style={{
-                  color: isActive ? "#B8956A" : "#8B7355",
-                  backgroundColor: isActive ? "rgba(184, 149, 106, 0.1)" : "transparent",
+                  color: isActive ? "#F97316" : "#8B7355",
+                  backgroundColor: isActive ? "rgba(249, 115, 22, 0.1)" : "transparent",
+                  textShadow: isActive ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
                 }}
               >
-                <Icon size={22} />
+                <Icon size={22} style={{ filter: isActive ? "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" : "none" }} />
                 <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{background: "#B8956A"}} />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{
+                    background: "#F97316",
+                    boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)"
+                  }} />
                 )}
               </button>
             </Reorder.Item>
