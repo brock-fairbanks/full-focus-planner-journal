@@ -18,25 +18,21 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     
-    const ctx = canvas.getContext('2d', { desynchronized: true, alpha: false });
+    const ctx = canvas.getContext('2d', { desynchronized: true, alpha: true });
     ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, rect.width, rect.height);
     ctxRef.current = ctx;
 
-    // 1. Draw the Paper first
-    drawPaperSubstrate(ctx, rect.width, rect.height, activeTemplate);
-
-    // 2. Overlay the saved Ink
+    // Load saved ink
     if (savedImageData) {
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
         ctx.drawImage(img, 0, 0, rect.width, rect.height);
-        // Redraw grid on top so it stays visible
-        drawPaperSubstrate(ctx, rect.width, rect.height, activeTemplate);
       };
       img.src = savedImageData;
     }
-  }, [pageKey, savedImageData, activeTemplate]);
+  }, [pageKey, savedImageData]);
 
   const startDrawing = (e) => {
     isDrawing.current = true;
