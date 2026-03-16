@@ -7,18 +7,25 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
   const { user } = useAuth();
   
   return (
-    <div className="fixed top-0 left-20 right-0 h-16 flex items-center justify-between px-8 pointer-events-auto z-50 border-b" style={{background: "#2C1F14", borderColor: "#1A120B"}}>
+    <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between pr-8 pointer-events-auto z-50 border-b shadow-md" style={{background: "#1A120B", borderColor: "#3e2d1d"}}>
       {/* Left: Logo and Title */}
-      <div className="flex items-center gap-3 min-w-[100px]">
-        <div className="flex items-center justify-center w-12 h-8 rounded bg-[#1A120B] border border-[#3e2d1d] shrink-0 overflow-hidden shadow-sm">
+      <div className="flex items-center h-full min-w-[280px]">
+        <div className="flex items-center justify-center w-56 h-full shrink-0 relative overflow-hidden" style={{
+           maskImage: "linear-gradient(to right, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
+           WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
+        }}>
           <img 
             src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/8fdb2cd49_Gemini_Generated_Image_u8sxr4u8sxr4u8sx1920x1080.png" 
             alt="Fairbanks Builders" 
-            className="w-full h-full object-cover scale-150"
+            className="absolute w-[180%] h-[300%] object-cover object-center max-w-none"
+            style={{ 
+              mixBlendMode: "screen",
+              filter: "contrast(1.3) brightness(0.9) saturate(1.2)"
+            }}
           />
         </div>
-        <div className="flex flex-col">
-          <span className="text-[#f5deb3] font-serif font-bold text-lg leading-tight tracking-wide whitespace-nowrap">
+        <div className="flex flex-col ml-[-20px] z-10">
+          <span className="text-[#f5deb3] font-serif font-bold text-lg leading-tight tracking-wide whitespace-nowrap drop-shadow-md">
             Fairbanks Builders
           </span>
           <span 
