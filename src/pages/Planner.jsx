@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { addDays } from "date-fns";
 import TabBar from "../components/planner/TabBar.jsx";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
