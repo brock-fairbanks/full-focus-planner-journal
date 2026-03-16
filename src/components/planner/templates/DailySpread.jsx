@@ -30,7 +30,7 @@ export default function DailySpread() {
           {HOURS.map((hour) => (
             <div key={hour} className="flex gap-3 mb-4">
               <span className="text-xs font-bold w-12 text-right" style={{ color: "#94a3b8" }}>
-                {hour > 12 ? hour - 12 : hour}:00 {hour >= 12 ? "PM" : "AM"}
+                {hour === 12 ? 12 : hour > 12 ? hour - 12 : hour}{hour >= 12 ? "PM" : "AM"}
               </span>
               <div className="flex-1 border-b" style={{ borderColor: "#E2E8F0", height: "24px" }} />
             </div>

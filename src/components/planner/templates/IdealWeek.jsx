@@ -15,7 +15,7 @@ export default function IdealWeek({ date }) {
         <div className="w-16 shrink-0">
           {HOURS.map((hour) => (
             <div key={hour} className="h-10 flex items-center" style={{ color: "#94a3b8" }}>
-              {hour > 12 ? hour - 12 : hour}:00
+              {hour === 12 ? 12 : hour > 12 ? hour - 12 : hour}{hour >= 12 ? "PM" : "AM"}
             </div>
           ))}
         </div>
