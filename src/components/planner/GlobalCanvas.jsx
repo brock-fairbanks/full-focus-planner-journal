@@ -465,6 +465,11 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
 
   const lh = textObj.lineHeight || 32;
 
+  const estimatedLines = activeTemplate === 'IDEAL_WEEK' 
+    ? Math.max(val.split('\n').length, Math.ceil(val.length / 16)) || 1
+    : 1;
+  const idealWeekFontSize = Math.max(9, Math.min(16, Math.floor((lh - 8) / (1.2 * estimatedLines))));
+
   return (
     <div 
       className="absolute group z-50"
@@ -486,7 +491,7 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
         className="w-full bg-transparent outline-none resize-none overflow-hidden pr-8"
         style={{
           lineHeight: activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`,
-          fontSize: activeTemplate === 'IDEAL_WEEK' ? '16px' : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
+          fontSize: activeTemplate === 'IDEAL_WEEK' ? `${idealWeekFontSize}px` : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
           fontFamily: "'Caveat', cursive",
           color: '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
