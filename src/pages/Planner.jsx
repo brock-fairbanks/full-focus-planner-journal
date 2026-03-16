@@ -8,6 +8,7 @@ import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
 import TabBar from "../components/planner/TabBar.jsx";
 import HeaderBar from "../components/planner/HeaderBar.jsx";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
+import { Trash2 } from "lucide-react";
 
 export default function Planner() {
   const [activeTemplate, setActiveTemplate] = useState("DAILY");
@@ -50,6 +51,16 @@ export default function Planner() {
     localInkMemory.current[pageKey] = dataUrl;
     saveMutation.mutate(dataUrl);
   }, [pageKey, existingDrawing]);
+
+  const handleClearInk = () => {
+    if (window.confirm("Clear all ink from this page?")) {
+      localInkMemory.current[pageKey] = null;
+      if (existingDrawing?.id) {
+        base44.entities.PageDrawing.delete(existingDrawing.id);
+        queryClient.invalidateQueries({ queryKey: ["pageDrawing", pageKey] });
+      }
+    }
+  };
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-white">
