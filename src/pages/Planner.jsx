@@ -39,18 +39,24 @@ export default function Planner() {
     navigate(pathMap[templateId] || "/today");
   };
 
-  const pageKey = `${activeTemplate}${activeTemplate === "DAILY" && subSection ? `_${subSection}` : ''}_${new Date().toISOString().split('T')[0]}`;
+  const pageKey = `${activeTemplate}${activeTemplate === "DAILY" && subSection ? `_${subSection}` : ''}_${selectedDate.toISOString().split('T')[0]}`;
 
   return (
     <div className="fixed inset-0 w-full h-full bg-[#F4EFE4]">
       {/* Sidebar - Highest Z-index */}
       <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTabChange} />
       
+      <HeaderBar 
+        selectedDate={selectedDate} 
+        onDateChange={setSelectedDate} 
+        isSynced={true} 
+      />
+
       {/* Content Area */}
-      <div className="fixed left-20 right-0 top-0 bottom-0 bg-[#FAF9F6]">
+      <div className="fixed left-20 right-0 top-16 bottom-0 bg-[#FAF9F6]">
         {/* Template Layer (z-10) */}
         <div className="absolute inset-0 z-10 pointer-events-none [&_button]:pointer-events-auto">
-          <TemplateRenderer template={activeTemplate} date={new Date()} onSubSectionChange={setSubSection} />
+          <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} />
         </div>
         
         {/* Drawing Layer (z-20) */}
