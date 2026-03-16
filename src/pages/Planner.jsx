@@ -170,7 +170,7 @@ export default function Planner() {
         className={`fixed ${
           isFullscreen 
             ? "left-0 top-0" 
-            : `${activeTemplate === "JOURNAL" ? "left-40" : "left-20"} top-16`
+            : (activeTemplate === "JOURNAL" ? "left-40 top-16" : "left-20 top-16")
         } right-0 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto transition-all duration-300 ease-in-out`}
       >
         <div className="relative min-h-full w-full flex flex-col">
