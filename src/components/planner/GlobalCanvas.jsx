@@ -172,20 +172,24 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
            siblingLines.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
            const nextRect = siblingLines[0].getBoundingClientRect();
            lineHeight = nextRect.top - bestRect.top;
-           if (lineHeight < 20 || lineHeight > 80) lineHeight = 32;
+           if (lineHeight < 20 || lineHeight > 100) lineHeight = 40;
         } else {
-           lineHeight = 32; // fallback
+           lineHeight = 40; // fallback
         }
         
+        // Cap the text box height so large gaps don't create massive text
+        lineHeight = Math.min(lineHeight, 40);
+        
         // Align text baseline to sit perfectly on the border line
-        snappedY = (bestRect.bottom - rect.top) - lineHeight + 6; 
+        snappedY = (bestRect.bottom - rect.top) - lineHeight + 8; 
       } else if (bestLine.style.backgroundSize) {
          const match = bestLine.style.backgroundSize.match(/(\d+)px/g);
          if (match && match.length > 0) {
              lineHeight = parseInt(match[match.length - 1]);
              const relativeY = clientY - bestRect.top;
              const gridY = Math.floor(relativeY / lineHeight) * lineHeight;
-             snappedY = gridY + bestRect.top - rect.top - (lineHeight === 40 ? 12 : 4); 
+             // Offset to align Caveat font baseline with the grid line
+             snappedY = gridY + bestRect.top - rect.top + (lineHeight === 40 ? 6 : 4); 
          }
       }
     }
@@ -472,7 +476,7 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
         className="w-full bg-transparent outline-none resize-none overflow-hidden"
         style={{
           lineHeight: `${lh}px`,
-          fontSize: '26px',
+          fontSize: `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
           fontFamily: "'Caveat', cursive",
           color: '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
