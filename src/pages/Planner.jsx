@@ -76,8 +76,10 @@ export default function Planner() {
       <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
 
       {/* Layer 0: Substrate (Static Background) */}
-      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 pointer-events-none z-10">
-        <TemplateRenderer template={activeTemplate} date={selectedDate} />
+      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 pointer-events-none z-10 overflow-hidden">
+        <div className="w-full h-full">
+          <TemplateRenderer template={activeTemplate} date={selectedDate} />
+        </div>
       </div>
 
       {/* Layer 2: Global Canvas (Drawing) */}
