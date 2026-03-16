@@ -63,7 +63,7 @@ export default function Planner() {
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-white">
+    <div className="fixed inset-0 overflow-hidden" style={{background: "#F4EFE4"}}>
       <PortraitOverlay />
 
       {/* Navigation */}
