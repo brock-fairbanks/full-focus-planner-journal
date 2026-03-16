@@ -25,6 +25,7 @@ export default function Planner() {
   const [activeTemplate, setActiveTemplate] = useState(getTemplateFromPath(location.pathname));
   const [subSection, setSubSection] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [journalMode, setJournalMode] = useState("DAILY");
   const pointerStartRef = useRef(null);
   const lastPenTimeRef = useRef(0);
 
