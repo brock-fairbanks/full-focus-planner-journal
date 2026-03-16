@@ -56,7 +56,9 @@ export default function Planner() {
     if (window.confirm("Clear all ink from this page?")) {
       localInkMemory.current[pageKey] = null;
       if (existingDrawing?.id) {
-        base44.entities.PageDrawing.delete(existingDrawing.id);
+        base44.entities.PageDrawing.delete(existingDrawing.id).catch(() => {
+          // Silently ignore if record doesn't exist
+        });
         queryClient.invalidateQueries({ queryKey: ["pageDrawing", pageKey] });
       }
     }
