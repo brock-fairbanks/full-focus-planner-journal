@@ -29,18 +29,21 @@ export default function InkCanvas({ savedImageData, onSave }) {
     return ctx;
   }, []);
 
-  // Load saved image
+  // Load saved image (ink only — transparent bg)
   const loadImage = useCallback(() => {
     if (!savedImageData || hasLoaded.current) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.onload = () => {
       const ctx = canvas.getContext("2d", { desynchronized: true });
-      const dpr = window.devicePixelRatio || 1;
+      // Clear first, then draw ink layer only
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = "source-over";
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       ctx.restore();
       hasLoaded.current = true;
