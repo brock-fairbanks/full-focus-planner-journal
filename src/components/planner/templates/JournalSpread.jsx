@@ -7,24 +7,28 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
   
   // Detect layout mode
   const isMonthEnd = differenceInDays(endOfMonth(currentDate), currentDate) <= 2; // Last 3 days of month
+  const isYearEnd = currentDate.getMonth() === 11 && currentDate.getDate() >= 25; // Last week of December
   const isWknd = isWeekend(currentDate);
 
-  const [layoutMode, setLayoutMode] = useState("DAILY"); // DAILY, WEEKEND, MONTHLY
+  const [layoutMode, setLayoutMode] = useState("DAILY"); // DAILY, WEEKEND, MONTHLY, ANNUAL
   
   useEffect(() => {
-    if (isMonthEnd) {
+    if (isYearEnd) {
+      setLayoutMode("ANNUAL");
+    } else if (isMonthEnd) {
       setLayoutMode("MONTHLY");
     } else if (isWknd) {
       setLayoutMode("WEEKEND");
     } else {
       setLayoutMode("DAILY");
     }
-  }, [currentDate, isMonthEnd, isWknd]);
+  }, [currentDate, isMonthEnd, isYearEnd, isWknd]);
 
   const LAYOUT_TABS = {
     DAILY: ["The Story", "Processing", "Gratitude", "Insights"],
     WEEKEND: ["Life Balance", "Relationships", "Rejuvenation"],
-    MONTHLY: ["Goal Progress", "Habit Tracker", "Monthly Wins"]
+    MONTHLY: ["Goal Progress", "Habit Tracker", "Monthly Wins"],
+    ANNUAL: ["Year in Review", "Biggest Lessons", "Vision Forward"]
   };
 
   const [activeSubSection, setActiveSubSection] = useState(LAYOUT_TABS["DAILY"][0]);
@@ -67,13 +71,16 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
   return (
     <div className="flex flex-col w-full min-h-full bg-[#FAF9F6]">
       {/* Mode Switcher Banner (if applicable) */}
-      {(isWknd || isMonthEnd) && (
+      {(isWknd || isMonthEnd || isYearEnd) && (
         <div className="bg-[#1e293b] text-white px-8 md:px-12 py-3 flex flex-wrap gap-4 justify-between items-center text-sm font-medium z-40 relative shadow-md">
-          <span>{isMonthEnd ? "It's the end of the month." : "It's the weekend."} What would you like to reflect on?</span>
+          <span>
+            {isYearEnd ? "It's the end of the year." : isMonthEnd ? "It's the end of the month." : "It's the weekend."} What would you like to reflect on?
+          </span>
           <div className="flex gap-2">
             <button onClick={() => setLayoutMode("DAILY")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "DAILY" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Daily</button>
             {isWknd && <button onClick={() => setLayoutMode("WEEKEND")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "WEEKEND" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Weekend</button>}
             {isMonthEnd && <button onClick={() => setLayoutMode("MONTHLY")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "MONTHLY" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Monthly</button>}
+            {isYearEnd && <button onClick={() => setLayoutMode("ANNUAL")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "ANNUAL" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Annual</button>}
           </div>
         </div>
       )}
@@ -139,6 +146,10 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
           {layoutMode === "MONTHLY" && activeSubSection === "Goal Progress" && renderSection("Goal Progress", ["Which of my Quarterly Goals am I making progress on?"])}
           {layoutMode === "MONTHLY" && activeSubSection === "Habit Tracker" && renderSection("Habit Tracker", ["Review habit consistency for the month."])}
           {layoutMode === "MONTHLY" && activeSubSection === "Monthly Wins" && renderSection("Monthly Wins", ["What are the 3 biggest accomplishments this month?"])}
+
+          {layoutMode === "ANNUAL" && activeSubSection === "Year in Review" && renderSection("Year in Review", ["What were my proudest achievements this year?", "How did I grow personally and professionally?"])}
+          {layoutMode === "ANNUAL" && activeSubSection === "Biggest Lessons" && renderSection("Biggest Lessons", ["What were the hardest challenges I faced?", "What did those challenges teach me?"])}
+          {layoutMode === "ANNUAL" && activeSubSection === "Vision Forward" && renderSection("Vision Forward", ["What do I want to leave behind in the old year?", "What is my central focus or 'word' for the new year?"])}
         </div>
       </div>
     </div>
