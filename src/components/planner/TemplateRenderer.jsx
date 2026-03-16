@@ -5,9 +5,9 @@ import QuarterlyGoals from "./templates/QuarterlyGoals.jsx";
 import Rituals from "./templates/Rituals.jsx";
 import WeeklyReview from "./templates/WeeklyReview.jsx";
 
-export default function TemplateRenderer({ template, date }) {
+export default function TemplateRenderer({ template, date, onSubSectionChange }) {
   const templates = {
-    DAILY: <DailySpread date={date} />,
+    DAILY: <DailySpread date={date} onSubSectionChange={onSubSectionChange} />,
     IDEAL_WEEK: <IdealWeek date={date} />,
     QUARTERLY_GOALS: <QuarterlyGoals date={date} />,
     RITUALS: <Rituals date={date} />,
