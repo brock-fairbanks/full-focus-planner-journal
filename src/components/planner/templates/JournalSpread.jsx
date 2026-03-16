@@ -1,31 +1,43 @@
 import React, { useState, useEffect } from "react";
-import { Reorder } from "framer-motion";
 import { Trash2, MapPin, CloudSun } from "lucide-react";
-import { format } from "date-fns";
+import { format, isWeekend, endOfMonth, differenceInDays } from "date-fns";
 
 export default function JournalSpread({ date, onSubSectionChange, onClearCanvas }) {
-  const [activeSubSection, setActiveSubSection] = useState("The Story");
+  const currentDate = date || new Date();
+  
+  // Detect layout mode
+  const isMonthEnd = differenceInDays(endOfMonth(currentDate), currentDate) <= 2; // Last 3 days of month
+  const isWknd = isWeekend(currentDate);
 
-  const [tabs, setTabs] = useState(() => {
-    const saved = localStorage.getItem("planner_journal_tabs_order");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {}
+  const [layoutMode, setLayoutMode] = useState("DAILY"); // DAILY, WEEKEND, MONTHLY
+  
+  useEffect(() => {
+    if (isMonthEnd) {
+      setLayoutMode("MONTHLY");
+    } else if (isWknd) {
+      setLayoutMode("WEEKEND");
+    } else {
+      setLayoutMode("DAILY");
     }
-    return ["The Story", "The Review", "The Heart", "The Compass"];
-  });
+  }, [currentDate, isMonthEnd, isWknd]);
 
-  const handleReorder = (newOrder) => {
-    setTabs(newOrder);
-    localStorage.setItem("planner_journal_tabs_order", JSON.stringify(newOrder));
+  const LAYOUT_TABS = {
+    DAILY: ["The Story", "Processing", "Gratitude", "Insights"],
+    WEEKEND: ["Life Balance", "Relationships", "Rejuvenation"],
+    MONTHLY: ["Goal Progress", "Habit Tracker", "Monthly Wins"]
   };
+
+  const [activeSubSection, setActiveSubSection] = useState(LAYOUT_TABS["DAILY"][0]);
+
+  useEffect(() => {
+    setActiveSubSection(LAYOUT_TABS[layoutMode][0]);
+  }, [layoutMode]);
 
   useEffect(() => {
     if (onSubSectionChange) {
-      onSubSectionChange(activeSubSection);
+      onSubSectionChange(`${layoutMode}_${activeSubSection}`);
     }
-  }, [activeSubSection, onSubSectionChange]);
+  }, [activeSubSection, layoutMode, onSubSectionChange]);
 
   const renderSection = (title, prompts) => (
     <div className="mt-2 h-full flex flex-col">
@@ -35,7 +47,7 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
       <div className="flex-1 flex flex-col gap-8">
         {prompts.map((prompt, idx) => (
           <div key={idx} className="flex-1 flex flex-col min-h-[300px]">
-            <h3 className="text-2xl font-serif font-semibold mb-4" style={{ color: "#8B7355" }}>
+            <h3 className="text-2xl font-serif italic mb-4" style={{ color: "#1e293b" }}>
               {prompt}
             </h3>
             <div
@@ -54,34 +66,35 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
 
   return (
     <div className="flex flex-col w-full min-h-full bg-[#FAF9F6]">
+      {/* Mode Switcher Banner (if applicable) */}
+      {(isWknd || isMonthEnd) && (
+        <div className="bg-[#1e293b] text-white px-8 md:px-12 py-3 flex flex-wrap gap-4 justify-between items-center text-sm font-medium z-40 relative shadow-md">
+          <span>{isMonthEnd ? "It's the end of the month." : "It's the weekend."} What would you like to reflect on?</span>
+          <div className="flex gap-2">
+            <button onClick={() => setLayoutMode("DAILY")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "DAILY" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Daily</button>
+            {isWknd && <button onClick={() => setLayoutMode("WEEKEND")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "WEEKEND" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Weekend</button>}
+            {isMonthEnd && <button onClick={() => setLayoutMode("MONTHLY")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "MONTHLY" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Monthly</button>}
+          </div>
+        </div>
+      )}
+
       {/* Secondary Navigation Bar */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E2E8F0] px-8 md:px-12 h-[64px] md:h-[72px] shrink-0 bg-[#FAF9F6]">
-        <Reorder.Group 
-          axis="x" 
-          values={tabs} 
-          onReorder={handleReorder}
-          className="flex gap-2 md:gap-4 items-center"
-        >
-          {tabs.map(tab => (
-            <Reorder.Item 
-              key={tab} 
-              value={tab}
-              className="flex items-center cursor-grab active:cursor-grabbing"
-              dragConstraints={{ left: 0, right: 0 }}
+        <div className="flex gap-2 md:gap-4 items-center">
+          {LAYOUT_TABS[layoutMode].map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveSubSection(tab)}
+              className={`text-sm md:text-base font-serif font-bold transition-all px-4 py-2 rounded-lg select-none shadow-sm ${
+                activeSubSection === tab 
+                  ? "bg-[#1e293b] text-white border border-[#1e293b]" 
+                  : "bg-white text-[#94a3b8] border border-[#E2E8F0] hover:bg-[#f8fafc] hover:text-[#1e293b]"
+              }`}
             >
-              <button
-                onClick={() => setActiveSubSection(tab)}
-                className={`text-sm md:text-base font-serif font-bold transition-all px-4 py-2 rounded-lg select-none shadow-sm ${
-                  activeSubSection === tab 
-                    ? "bg-[#1e293b] text-white border border-[#1e293b]" 
-                    : "bg-white text-[#94a3b8] border border-[#E2E8F0] hover:bg-[#f8fafc] hover:text-[#1e293b]"
-                }`}
-              >
-                {tab}
-              </button>
-            </Reorder.Item>
+              {tab}
+            </button>
           ))}
-        </Reorder.Group>
+        </div>
 
         <div className="flex items-center ml-4">
           <button 
@@ -99,7 +112,7 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
       <div className="px-8 md:px-12 py-6 flex flex-wrap gap-8 items-center border-b border-[#E2E8F0]">
         <div className="flex flex-col">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1">Date</span>
-          <span className="font-serif text-xl text-[#1e293b]">{format(date || new Date(), 'EEEE, MMMM d, yyyy')}</span>
+          <span className="font-serif text-xl text-[#1e293b]">{format(currentDate, 'EEEE, MMMM d, yyyy')}</span>
         </div>
         <div className="flex flex-col flex-1 min-w-[200px]">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1 flex items-center gap-1"><MapPin size={12}/> Location</span>
@@ -114,10 +127,18 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
       {/* Content Area */}
       <div className="flex-1 p-6 md:p-10 flex justify-center">
         <div className="w-full max-w-4xl h-full pb-32">
-          {activeSubSection === "The Story" && renderSection("The Story", ["What happened today?"])}
-          {activeSubSection === "The Review" && renderSection("The Review", ["What were my wins?", "What were my losses/lessons?"])}
-          {activeSubSection === "The Heart" && renderSection("The Heart", ["What am I grateful for?", "What am I excited about?"])}
-          {activeSubSection === "The Compass" && renderSection("The Compass", ["What did I learn?", "Where did I see meaning/connection?", "What is one thing I want to remember about today?"])}
+          {layoutMode === "DAILY" && activeSubSection === "The Story" && renderSection("The Story", ["What happened today?"])}
+          {layoutMode === "DAILY" && activeSubSection === "Processing" && renderSection("Processing", ["What were my wins?", "What were my losses/lessons?"])}
+          {layoutMode === "DAILY" && activeSubSection === "Gratitude" && renderSection("Gratitude", ["What am I grateful for?", "What am I excited about?"])}
+          {layoutMode === "DAILY" && activeSubSection === "Insights" && renderSection("Insights", ["What did I learn?", "Where did I see meaning/connection?", "What is one thing I want to remember?"])}
+
+          {layoutMode === "WEEKEND" && activeSubSection === "Life Balance" && renderSection("Life Balance", ["How is my sleep, movement, and nutrition?"])}
+          {layoutMode === "WEEKEND" && activeSubSection === "Relationships" && renderSection("Relationships", ["Who did I connect with this weekend?"])}
+          {layoutMode === "WEEKEND" && activeSubSection === "Rejuvenation" && renderSection("Rejuvenation", ["What did I do to refuel my tank?"])}
+
+          {layoutMode === "MONTHLY" && activeSubSection === "Goal Progress" && renderSection("Goal Progress", ["Which of my Quarterly Goals am I making progress on?"])}
+          {layoutMode === "MONTHLY" && activeSubSection === "Habit Tracker" && renderSection("Habit Tracker", ["Review habit consistency for the month."])}
+          {layoutMode === "MONTHLY" && activeSubSection === "Monthly Wins" && renderSection("Monthly Wins", ["What are the 3 biggest accomplishments this month?"])}
         </div>
       </div>
     </div>

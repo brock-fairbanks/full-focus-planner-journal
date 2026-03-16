@@ -62,6 +62,28 @@ export default function TabBar({ activeTemplate, onTemplateChange }) {
     localStorage.setItem("planner_tabs_order", JSON.stringify(newOrder.map(t => ({ id: t.id, label: t.label }))));
   };
 
+  if (activeTemplate === "JOURNAL") {
+    return (
+      <div 
+        className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center py-6 pointer-events-auto z-50" 
+        style={{background: "#1A120B"}}
+      >
+        <button
+          onClick={() => onTemplateChange("DAILY")}
+          className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none hover:bg-white/5"
+          title="Back to Planner"
+          style={{
+            color: "#F97316",
+            textShadow: "0 0 8px rgba(249, 115, 22, 0.6)",
+          }}
+        >
+          <Calendar size={22} style={{ filter: "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" }} />
+          <span className="text-[10px] font-medium tracking-wide uppercase mt-1">Planner</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div 
       className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center py-6 pointer-events-auto z-50" 
