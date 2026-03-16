@@ -21,12 +21,12 @@ export default function WeeklyReview({ date }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 h-full gap-0 w-full">
+    <div className="grid grid-cols-2 h-full gap-0 w-full overflow-auto" style={{ background: "#FAF9F6" }}>
       {pages.map((page, idx) => (
         <div
           key={idx}
           className="flex flex-col border p-8"
-          style={{ borderColor: "#E2E8F0" }}
+          style={{ borderColor: "#E2E8F0", background: "#ffffff" }}
         >
           <h2 className="text-2xl font-serif font-bold mb-2" style={{ color: "#1e293b" }}>
             {page.title}
