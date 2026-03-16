@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, forwardRef, useImperativeHandle, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, forwardRef, useImperativeHandle, useState } from "react";
 
 const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTemplate, onClear }, ref) => {
   const canvasRef = useRef(null);
