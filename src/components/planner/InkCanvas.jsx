@@ -150,7 +150,12 @@ export default function InkCanvas({ savedImageData, onSave }) {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full"
-      style={{ touchAction: "none", cursor: "crosshair", background: "transparent" }}
+      style={{
+        touchAction: "none",
+        cursor: "crosshair",
+        background: "transparent",
+        opacity: 1,
+      }}
     />
   );
 }
