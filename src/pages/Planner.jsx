@@ -81,12 +81,12 @@ export default function Planner() {
       <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
 
       {/* Template Layout */}
-      <div className="fixed left-16 right-0 top-20 bottom-0 z-10 overflow-auto">
+      <div className="fixed left-16 right-0 top-0 bottom-0 z-10 overflow-auto">
         <TemplateRenderer template={activeTemplate} date={selectedDate} />
       </div>
 
       {/* Drawing Canvas (overlay) */}
-      <div className="fixed left-16 right-0 top-20 bottom-0 z-20 pointer-events-none">
+      <div className="fixed left-16 right-0 top-0 bottom-0 z-20 pointer-events-none">
         <div className="pointer-events-auto w-full h-full">
           <GlobalCanvas
             ref={canvasRef}
