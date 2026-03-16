@@ -90,6 +90,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
 
   const pointsRef = useRef([]);
   const preStrokeStateRef = useRef(null);
+  const doubleTapSnapshotRef = useRef(null);
 
   const handleDoubleClickAction = (clientX, clientY, pointerType) => {
     const rect = canvasRef.current.getBoundingClientRect();
