@@ -1,40 +1,49 @@
 import React from "react";
-import { ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, PenTool } from "lucide-react";
 import { format, addDays } from "date-fns";
 
 export default function HeaderBar({ selectedDate, onDateChange, isSynced }) {
   return (
-    <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-4 border-b pointer-events-auto" style={{background: "#8B6F47", borderColor: "#6B5638"}}>
-      <h1 className="text-lg font-semibold" style={{color: "#F5E6D3"}}>Executive OS</h1>
-
-      <div className="flex items-center gap-4">
-        <button
-          className="px-3 py-1 text-sm font-medium rounded transition-colors"
-          style={{color: "#F5E6D3", background: "rgba(255,255,255,0.1)"}}
-          onClick={() => onDateChange(new Date())}
+    <div className="fixed top-0 left-20 right-0 h-16 flex items-center justify-between px-8 pointer-events-auto z-50 border-b" style={{background: "#2c1f14", borderColor: "#1a120b"}}>
+      {/* Left: Navigation */}
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={() => onDateChange(addDays(selectedDate, -1))}
+          className="p-2 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+          style={{color: "#b8956a"}}
+          title="Previous"
         >
-          Today
-        </button>
-
-        <button className="p-1 rounded transition-colors" style={{color: "#F5E6D3", background: "rgba(255,255,255,0.1)"}} onClick={() => onDateChange(addDays(selectedDate, -1))}>
           <ChevronLeft size={20} />
         </button>
-
-        <span className="min-w-[120px] text-center text-sm font-medium" style={{color: "#F5E6D3"}}>
-          {format(selectedDate, "EEE, MMM d")}
-        </span>
-
-        <button className="p-1 rounded transition-colors" style={{color: "#F5E6D3", background: "rgba(255,255,255,0.1)"}} onClick={() => onDateChange(addDays(selectedDate, 1))}>
+        
+        <button 
+          onClick={() => onDateChange(addDays(selectedDate, 1))}
+          className="p-2 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+          style={{color: "#b8956a"}}
+          title="Next"
+        >
           <ChevronRight size={20} />
         </button>
       </div>
 
-      <div className="flex items-center gap-2">
-        {isSynced ? (
-          <ShieldCheck size={18} style={{color: "#C8E6C9", animation: "pulse 2s infinite" }} />
-        ) : (
-          <span className="text-xs font-medium" style={{color: "#FFE0B2"}}>Saving...</span>
-        )}
+      {/* Center: Date in Serif */}
+      <div className="flex-1 text-center">
+        <div style={{fontFamily: "'Playfair Display', serif", fontSize: "24px", fontWeight: "600", color: "#f5deb3", letterSpacing: "0.5px"}}>
+          {format(selectedDate, "EEEE")}
+        </div>
+        <div style={{fontFamily: "'Playfair Display', serif", fontSize: "18px", fontWeight: "400", color: "#c5a87e", letterSpacing: "0.3px"}}>
+          {format(selectedDate, "MMMM d, yyyy")}
+        </div>
+      </div>
+
+      {/* Right: Sync Status */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 min-h-[44px]">
+          <PenTool size={18} style={{color: isSynced ? "#f59e0b" : "#d4af37", animation: !isSynced ? "pulse 1.5s ease-in-out infinite" : "none"}} />
+          <span style={{fontSize: "12px", color: isSynced ? "#f59e0b" : "#d4af37", fontWeight: "500"}}>
+            {isSynced ? "Synced" : "Syncing..."}
+          </span>
+        </div>
       </div>
     </div>
   );
