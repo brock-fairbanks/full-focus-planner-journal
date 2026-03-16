@@ -88,7 +88,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     ctxRef.current = ctx;
 
     // 1. Draw the Paper first
-    drawPaperSubstrate(ctx, rect.width, rect.height);
+    drawPaperSubstrate(ctx, rect.width, rect.height, activeTemplate);
 
     // 2. Overlay the saved Ink
     if (savedImageData) {
