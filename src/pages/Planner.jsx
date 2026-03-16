@@ -1,10 +1,12 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 
 import PortraitOverlay from "../components/planner/PortraitOverlay";
 import BinderHeader from "../components/planner/BinderHeader";
+import TabStrip from "../components/planner/TabStrip";
+import PageSelector from "../components/planner/PageSelector";
 import LeftPage from "../components/planner/LeftPage";
 import RightPage from "../components/planner/RightPage";
 import BinderSpine from "../components/planner/BinderSpine";
