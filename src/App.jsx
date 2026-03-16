@@ -7,8 +7,6 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Planner from './pages/Planner.jsx';
 import BrandCompass from './pages/BrandCompass.jsx';
-import WeeklyPreviewWizard from './pages/WeeklyPreviewWizard.jsx';
-import DailyPlan from './pages/DailyPlan.jsx';
 // Add page imports here
 
 const AuthenticatedApp = () => {
