@@ -75,7 +75,6 @@ const GlobalCanvas = React.forwardRef(({ onSave, savedImageData, pageKey }, ref)
   // Pointer events for drawing
   useEffect(() => {
     const handlePointerDown = (e) => {
-      if (e.pointerType !== "pen") return;
       e.preventDefault();
       isDrawing.current = true;
       const canvas = canvasRef.current;
@@ -91,7 +90,7 @@ const GlobalCanvas = React.forwardRef(({ onSave, savedImageData, pageKey }, ref)
     };
 
     const handlePointerMove = (e) => {
-      if (!isDrawing.current || e.pointerType !== "pen") return;
+      if (!isDrawing.current) return;
       e.preventDefault();
       const canvas = canvasRef.current;
       const rect = canvas.getBoundingClientRect();
