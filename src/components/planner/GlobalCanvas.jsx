@@ -54,8 +54,19 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     };
 
     const timer = setTimeout(initCanvas, 50);
-    return () => clearTimeout(timer);
-  }, [pageKey, savedImageData]);
+    return () => {
+      clearTimeout(timer);
+      if (saveTimeout.current) {
+        clearTimeout(saveTimeout.current);
+        saveTimeout.current = null;
+        if (canvasRef.current) {
+          const dataUrl = canvasRef.current.toDataURL("image/png");
+          localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
+          if (onSave) onSave(dataUrl);
+        }
+      }
+    };
+  }, [pageKey, savedImageData, onSave]);
 
   const lastTapRef = useRef(0);
   const [texts, setTexts] = useState([]);
