@@ -80,12 +80,12 @@ export default function Planner() {
       </div>
 
       {/* Layer 0: Substrate (Static Background) */}
-      <div className="absolute inset-0 md:top-36 top-30 bottom-0 pointer-events-none">
+      <div className="absolute left-20 md:left-24 right-0 md:top-36 top-30 bottom-0 pointer-events-none">
         <TemplateRenderer template={activeTemplate} date={selectedDate} />
       </div>
 
       {/* Layer 2: Global Canvas (Drawing) */}
-      <div className="absolute inset-0 md:top-36 top-30 bottom-0" style={{ touchAction: "none", pointerEvents: "auto" }}>
+      <div className="absolute left-20 md:left-24 right-0 md:top-36 top-30 bottom-0" style={{ touchAction: "none", pointerEvents: "auto" }}>
         <GlobalCanvas
           ref={canvasRef}
           onSave={handleSaveInk}
