@@ -27,6 +27,7 @@ export default function Planner() {
   const [subSection, setSubSection] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [journalMode, setJournalMode] = useState("DAILY");
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const pointerStartRef = useRef(null);
   const lastPenTimeRef = useRef(0);
 
@@ -145,24 +146,59 @@ export default function Planner() {
       onPointerCancel={() => { pointerStartRef.current = null; }}
     >
       {/* Sidebar - Highest Z-index */}
-      <TabBar 
-        activeTemplate={activeTemplate} 
-        onTemplateChange={handleTabChange} 
-        journalMode={journalMode}
-        onJournalModeChange={setJournalMode}
-      />
-      
-      <HeaderBar 
-        selectedDate={selectedDate} 
-        onDateChange={setSelectedDate} 
-        isSynced={true} 
-        activeTemplate={activeTemplate}
-      />
+      {!isFullscreen && (
+        <>
+          <TabBar 
+            activeTemplate={activeTemplate} 
+            onTemplateChange={handleTabChange} 
+            journalMode={journalMode}
+            onJournalModeChange={setJournalMode}
+          />
+          
+          <HeaderBar 
+            selectedDate={selectedDate} 
+            onDateChange={setSelectedDate} 
+            isSynced={true} 
+            activeTemplate={activeTemplate}
+          />
+        </>
+      )}
 
       {/* Content Area */}
       {/* Content Area */}
-      <div className={`fixed ${activeTemplate === "JOURNAL" ? "left-40" : "left-20"} right-0 top-16 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto transition-[left] duration-300 ease-in-out`}>
+      <div 
+        className={`fixed ${
+          isFullscreen 
+            ? "left-0 top-0" 
+            : `${activeTemplate === "JOURNAL" ? "left-40" : "left-20"} top-16`
+        } right-0 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto transition-all duration-300 ease-in-out`}
+      >
         <div className="relative min-h-full w-full flex flex-col">
+          {/* Fullscreen Toggle Button */}
+          <button
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="absolute top-4 left-4 z-30 p-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] rounded-md shadow-sm text-[#94a3b8] hover:text-[#1e293b] transition-colors"
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {isFullscreen ? (
+                <>
+                  <path d="M8 3v3a2 2 0 0 1-2 2H3" />
+                  <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+                  <path d="M3 16h3a2 2 0 0 1 2 2v3" />
+                  <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
+                </>
+              ) : (
+                <>
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+                  <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+                  <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+                  <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+                </>
+              )}
+            </svg>
+          </button>
+
           {/* Template Layer */}
           <div className="flex-1 w-full pointer-events-auto">
             <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} journalMode={journalMode} />
