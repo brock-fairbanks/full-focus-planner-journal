@@ -117,8 +117,6 @@ export default function Planner() {
   if (activeTemplate === "JOURNAL" && subSection) {
     if (subSection.startsWith("ANNUAL_")) {
       datePart = selectedDate.getFullYear().toString();
-    } else if (subSection.startsWith("MONTHLY_")) {
-      datePart = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}`;
     } else if (subSection.startsWith("WEEKEND_")) {
       const d = new Date(selectedDate);
       const day = d.getDay(); // 0 is Sunday, 6 is Saturday
