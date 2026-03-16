@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Reorder } from "framer-motion";
 
-export default function DailySpread({ date, onSubSectionChange }) {
+import { Trash2 } from "lucide-react";
+
+export default function DailySpread({ date, onSubSectionChange, onClearCanvas }) {
   const HOURS = Array.from({ length: 17 }, (_, i) => 5 + i); // 5 AM to 9 PM
   const [activeSubSection, setActiveSubSection] = useState("Big 3");
 
@@ -29,32 +31,45 @@ export default function DailySpread({ date, onSubSectionChange }) {
   return (
     <div className="flex flex-col w-full min-h-full bg-[#FAF9F6]">
       {/* Secondary Navigation Bar */}
-      <Reorder.Group 
-        axis="x" 
-        values={tabs} 
-        onReorder={handleReorder}
-        className="sticky top-0 z-30 flex border-b border-[#E2E8F0] px-8 pt-4 md:px-12 md:pt-6 gap-8 h-[64px] md:h-[72px] shrink-0 bg-[#FAF9F6]"
-      >
-        {tabs.map(tab => (
-          <Reorder.Item 
-            key={tab} 
-            value={tab}
-            className="h-full flex items-end cursor-grab active:cursor-grabbing"
-            dragConstraints={{ left: 0, right: 0 }}
-          >
-            <button
-              onClick={() => setActiveSubSection(tab)}
-              className={`text-lg md:text-xl font-serif font-bold transition-colors pb-3 md:pb-4 border-b-2 h-full flex items-end select-none ${
-                activeSubSection === tab 
-                  ? "border-[#1e293b] text-[#1e293b]" 
-                  : "border-transparent text-[#94a3b8] hover:text-[#1e293b]"
-              }`}
+      <div className="sticky top-0 z-30 flex justify-between border-b border-[#E2E8F0] px-8 pt-4 md:px-12 md:pt-6 h-[64px] md:h-[72px] shrink-0 bg-[#FAF9F6]">
+        <Reorder.Group 
+          axis="x" 
+          values={tabs} 
+          onReorder={handleReorder}
+          className="flex gap-8 h-full"
+        >
+          {tabs.map(tab => (
+            <Reorder.Item 
+              key={tab} 
+              value={tab}
+              className="h-full flex items-end cursor-grab active:cursor-grabbing"
+              dragConstraints={{ left: 0, right: 0 }}
             >
-              {tab}
-            </button>
-          </Reorder.Item>
-        ))}
-      </Reorder.Group>
+              <button
+                onClick={() => setActiveSubSection(tab)}
+                className={`text-lg md:text-xl font-serif font-bold transition-colors pb-3 md:pb-4 border-b-2 h-full flex items-end select-none ${
+                  activeSubSection === tab 
+                    ? "border-[#1e293b] text-[#1e293b]" 
+                    : "border-transparent text-[#94a3b8] hover:text-[#1e293b]"
+                }`}
+              >
+                {tab}
+              </button>
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+
+        <div className="flex items-end pb-3 md:pb-4 ml-4">
+          <button 
+            onClick={onClearCanvas}
+            className="flex items-center gap-1.5 text-sm font-medium text-[#94a3b8] hover:text-red-500 transition-colors bg-transparent px-3 py-1 rounded-md hover:bg-red-50"
+            title="Clear entire page"
+          >
+            <Trash2 size={16} />
+            <span>Clear Page</span>
+          </button>
+        </div>
+      </div>
 
       {/* Content Area */}
       <div className="flex-1 p-6 md:p-10 flex justify-center">

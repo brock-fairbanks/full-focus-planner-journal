@@ -10,8 +10,11 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   useImperativeHandle(ref, () => ({
     clear: () => {
       if (canvasRef.current && ctxRef.current) {
-        const rect = canvasRef.current.getBoundingClientRect();
-        ctxRef.current.clearRect(0, 0, rect.width, rect.height);
+        ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        updateTextsState([]);
+        const dataUrl = canvasRef.current.toDataURL("image/png");
+        localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
+        if (onSave) onSave(dataUrl);
         onClear?.();
       }
     }

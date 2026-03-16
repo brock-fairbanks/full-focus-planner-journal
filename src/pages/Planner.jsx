@@ -94,6 +94,12 @@ export default function Planner() {
     pointerStartRef.current = null;
   };
 
+  const handleClearCanvas = useCallback(() => {
+    if (canvasRef.current && canvasRef.current.clear) {
+      canvasRef.current.clear();
+    }
+  }, []);
+
   const handleTabChange = (templateId) => {
     const pathMap = {
       DAILY: "/today",
@@ -129,7 +135,7 @@ export default function Planner() {
         <div className="relative min-h-full w-full flex flex-col">
           {/* Template Layer */}
           <div className="flex-1 w-full pointer-events-auto">
-            <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} />
+            <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} />
           </div>
           
           {/* Drawing Layer (z-20) */}
