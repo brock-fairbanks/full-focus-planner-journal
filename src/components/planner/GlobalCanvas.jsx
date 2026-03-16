@@ -216,8 +216,8 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         <TextItem 
           key={textObj.id} 
           textObj={textObj} 
-          updateText={(id, updated) => saveTexts(texts.map(t => t.id === id ? updated : t))}
-          deleteText={(id) => saveTexts(texts.filter(t => t.id !== id))}
+          updateText={(id, updated) => updateTextsState(prev => prev.map(t => t.id === id ? updated : t))}
+          deleteText={(id) => updateTextsState(prev => prev.filter(t => t.id !== id))}
         />
       ))}
     </div>
