@@ -94,7 +94,7 @@ export default function InkCanvas({ savedImageData, onSave }) {
     if (!canvas) return;
 
     const handlePointerDown = (e) => {
-      if (e.pointerType !== "pen" && e.pointerType !== "mouse") return;
+      if (e.pointerType !== "pen") return;
       e.preventDefault();
       isDrawing.current = true;
       const rect = canvas.getBoundingClientRect();
@@ -108,7 +108,7 @@ export default function InkCanvas({ savedImageData, onSave }) {
 
     const handlePointerMove = (e) => {
       if (!isDrawing.current) return;
-      if (e.pointerType !== "pen" && e.pointerType !== "mouse") return;
+      if (e.pointerType !== "pen") return;
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const pt = { x: e.clientX - rect.left, y: e.clientY - rect.top };
