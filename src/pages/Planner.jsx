@@ -158,7 +158,7 @@ export default function Planner() {
 
       {/* Content Area */}
       {/* Content Area */}
-      <div className="fixed left-20 right-0 top-16 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto">
+      <div className={`fixed ${activeTemplate === "JOURNAL" ? "left-40" : "left-20"} right-0 top-16 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto transition-[left] duration-300 ease-in-out`}>
         <div className="relative min-h-full w-full flex flex-col">
           {/* Template Layer */}
           <div className="flex-1 w-full pointer-events-auto">
