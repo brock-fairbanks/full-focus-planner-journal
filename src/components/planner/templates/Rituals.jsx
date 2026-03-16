@@ -3,7 +3,7 @@ import { Sun, Moon } from "lucide-react";
 
 export default function Rituals({ date }) {
   return (
-    <div className="flex h-full gap-0 w-full" style={{ background: "#FAF9F6" }}>
+    <div className="flex h-full gap-0 w-full">
       {/* Morning Startup */}
       <div className="flex-1 flex flex-col border-r p-8" style={{ borderColor: "#E2E8F0" }}>
         <div className="flex items-center gap-3 mb-8">
