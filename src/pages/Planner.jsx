@@ -175,11 +175,12 @@ export default function Planner() {
       >
         <div className="relative min-h-full w-full flex flex-col">
           {/* Fullscreen Toggle Button */}
-          <button
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            className="absolute top-4 left-4 z-30 p-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] rounded-md shadow-sm text-[#94a3b8] hover:text-[#1e293b] transition-colors"
-            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-          >
+          <div className="w-full flex justify-start p-2 shrink-0 z-30">
+            <button
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="p-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] rounded-md shadow-sm text-[#94a3b8] hover:text-[#1e293b] transition-colors"
+              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               {isFullscreen ? (
                 <>
