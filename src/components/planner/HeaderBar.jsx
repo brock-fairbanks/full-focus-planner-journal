@@ -1,8 +1,11 @@
 import React from "react";
 import { ChevronLeft, ChevronRight, ShieldCheck, Compass } from "lucide-react";
 import { format, addDays } from "date-fns";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function HeaderBar({ selectedDate, onDateChange, isSynced }) {
+  const { user } = useAuth();
+  
   return (
     <div className="fixed top-0 left-20 right-0 h-16 flex items-center justify-between px-8 pointer-events-auto z-50 border-b" style={{background: "#2C1F14", borderColor: "#1A120B"}}>
       {/* Left: Logo and Title */}
