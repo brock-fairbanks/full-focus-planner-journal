@@ -21,11 +21,11 @@ export default function WeeklyReview({ date }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 h-full gap-0 overflow-auto" style={{ background: "#FAF9F6" }}>
+    <div className="grid grid-cols-2 h-full gap-0" style={{ background: "#FAF9F6" }}>
       {pages.map((page, idx) => (
         <div
           key={idx}
-          className="flex flex-col border p-8"
+          className="flex flex-col border p-8 overflow-auto"
           style={{ borderColor: "#E2E8F0" }}
         >
           <h2 className="text-2xl font-serif font-bold mb-2" style={{ color: "#1e293b" }}>
