@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 export default function DailySpread({ date, onSubSectionChange }) {
-  const HOURS = Array.from({ length: 15 }, (_, i) => 6 + i); // 6 AM to 8 PM
+  const HOURS = Array.from({ length: 17 }, (_, i) => 5 + i); // 5 AM to 9 PM
   const [activeSubSection, setActiveSubSection] = useState("Big 3");
 
   useEffect(() => {
