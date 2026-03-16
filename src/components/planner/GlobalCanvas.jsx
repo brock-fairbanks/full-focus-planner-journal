@@ -230,6 +230,12 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 500; 
 
+    if (now - lastTapRef.current > DOUBLE_TAP_DELAY) {
+      if (ctxRef.current && canvasRef.current) {
+        doubleTapSnapshotRef.current = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
+    }
+
     // Only check double tap if it's not a pen, or if it's a mouse/touch that hasn't moved much
     const dx = Math.abs(e.clientX - lastTapPosRef.current.x);
     const dy = Math.abs(e.clientY - lastTapPosRef.current.y);
