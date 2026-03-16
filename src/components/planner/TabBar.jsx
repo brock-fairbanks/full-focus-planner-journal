@@ -48,7 +48,10 @@ export default function TabBar({ activeTemplate, onTemplateChange }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return parsed.map(tab => ({ ...tab, icon: ICONS_MAP[tab.id] }));
+        // Make sure newly added tabs appear even if user has saved an old layout
+        const parsedIds = parsed.map(t => t.id);
+        const missingTabs = DEFAULT_TABS.filter(t => !parsedIds.includes(t.id));
+        return [...parsed, ...missingTabs].map(tab => ({ ...tab, icon: ICONS_MAP[tab.id] }));
       } catch (e) {}
     }
     return DEFAULT_TABS;
