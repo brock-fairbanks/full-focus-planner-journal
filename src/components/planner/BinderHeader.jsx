@@ -12,7 +12,7 @@ export default function BinderHeader({ activeTab, onTabChange, dateLabel }) {
     <div
       className="flex items-center justify-between px-6 shrink-0 select-none"
       style={{
-        height: 56,
+        height: 68,
         background: "linear-gradient(180deg, #2a1f14 0%, #1a120b 100%)",
         borderBottom: "2px solid #f59e0b33",
       }}

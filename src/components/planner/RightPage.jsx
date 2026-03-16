@@ -7,45 +7,45 @@ export default function RightPage() {
       style={{ background: "#FAF9F6", color: "#1E293B" }}
     >
       {/* Other Tasks */}
-      <div className="px-5 pt-4 pb-2">
+      <div className="px-7 pt-6 pb-3">
         <h2
-          className="text-xs font-bold uppercase tracking-[0.2em] mb-3"
-          style={{ color: "#1E293B", opacity: 0.5 }}
+          className="text-sm font-bold uppercase tracking-[0.25em] mb-4"
+          style={{ color: "#1E293B", opacity: 0.45 }}
         >
           Other Tasks
         </h2>
-        {[1, 2, 3, 4, 5].map((n) => (
-          <div key={n} className="flex items-center gap-3 mb-2">
+        {[1, 2, 3, 4, 5, 6].map((n) => (
+          <div key={n} className="flex items-center gap-4 mb-3">
             <div
-              className="w-4 h-4 rounded-sm border-2 shrink-0"
-              style={{ borderColor: "#1E293B33" }}
+              className="w-6 h-6 rounded-sm border-2 shrink-0"
+              style={{ borderColor: "#1E293B44" }}
             />
             <div
-              className="flex-1 border-b"
-              style={{ borderColor: "#1E293B1a", height: 24 }}
+              className="flex-1 border-b-2"
+              style={{ borderColor: "#1E293B18", height: 32 }}
             />
           </div>
         ))}
       </div>
 
       {/* Divider */}
-      <div className="mx-5 border-t" style={{ borderColor: "#1E293B15" }} />
+      <div className="mx-7 border-t" style={{ borderColor: "#1E293B18" }} />
 
       {/* Notes */}
-      <div className="px-5 pt-3 flex-1 overflow-hidden">
+      <div className="px-7 pt-4 flex-1 overflow-hidden">
         <h2
-          className="text-xs font-bold uppercase tracking-[0.2em] mb-2"
-          style={{ color: "#1E293B", opacity: 0.5 }}
+          className="text-sm font-bold uppercase tracking-[0.25em] mb-3"
+          style={{ color: "#1E293B", opacity: 0.45 }}
         >
           Notes
         </h2>
         <div
-          className="w-full flex-1"
+          className="w-full"
           style={{
-            height: "calc(100% - 28px)",
+            height: "calc(100% - 36px)",
             backgroundImage:
-              "radial-gradient(circle, #1E293B18 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
+              "radial-gradient(circle, #1E293B20 1.5px, transparent 1.5px)",
+            backgroundSize: "28px 28px",
           }}
         />
       </div>

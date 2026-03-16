@@ -14,57 +14,54 @@ export default function LeftPage() {
       style={{ background: "#FAF9F6", color: "#1E293B" }}
     >
       {/* Daily Big 3 */}
-      <div className="px-5 pt-4 pb-2">
+      <div className="px-7 pt-6 pb-3">
         <h2
-          className="text-xs font-bold uppercase tracking-[0.2em] mb-3"
-          style={{ color: "#1E293B", opacity: 0.5 }}
+          className="text-sm font-bold uppercase tracking-[0.25em] mb-4"
+          style={{ color: "#1E293B", opacity: 0.45 }}
         >
           Daily Big 3
         </h2>
         {[1, 2, 3].map((n) => (
-          <div
-            key={n}
-            className="flex items-center gap-3 mb-2"
-          >
+          <div key={n} className="flex items-center gap-4 mb-4">
             <div
-              className="w-5 h-5 rounded-full border-2 shrink-0"
-              style={{ borderColor: "#1E293B33" }}
+              className="w-7 h-7 rounded-full border-2 shrink-0"
+              style={{ borderColor: "#1E293B44" }}
             />
             <div
-              className="flex-1 border-b"
-              style={{ borderColor: "#1E293B1a", height: 28 }}
+              className="flex-1 border-b-2"
+              style={{ borderColor: "#1E293B18", height: 36 }}
             />
           </div>
         ))}
       </div>
 
       {/* Divider */}
-      <div className="mx-5 border-t" style={{ borderColor: "#1E293B15" }} />
+      <div className="mx-7 border-t" style={{ borderColor: "#1E293B18" }} />
 
       {/* Hourly Schedule */}
-      <div className="px-5 pt-3 flex-1 overflow-hidden">
+      <div className="px-7 pt-4 flex-1 overflow-hidden">
         <h2
-          className="text-xs font-bold uppercase tracking-[0.2em] mb-2"
-          style={{ color: "#1E293B", opacity: 0.5 }}
+          className="text-sm font-bold uppercase tracking-[0.25em] mb-3"
+          style={{ color: "#1E293B", opacity: 0.45 }}
         >
           Schedule
         </h2>
-        <div className="flex flex-col gap-0">
+        <div className="flex flex-col h-[calc(100%-32px)]">
           {HOURS.map((label) => (
             <div
               key={label}
-              className="flex items-center"
-              style={{ height: "calc((100% - 20px) / 15)", minHeight: 22 }}
+              className="flex items-center flex-1"
+              style={{ minHeight: 28 }}
             >
               <span
-                className="text-[10px] font-mono shrink-0"
-                style={{ width: 60, color: "#1E293B66" }}
+                className="text-xs font-mono shrink-0"
+                style={{ width: 72, color: "#1E293B55", fontSize: 12 }}
               >
                 {label}
               </span>
               <div
                 className="flex-1 border-b"
-                style={{ borderColor: "#1E293B12" }}
+                style={{ borderColor: "#1E293B14" }}
               />
             </div>
           ))}
