@@ -463,7 +463,7 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
         left: textObj.x, 
         top: textObj.y, 
         width: textObj.width || `calc(100% - ${textObj.x}px - 40px)`, 
-        minWidth: '200px' 
+        minWidth: activeTemplate === 'IDEAL_WEEK' ? '50px' : '200px' 
       }}
       onPointerDown={(e) => e.stopPropagation()}
     >
