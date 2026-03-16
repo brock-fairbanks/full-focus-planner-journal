@@ -169,13 +169,12 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         // Align text baseline to sit perfectly on the border line
         snappedY = (bestRect.bottom - rect.top) - lineHeight + 6; 
       } else if (bestLine.style.backgroundSize) {
-         // It's a grid/lines background
          const match = bestLine.style.backgroundSize.match(/(\d+)px/g);
          if (match && match.length > 0) {
              lineHeight = parseInt(match[match.length - 1]);
              const relativeY = clientY - bestRect.top;
              const gridY = Math.floor(relativeY / lineHeight) * lineHeight;
-             snappedY = gridY + bestRect.top - rect.top - 4; // slight visual offset
+             snappedY = gridY + bestRect.top - rect.top - (lineHeight === 40 ? 12 : 4); 
          }
       }
     }
