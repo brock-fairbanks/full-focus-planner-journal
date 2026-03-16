@@ -7,7 +7,7 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
   const { user } = useAuth();
   
   return (
-    <div className="fixed top-0 left-20 right-0 h-16 flex items-center justify-between px-8 pointer-events-auto z-50 border-b" style={{background: "#2C1F14", borderColor: "#1A120B"}}>
+    <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-8 pointer-events-auto z-50 border-b" style={{background: "#2C1F14", borderColor: "#1A120B"}}>
       {/* Left: Logo and Title */}
       <div className="flex items-center gap-3 min-w-[100px]">
         <div className="flex items-center justify-center w-8 h-8 rounded bg-[#1A120B] border border-[#3e2d1d] shrink-0">

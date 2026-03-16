@@ -66,7 +66,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     <>
       {/* Primary Navigation */}
       <div 
-        className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-50 overflow-y-auto no-scrollbar border-r border-black/20" 
+        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar border-r border-black/20" 
         style={{background: "#1A120B"}}
       >
         <div className="w-full flex-1 flex flex-col">
