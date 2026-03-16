@@ -71,7 +71,12 @@ export default function Planner() {
   const pageKey = `${activeTemplate}${activeTemplate === "DAILY" && subSection ? `_${subSection}` : ''}_${selectedDate.toISOString().split('T')[0]}`;
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-[#F4EFE4]">
+    <div 
+      className="fixed inset-0 w-full h-full bg-[#F4EFE4]"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={() => { pointerStartRef.current = null; }}
+    >
       {/* Sidebar - Highest Z-index */}
       <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTabChange} />
       
