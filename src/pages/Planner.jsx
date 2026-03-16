@@ -52,22 +52,20 @@ export default function Planner() {
   }, [pageKey, existingDrawing]);
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-[#FAF9F6]">
+    <div className="fixed inset-0 overflow-hidden bg-white">
       <PortraitOverlay />
 
-      {/* Layer 1: Navigation */}
-      <div className="relative z-50">
-        <TabBar activeTemplate={activeTemplate} onTemplateChange={setActiveTemplate} />
-        <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
-      </div>
+      {/* Navigation */}
+      <TabBar activeTemplate={activeTemplate} onTemplateChange={setActiveTemplate} />
+      <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
 
-      {/* Layer 2: Template Layout */}
-      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 z-10 overflow-auto">
+      {/* Template Layout */}
+      <div className="fixed left-16 right-0 top-20 bottom-0 z-10 overflow-auto">
         <TemplateRenderer template={activeTemplate} date={selectedDate} />
       </div>
 
-      {/* Layer 3: Drawing Canvas (on top) */}
-      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 z-20 pointer-events-none">
+      {/* Drawing Canvas (overlay) */}
+      <div className="fixed left-16 right-0 top-20 bottom-0 z-20 pointer-events-none">
         <div className="pointer-events-auto w-full h-full">
           <GlobalCanvas
             ref={canvasRef}
