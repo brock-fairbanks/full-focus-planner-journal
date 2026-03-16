@@ -124,7 +124,8 @@ export default function Planner() {
       />
 
       {/* Content Area */}
-      <div className="fixed left-20 right-0 top-16 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-hidden">
+      {/* Content Area */}
+      <div className="fixed left-20 right-0 top-16 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto">
         <div className="relative min-h-full w-full flex flex-col">
           {/* Template Layer (z-10) */}
           <div className="flex-1 w-full z-10 pointer-events-auto">
