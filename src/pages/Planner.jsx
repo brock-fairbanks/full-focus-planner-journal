@@ -72,20 +72,16 @@ export default function Planner() {
       <PortraitOverlay />
 
       {/* Layer 1: Active Anchors (Navigation UI) */}
-      <div className="md:h-20 h-16">
-        <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTemplateChange} />
-      </div>
-      <div className="md:h-16 h-14">
-        <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
-      </div>
+      <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTemplateChange} />
+      <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
 
       {/* Layer 0: Substrate (Static Background) */}
-      <div className="absolute left-20 md:left-24 right-0 md:top-36 top-30 bottom-0 pointer-events-none">
+      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 pointer-events-none">
         <TemplateRenderer template={activeTemplate} date={selectedDate} />
       </div>
 
       {/* Layer 2: Global Canvas (Drawing) */}
-      <div className="absolute left-20 md:left-24 right-0 md:top-36 top-30 bottom-0" style={{ touchAction: "none", pointerEvents: "auto" }}>
+      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0" style={{ touchAction: "none", pointerEvents: "auto" }}>
         <GlobalCanvas
           ref={canvasRef}
           onSave={handleSaveInk}
