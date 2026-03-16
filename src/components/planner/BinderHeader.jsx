@@ -18,9 +18,9 @@ export default function BinderHeader({ activeTab, onTabChange, dateLabel }) {
       }}
     >
       <div className="flex items-center gap-3">
-        <BookOpen className="w-6 h-6 text-amber-400" />
+        <BookOpen className="w-8 h-8 text-amber-400" />
         <span
-          className="text-lg font-bold tracking-widest uppercase"
+          className="text-xl font-bold tracking-widest uppercase"
           style={{ color: "#f59e0b" }}
         >
           Executive OS
@@ -32,7 +32,7 @@ export default function BinderHeader({ activeTab, onTabChange, dateLabel }) {
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className="px-5 py-1.5 rounded-t-lg text-sm font-semibold transition-all duration-200"
+            className="px-7 py-2.5 rounded-t-lg text-base font-semibold transition-all duration-200"
             style={{
               background: activeTab === t.key ? "#f59e0b" : "transparent",
               color: activeTab === t.key ? "#1a120b" : "#f59e0b99",
@@ -44,7 +44,7 @@ export default function BinderHeader({ activeTab, onTabChange, dateLabel }) {
         ))}
       </div>
 
-      <div className="text-amber-200/70 text-sm font-medium tracking-wide">
+      <div className="text-amber-200/70 text-base font-medium tracking-wide">
         {dateLabel}
       </div>
     </div>

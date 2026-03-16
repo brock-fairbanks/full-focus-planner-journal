@@ -27,7 +27,7 @@ export default function InkCanvas({ savedImageData, onSave }) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.strokeStyle = "#1E293B";
     ctxRef.current = ctx;
     return ctx;
