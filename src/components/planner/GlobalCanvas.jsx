@@ -335,7 +335,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
 
       // Scratch-out detection (zigzag back and forth)
       // Increased thresholds significantly to prevent mistaking cursive handwriting for a scratch-out
-      if (xReversals >= 8 && width > 20 && height > 10 && pts.length > 50) {
+      if (xReversals >= 12 && width > 30 && height > 10 && pts.length > 100) {
         if (preStrokeStateRef.current) {
           ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
         }
