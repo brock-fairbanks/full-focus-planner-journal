@@ -1,0 +1,9 @@
+html, body, #root {
+  overflow: hidden !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  -webkit-overflow-scrolling: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
