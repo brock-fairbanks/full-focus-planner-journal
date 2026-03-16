@@ -39,8 +39,14 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced }) {
       {/* Right: Sync Status */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 min-h-[44px]">
-          <PenTool size={18} style={{color: isSynced ? "#f59e0b" : "#d4af37", animation: !isSynced ? "pulse 1.5s ease-in-out infinite" : "none"}} />
-          <span style={{fontSize: "12px", color: isSynced ? "#f59e0b" : "#d4af37", fontWeight: "500"}}>
+          <ShieldCheck 
+            size={18} 
+            style={{
+              color: isSynced ? "#B8956A" : "#8B7355",
+              animation: !isSynced ? "pulse 2s ease-in-out infinite" : "none"
+            }} 
+          />
+          <span style={{fontSize: "12px", color: isSynced ? "#B8956A" : "#8B7355", fontWeight: "500"}}>
             {isSynced ? "Synced" : "Syncing..."}
           </span>
         </div>
