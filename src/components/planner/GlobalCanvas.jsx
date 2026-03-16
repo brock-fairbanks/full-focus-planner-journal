@@ -105,12 +105,17 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const startDrawing = (e) => {
     if (e.pointerType !== 'pen') return;
     isDrawing.current = true;
+    isErasing.current = e.buttons === 32; // Secondary button (eraser)
     const rect = canvasRef.current.getBoundingClientRect();
-    ctxRef.current.strokeStyle = '#1e293b';
-    ctxRef.current.lineWidth = 2.2;
-    ctxRef.current.lineCap = 'round';
-    ctxRef.current.beginPath();
-    ctxRef.current.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    if (isErasing.current) {
+      ctxRef.current.clearRect(e.clientX - rect.left - 10, e.clientY - rect.top - 10, 20, 20);
+    } else {
+      ctxRef.current.strokeStyle = '#1e293b';
+      ctxRef.current.lineWidth = 2.2;
+      ctxRef.current.lineCap = 'round';
+      ctxRef.current.beginPath();
+      ctxRef.current.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
   };
 
   const draw = (e) => {
