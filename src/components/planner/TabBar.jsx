@@ -72,7 +72,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     <>
       {/* Primary Navigation */}
       <div 
-        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-4 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar border-r border-black/20" 
+        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-4 pb-2 pointer-events-auto z-40 overflow-hidden border-r border-black/20" 
         style={{background: "#1A120B"}}
       >
         <div className="w-full flex flex-col items-center justify-center pb-4 mb-2 border-b border-[#3e2d1d]/50 shrink-0">
@@ -87,7 +87,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
           </span>
         </div>
         <div className="w-full flex-1 flex flex-col">
-          <Reorder.Group axis="y" values={tabs} onReorder={handleReorder} className="w-full">
+          <Reorder.Group axis="y" values={tabs} onReorder={handleReorder} className="w-full h-full flex flex-col">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTemplate === tab.id;
@@ -95,12 +95,12 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                 <Reorder.Item 
                   key={tab.id} 
                   value={tab} 
-                  className="w-full cursor-grab active:cursor-grabbing"
+                  className="w-full cursor-grab active:cursor-grabbing flex-1 flex flex-col"
                   dragConstraints={{ top: 0, bottom: 0 }}
                 >
                   <button
                     onClick={() => onTemplateChange(tab.id)}
-                    className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
+                    className="relative flex flex-col items-center justify-center w-full flex-1 min-h-0 transition-all duration-200 gap-1 select-none py-1"
                     title={tab.label}
                     style={{
                       color: isActive ? "#F97316" : "#8B7355",
@@ -108,10 +108,10 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                       textShadow: isActive ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
                     }}
                   >
-                    <Icon size={22} style={{ filter: isActive ? "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" : "none" }} />
-                    <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
+                    <Icon size={18} style={{ filter: isActive ? "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" : "none" }} />
+                    <span className="text-[9px] font-medium tracking-wide uppercase">{tab.label}</span>
                     {isActive && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1" style={{
                         background: "#F97316",
                         boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)"
                       }} />
@@ -122,13 +122,13 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
             })}
           </Reorder.Group>
         </div>
-        <div className="w-full flex flex-col items-center justify-center pt-4 mt-auto border-t border-[#3e2d1d]/50 shrink-0">
+        <div className="w-full flex flex-col items-center justify-center pt-2 mt-auto border-t border-[#3e2d1d]/50 shrink-0">
           <button
             onClick={() => base44.auth.logout()}
-            className="flex flex-col items-center justify-center w-full h-16 transition-all duration-200 gap-1 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
+            className="flex flex-col items-center justify-center w-full h-12 transition-all duration-200 gap-1 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
             title="Logout"
           >
-            <LogOut size={20} />
+            <LogOut size={16} />
             <span className="text-[9px] font-medium tracking-wide uppercase">Logout</span>
           </button>
         </div>
