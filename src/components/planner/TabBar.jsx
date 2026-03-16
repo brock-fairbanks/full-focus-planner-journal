@@ -62,113 +62,91 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     localStorage.setItem("planner_tabs_order", JSON.stringify(newOrder.map(t => ({ id: t.id, label: t.label }))));
   };
 
-  if (activeTemplate === "JOURNAL") {
-    return (
-      <div 
-        className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center py-6 pointer-events-auto z-50 justify-between" 
-        style={{background: "#1A120B"}}
-      >
-        <div className="w-full flex flex-col">
+  return (
+    <div 
+      className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-50 overflow-y-auto no-scrollbar" 
+      style={{background: "#1A120B"}}
+    >
+      <div className="w-full flex-1 flex flex-col">
+        <Reorder.Group axis="y" values={tabs} onReorder={handleReorder} className="w-full">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTemplate === tab.id;
+            return (
+              <Reorder.Item 
+                key={tab.id} 
+                value={tab} 
+                className="w-full cursor-grab active:cursor-grabbing"
+                dragConstraints={{ top: 0, bottom: 0 }}
+              >
+                <button
+                  onClick={() => onTemplateChange(tab.id)}
+                  className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
+                  title={tab.label}
+                  style={{
+                    color: isActive ? "#F97316" : "#8B7355",
+                    backgroundColor: isActive ? "rgba(249, 115, 22, 0.1)" : "transparent",
+                    textShadow: isActive ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
+                  }}
+                >
+                  <Icon size={22} style={{ filter: isActive ? "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" : "none" }} />
+                  <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{
+                      background: "#F97316",
+                      boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)"
+                    }} />
+                  )}
+                </button>
+              </Reorder.Item>
+            );
+          })}
+        </Reorder.Group>
+      </div>
+
+      {/* Journal Modes Sub-Menu */}
+      {activeTemplate === "JOURNAL" && (
+        <div className="w-full flex flex-col mt-4 border-t border-[#3e2d1d] pt-2">
           <button
             onClick={() => onJournalModeChange("DAILY")}
-            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
+            className="relative flex flex-col items-center justify-center w-full h-16 transition-all duration-200 gap-1 select-none hover:bg-white/5"
             style={{
               color: journalMode === "DAILY" ? "#F97316" : "#8B7355",
-              backgroundColor: journalMode === "DAILY" ? "rgba(249, 115, 22, 0.1)" : "transparent",
-              textShadow: journalMode === "DAILY" ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
             }}
           >
-            <span className="text-[11px] font-medium tracking-wide">DAILY</span>
+            <span className="text-[10px] font-medium tracking-wide">DAILY</span>
             {journalMode === "DAILY" && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
             )}
           </button>
           
           <button
             onClick={() => onJournalModeChange("WEEKEND")}
-            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
+            className="relative flex flex-col items-center justify-center w-full h-16 transition-all duration-200 gap-1 select-none hover:bg-white/5"
             style={{
               color: journalMode === "WEEKEND" ? "#F97316" : "#8B7355",
-              backgroundColor: journalMode === "WEEKEND" ? "rgba(249, 115, 22, 0.1)" : "transparent",
-              textShadow: journalMode === "WEEKEND" ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
             }}
           >
-            <span className="text-[11px] font-medium tracking-wide">WKND</span>
+            <span className="text-[10px] font-medium tracking-wide">WKND</span>
             {journalMode === "WEEKEND" && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
             )}
           </button>
 
           <button
             onClick={() => onJournalModeChange("ANNUAL")}
-            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
+            className="relative flex flex-col items-center justify-center w-full h-16 transition-all duration-200 gap-1 select-none hover:bg-white/5"
             style={{
               color: journalMode === "ANNUAL" ? "#F97316" : "#8B7355",
-              backgroundColor: journalMode === "ANNUAL" ? "rgba(249, 115, 22, 0.1)" : "transparent",
-              textShadow: journalMode === "ANNUAL" ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
             }}
           >
-            <span className="text-[11px] font-medium tracking-wide">ANNUAL</span>
+            <span className="text-[10px] font-medium tracking-wide">ANNUAL</span>
             {journalMode === "ANNUAL" && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
             )}
           </button>
         </div>
-
-        <button
-          onClick={() => onTemplateChange("DAILY")}
-          className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none hover:bg-white/5 mt-auto border-t border-[#3e2d1d]"
-          title="Back to Planner"
-          style={{
-            color: "#8B7355",
-          }}
-        >
-          <Calendar size={22} />
-          <span className="text-[10px] font-medium tracking-wide uppercase mt-1">Planner</span>
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div 
-      className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center py-6 pointer-events-auto z-50" 
-      style={{background: "#1A120B"}}
-    >
-      <Reorder.Group axis="y" values={tabs} onReorder={handleReorder} className="w-full">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTemplate === tab.id;
-          return (
-            <Reorder.Item 
-              key={tab.id} 
-              value={tab} 
-              className="w-full cursor-grab active:cursor-grabbing"
-              dragConstraints={{ top: 0, bottom: 0 }}
-            >
-              <button
-                onClick={() => onTemplateChange(tab.id)}
-                className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
-                title={tab.label}
-                style={{
-                  color: isActive ? "#F97316" : "#8B7355",
-                  backgroundColor: isActive ? "rgba(249, 115, 22, 0.1)" : "transparent",
-                  textShadow: isActive ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
-                }}
-              >
-                <Icon size={22} style={{ filter: isActive ? "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" : "none" }} />
-                <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{
-                    background: "#F97316",
-                    boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)"
-                  }} />
-                )}
-              </button>
-            </Reorder.Item>
-          );
-        })}
-      </Reorder.Group>
+      )}
     </div>
   );
 }
