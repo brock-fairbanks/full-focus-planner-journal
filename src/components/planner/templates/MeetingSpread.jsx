@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Mic, Square, FileText, Loader2, Sparkles, Trash2 } from "lucide-react";
+import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 export default function MeetingSpread({ date, onClearCanvas }) {
@@ -7,6 +7,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcription, setTranscription] = useState("");
   const [summary, setSummary] = useState("");
+  const [audioUrl, setAudioUrl] = useState(null);
   
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -14,7 +15,10 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      // Use webm format as it's widely supported for web recording
+      const options = { mimeType: 'audio/webm' };
+      const mediaRecorder = new MediaRecorder(stream, options);
+      setAudioUrl(null);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -38,6 +42,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         setIsProcessing(true);
         setIsRecording(false);
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url);
         
         try {
           const file = new File([audioBlob], "meeting_audio.webm", { type: "audio/webm" });
@@ -128,6 +134,20 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             <div className="flex items-center gap-2 text-[#F97316] font-medium">
               <Loader2 size={18} className="animate-spin" />
               Processing Audio...
+            </div>
+          )}
+
+          {audioUrl && !isRecording && !isProcessing && (
+            <div className="flex items-center gap-4 mt-2">
+              <audio controls src={audioUrl} className="h-10" />
+              <a 
+                href={audioUrl} 
+                download="meeting_recording.webm"
+                className="flex items-center gap-2 text-sm font-medium text-[#1e293b] hover:text-[#F97316] bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition-colors"
+              >
+                <Download size={16} />
+                Download Audio
+              </a>
             </div>
           )}
         </div>
