@@ -57,15 +57,8 @@ export default function InkCanvas({ savedImageData, onSave }) {
     saveTimeout.current = setTimeout(() => {
       const canvas = canvasRef.current;
       if (!canvas || !onSave) return;
-      // Composite ink onto white background for saving
-      const offscreen = document.createElement("canvas");
-      offscreen.width = canvas.width;
-      offscreen.height = canvas.height;
-      const offCtx = offscreen.getContext("2d");
-      offCtx.fillStyle = "#FAF9F6";
-      offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
-      offCtx.drawImage(canvas, 0, 0);
-      onSave(offscreen.toDataURL("image/png"));
+      // Save ink-only as transparent PNG
+      onSave(canvas.toDataURL("image/png"));
     }, 1000);
   }, [onSave]);
 
