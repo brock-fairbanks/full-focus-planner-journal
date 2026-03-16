@@ -5,6 +5,7 @@ import QuarterlyGoals from "./templates/QuarterlyGoals.jsx";
 import Rituals from "./templates/Rituals.jsx";
 import WeeklyReview from "./templates/WeeklyReview.jsx";
 import JournalSpread from "./templates/JournalSpread.jsx";
+import MeetingSpread from "./templates/MeetingSpread.jsx";
 
 export default function TemplateRenderer({ template, date, onSubSectionChange, onClearCanvas, journalMode }) {
   const templates = {
@@ -14,6 +15,7 @@ export default function TemplateRenderer({ template, date, onSubSectionChange, o
     RITUALS: <Rituals date={date} onClearCanvas={onClearCanvas} />,
     WEEKLY: <WeeklyReview date={date} onClearCanvas={onClearCanvas} />,
     JOURNAL: <JournalSpread date={date} onSubSectionChange={onSubSectionChange} onClearCanvas={onClearCanvas} journalMode={journalMode} />,
+    MEETING: <MeetingSpread date={date} onClearCanvas={onClearCanvas} />,
   };
 
   const component = templates[template];
