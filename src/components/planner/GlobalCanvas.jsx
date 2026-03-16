@@ -180,8 +180,8 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         // Cap the text box height so large gaps don't create massive text
         lineHeight = Math.min(lineHeight, 40);
         
-        // Align text baseline to sit perfectly on the border line
-        snappedY = (bestRect.bottom - rect.top) - lineHeight + 8; 
+        // Align text box to fit within the cell
+        snappedY = (bestRect.bottom - rect.top) - lineHeight + (lineHeight === 40 ? 0 : 8); 
       } else if (bestLine.style.backgroundSize) {
          const match = bestLine.style.backgroundSize.match(/(\d+)px/g);
          if (match && match.length > 0) {
