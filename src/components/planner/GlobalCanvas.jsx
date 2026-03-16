@@ -25,12 +25,18 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
 
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
+    const width = rect.width || window.innerWidth - 80;
+    const height = rect.height || window.innerHeight - 64;
+    
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
     
     const ctx = canvas.getContext('2d', { desynchronized: true, alpha: true });
+    if (!ctx) return;
+    
     ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, rect.width, rect.height);
+    ctx.fillStyle = 'transparent';
+    ctx.clearRect(0, 0, width, height);
     ctxRef.current = ctx;
 
     // Load saved ink
@@ -38,7 +44,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
-        ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        ctx.drawImage(img, 0, 0, width, height);
       };
       img.src = savedImageData;
     }
