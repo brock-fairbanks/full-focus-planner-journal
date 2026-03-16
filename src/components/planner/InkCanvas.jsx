@@ -160,6 +160,7 @@ export default function InkCanvas({ savedImageData, onSave }) {
         cursor: "crosshair",
         background: "transparent",
         display: "block",
+        pointerEvents: "none",
       }}
     />
   );
