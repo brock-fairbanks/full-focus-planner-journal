@@ -31,26 +31,26 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
   return (
     <div className="flex flex-col w-full min-h-full bg-[#FAF9F6]">
       {/* Secondary Navigation Bar */}
-      <div className="sticky top-0 z-30 flex justify-between border-b border-[#E2E8F0] px-8 pt-4 md:px-12 md:pt-6 h-[64px] md:h-[72px] shrink-0 bg-[#FAF9F6]">
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E2E8F0] px-8 md:px-12 h-[64px] md:h-[72px] shrink-0 bg-[#FAF9F6]">
         <Reorder.Group 
           axis="x" 
           values={tabs} 
           onReorder={handleReorder}
-          className="flex gap-8 h-full"
+          className="flex gap-2 md:gap-4 items-center"
         >
           {tabs.map(tab => (
             <Reorder.Item 
               key={tab} 
               value={tab}
-              className="h-full flex items-end cursor-grab active:cursor-grabbing"
+              className="flex items-center cursor-grab active:cursor-grabbing"
               dragConstraints={{ left: 0, right: 0 }}
             >
               <button
                 onClick={() => setActiveSubSection(tab)}
-                className={`text-lg md:text-xl font-serif font-bold transition-colors pb-3 md:pb-4 border-b-2 h-full flex items-end select-none ${
+                className={`text-sm md:text-base font-serif font-bold transition-all px-4 py-2 rounded-lg select-none shadow-sm ${
                   activeSubSection === tab 
-                    ? "border-[#1e293b] text-[#1e293b]" 
-                    : "border-transparent text-[#94a3b8] hover:text-[#1e293b]"
+                    ? "bg-[#1e293b] text-white border border-[#1e293b]" 
+                    : "bg-white text-[#94a3b8] border border-[#E2E8F0] hover:bg-[#f8fafc] hover:text-[#1e293b]"
                 }`}
               >
                 {tab}
@@ -59,14 +59,14 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
           ))}
         </Reorder.Group>
 
-        <div className="flex items-end pb-3 md:pb-4 ml-4">
+        <div className="flex items-center ml-4">
           <button 
             onClick={onClearCanvas}
-            className="flex items-center gap-1.5 text-sm font-medium text-[#94a3b8] hover:text-red-500 transition-colors bg-transparent px-3 py-1 rounded-md hover:bg-red-50"
+            className="flex items-center gap-1.5 text-sm font-medium text-[#94a3b8] hover:text-red-500 transition-colors bg-white border border-[#E2E8F0] px-3 py-2 rounded-lg hover:bg-red-50 shadow-sm"
             title="Clear entire page"
           >
             <Trash2 size={16} />
-            <span>Clear Page</span>
+            <span className="hidden md:inline">Clear Page</span>
           </button>
         </div>
       </div>
