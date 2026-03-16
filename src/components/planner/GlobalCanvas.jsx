@@ -105,15 +105,26 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     isDrawing.current = false;
   };
 
+  const lastTapPosRef = useRef({ x: 0, y: 0 });
+
   const startDrawing = (e) => {
+    const isPen = e.pointerType === 'pen';
     const now = Date.now();
-    const DOUBLE_TAP_DELAY = 400; // Increased delay to make double click easier
-    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+    const DOUBLE_TAP_DELAY = 400; 
+
+    // Only check double tap if it's not a pen, or if it's a mouse/touch that hasn't moved much
+    const dx = Math.abs(e.clientX - lastTapPosRef.current.x);
+    const dy = Math.abs(e.clientY - lastTapPosRef.current.y);
+    const isSameSpot = dx < 20 && dy < 20;
+
+    if (!isPen && isSameSpot && now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       handleDoubleClickAction(e.clientX, e.clientY);
       lastTapRef.current = 0;
       return;
     }
+    
     lastTapRef.current = now;
+    lastTapPosRef.current = { x: e.clientX, y: e.clientY };
 
     // Prevent drawing with finger (touch), allow stylus/pen and mouse
     if (e.pointerType === 'touch') return;
