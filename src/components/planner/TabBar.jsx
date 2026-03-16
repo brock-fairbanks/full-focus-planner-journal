@@ -109,47 +109,41 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
 
       {/* Secondary Navigation for Journal Modes */}
       {activeTemplate === "JOURNAL" && (
-        <div className="fixed left-20 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-white border-r border-[#E2E8F0] shadow-sm">
+        <div className="fixed left-20 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-white border-r border-[#E2E8F0] shadow-sm gap-4">
           <button
             onClick={() => onJournalModeChange("DAILY")}
-            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1.5 select-none hover:bg-slate-50"
-            style={{
-              color: journalMode === "DAILY" ? "#1e293b" : "#94a3b8",
-            }}
+            className={`flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-200 gap-1.5 select-none ${
+              journalMode === "DAILY" 
+                ? "bg-[#1e293b] text-white shadow-md" 
+                : "bg-white text-[#94a3b8] hover:bg-slate-50 border border-[#E2E8F0]"
+            }`}
           >
-            <Sun size={20} />
-            <span className="text-[10px] font-bold tracking-wide">DAILY</span>
-            {journalMode === "DAILY" && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-1 bg-[#1e293b] rounded-r-md" />
-            )}
+            <Sun size={18} />
+            <span className="text-[9px] font-bold tracking-wide">DAILY</span>
           </button>
           
           <button
             onClick={() => onJournalModeChange("WEEKEND")}
-            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1.5 select-none hover:bg-slate-50"
-            style={{
-              color: journalMode === "WEEKEND" ? "#1e293b" : "#94a3b8",
-            }}
+            className={`flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-200 gap-1.5 select-none ${
+              journalMode === "WEEKEND" 
+                ? "bg-[#1e293b] text-white shadow-md" 
+                : "bg-white text-[#94a3b8] hover:bg-slate-50 border border-[#E2E8F0]"
+            }`}
           >
-            <Coffee size={20} />
-            <span className="text-[10px] font-bold tracking-wide">WKND</span>
-            {journalMode === "WEEKEND" && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-1 bg-[#1e293b] rounded-r-md" />
-            )}
+            <Coffee size={18} />
+            <span className="text-[9px] font-bold tracking-wide">WKND</span>
           </button>
 
           <button
             onClick={() => onJournalModeChange("ANNUAL")}
-            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1.5 select-none hover:bg-slate-50"
-            style={{
-              color: journalMode === "ANNUAL" ? "#1e293b" : "#94a3b8",
-            }}
+            className={`flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-200 gap-1.5 select-none ${
+              journalMode === "ANNUAL" 
+                ? "bg-[#1e293b] text-white shadow-md" 
+                : "bg-white text-[#94a3b8] hover:bg-slate-50 border border-[#E2E8F0]"
+            }`}
           >
-            <CalendarDays size={20} />
-            <span className="text-[10px] font-bold tracking-wide">ANNUAL</span>
-            {journalMode === "ANNUAL" && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-1 bg-[#1e293b] rounded-r-md" />
-            )}
+            <CalendarDays size={18} />
+            <span className="text-[9px] font-bold tracking-wide">ANNUAL</span>
           </button>
         </div>
       )}
