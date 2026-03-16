@@ -97,6 +97,8 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       img.crossOrigin = "anonymous";
       img.onload = () => {
         ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        // Redraw grid on top so it stays visible
+        drawPaperSubstrate(ctx, rect.width, rect.height, activeTemplate);
       };
       img.src = savedImageData;
     }
