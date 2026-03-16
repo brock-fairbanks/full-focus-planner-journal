@@ -68,6 +68,15 @@ export default function Planner() {
 
       {/* Navigation */}
       <TabBar activeTemplate={activeTemplate} onTemplateChange={setActiveTemplate} />
+      <div className="fixed top-4 right-6 z-50 pointer-events-auto">
+        <button
+          onClick={handleClearInk}
+          className="p-2 hover:bg-gray-100 rounded transition-colors"
+          title="Clear ink from this page"
+        >
+          <Trash2 size={18} className="text-gray-600" />
+        </button>
+      </div>
       <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
 
       {/* Template Layout */}
@@ -82,6 +91,7 @@ export default function Planner() {
             ref={canvasRef}
             activeTemplate={activeTemplate}
             onSave={handleSaveInk}
+            onClear={() => canvasRef.current?.clear?.()}
             savedImageData={currentImageData}
             pageKey={pageKey}
           />
