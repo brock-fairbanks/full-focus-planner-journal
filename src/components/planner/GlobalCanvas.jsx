@@ -39,13 +39,14 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       ctx.clearRect(0, 0, width, height);
       ctxRef.current = ctx;
 
-      if (savedImageData && savedImageData !== "null") {
+      const localImageData = savedImageData || localStorage.getItem(`planner_drawing_${pageKey}`);
+      if (localImageData && localImageData !== "null") {
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.onload = () => {
           if (canvasRef.current) ctx.drawImage(img, 0, 0, width, height);
         };
-        img.src = savedImageData;
+        img.src = localImageData;
       }
     };
 
