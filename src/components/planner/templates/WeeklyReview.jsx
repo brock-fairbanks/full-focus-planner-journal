@@ -34,12 +34,12 @@ export default function WeeklyReview({ date }) {
             {page.subtitle}
           </p>
 
-          {/* Content area with dot grid */}
+          {/* Content area with lines */}
           <div
-            className="flex-1"
+            className="flex-1 mt-2"
             style={{
-              backgroundImage: `radial-gradient(circle, #E2E8F0 1px, transparent 1px)`,
-              backgroundSize: "20px 20px",
+              backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 31px, #E2E8F0 32px)`,
+              backgroundSize: "100% 32px",
               backgroundPosition: "0 0",
             }}
           />
