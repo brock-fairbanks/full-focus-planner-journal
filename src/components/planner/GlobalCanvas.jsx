@@ -383,7 +383,7 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isEditing && textareaRef.current) {
       textareaRef.current.focus();
     }
@@ -394,7 +394,7 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
     setVal(e.target.value);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     resizeTextarea();
   }, [val]);
 
