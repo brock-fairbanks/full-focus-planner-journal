@@ -215,7 +215,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       }
     });
     
-    if (pointerType !== 'touch' && preStrokeStateRef.current && ctxRef.current) {
+    if (doubleTapSnapshotRef.current && ctxRef.current) {
+      ctxRef.current.putImageData(doubleTapSnapshotRef.current, 0, 0);
+    } else if (pointerType !== 'touch' && preStrokeStateRef.current && ctxRef.current) {
       ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
     }
     isDrawing.current = false;
