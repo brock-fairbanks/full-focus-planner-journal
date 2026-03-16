@@ -408,6 +408,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         <TextItem 
           key={textObj.id} 
           textObj={textObj} 
+          activeTemplate={activeTemplate}
           updateText={(id, updated) => updateTextsState(prev => prev.map(t => t.id === id ? updated : t))}
           deleteText={(id) => updateTextsState(prev => prev.filter(t => t.id !== id))}
         />
@@ -416,7 +417,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   );
 });
 
-const TextItem = ({ textObj, updateText, deleteText }) => {
+const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
   const [isEditing, setIsEditing] = useState(textObj.isEditing);
   const [val, setVal] = useState(textObj.text);
   const textareaRef = useRef(null);
@@ -476,7 +477,7 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
         className="w-full bg-transparent outline-none resize-none overflow-hidden"
         style={{
           lineHeight: `${lh}px`,
-          fontSize: `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
+          fontSize: activeTemplate === 'IDEAL_WEEK' ? `${Math.max(12, Math.min(22, Math.round(lh * 0.6)))}px` : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
           fontFamily: "'Caveat', cursive",
           color: '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
