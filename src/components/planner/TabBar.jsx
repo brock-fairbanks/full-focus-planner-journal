@@ -91,7 +91,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                     className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
                     title={tab.label}
                     style={{
-                      color: isActive ? "#9e2a2b" : "rgba(0,0,0,0.5)",
+                      color: isActive ? "#ff8c00" : "#d32f2f",
                       backgroundColor: "transparent",
                       textShadow: isActive 
                         ? "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.2)" 
@@ -106,8 +106,8 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                     <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
                     {isActive && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{
-                        background: "#9e2a2b",
-                        boxShadow: "0 0 8px 1px rgba(158, 42, 43, 0.5)"
+                        background: "#ff8c00",
+                        boxShadow: "0 0 8px 1px rgba(255, 140, 0, 0.5)"
                       }} />
                     )}
                   </button>
