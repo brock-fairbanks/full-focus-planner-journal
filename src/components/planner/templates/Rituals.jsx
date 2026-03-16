@@ -3,9 +3,9 @@ import { Sun, Moon } from "lucide-react";
 
 export default function Rituals({ date }) {
   return (
-    <div className="flex min-h-full w-full gap-0 p-8 bg-[#FAF9F6]">
+    <div className="flex flex-col md:flex-row min-h-full w-full gap-8 md:gap-0 p-4 md:p-8 bg-[#FAF9F6]">
       {/* Morning Startup */}
-      <div className="flex-1 flex flex-col border-r border-[#E2E8F0]">
+      <div className="flex-1 flex flex-col md:border-r border-[#E2E8F0] md:pr-8">
         <div className="flex items-center gap-3 mb-8">
           <Sun size={28} style={{ color: "#f59e0b" }} />
           <h2 className="text-2xl font-serif font-bold" style={{ color: "#1e293b" }}>
@@ -22,7 +22,7 @@ export default function Rituals({ date }) {
       </div>
 
       {/* Evening Shutdown */}
-      <div className="flex-1 flex flex-col pl-8">
+      <div className="flex-1 flex flex-col md:pl-8">
         <div className="flex items-center gap-3 mb-8">
           <Moon size={28} style={{ color: "#8b5cf6" }} />
           <h2 className="text-2xl font-serif font-bold" style={{ color: "#1e293b" }}>

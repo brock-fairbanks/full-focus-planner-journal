@@ -5,12 +5,12 @@ export default function IdealWeek({ date }) {
   const HOURS = Array.from({ length: 19 }, (_, i) => 5 + i); // 5 AM to 11 PM
 
   return (
-    <div className="w-full min-h-full p-8" style={{ background: "#FAF9F6" }}>
+    <div className="w-full min-h-full p-4 md:p-8" style={{ background: "#FAF9F6" }}>
       <h1 className="text-3xl font-serif font-bold mb-6" style={{ color: "#1e293b" }}>
         Ideal Week
       </h1>
 
-      <div className="flex gap-2 text-[11px] font-bold">
+      <div className="flex gap-2 text-[11px] font-bold min-w-[800px] md:min-w-0">
         {/* Time column */}
         <div className="w-16 shrink-0">
           {HOURS.map((hour) => (

@@ -2,7 +2,7 @@ import React from "react";
 
 export default function QuarterlyGoals() {
   return (
-    <div className="w-full min-h-full p-8 grid grid-cols-2 gap-8" style={{ background: "#FAF9F6" }}>
+    <div className="w-full min-h-full p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8" style={{ background: "#FAF9F6" }}>
       <h1 className="col-span-2 text-3xl font-serif font-bold" style={{ color: "#1e293b" }}>
         Quarterly Goals
       </h1>
