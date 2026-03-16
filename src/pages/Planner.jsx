@@ -37,7 +37,7 @@ export default function Planner() {
     navigate(pathMap[templateId] || "/today");
   };
 
-  const pageKey = `${activeTemplate}_${new Date().toISOString().split('T')[0]}`;
+  const pageKey = `${activeTemplate}${subSection ? `_${subSection}` : ''}_${new Date().toISOString().split('T')[0]}`;
 
   return (
     <div className="fixed inset-0 w-full h-full bg-[#F4EFE4]">
@@ -47,12 +47,12 @@ export default function Planner() {
       {/* Content Area */}
       <div className="fixed left-20 right-0 top-0 bottom-0 bg-[#FAF9F6]">
         {/* Template Layer (z-10) */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
-          <TemplateRenderer template={activeTemplate} date={new Date()} />
+        <div className="absolute inset-0 z-10 pointer-events-none [&_button]:pointer-events-auto">
+          <TemplateRenderer template={activeTemplate} date={new Date()} onSubSectionChange={setSubSection} />
         </div>
         
         {/* Drawing Layer (z-20) */}
-        <div className="absolute inset-0 z-20 pointer-events-auto">
+        <div className={`absolute inset-x-0 bottom-0 z-20 pointer-events-auto ${activeTemplate === "DAILY" ? "top-[72px]" : "top-0"}`}>
           {/* FIXED: Using standard 'ref' instead of 'ref__' */}
           <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} />
         </div>
