@@ -42,7 +42,7 @@ const ICONS_MAP = {
   WEEKLY: WeeklyIcon
 };
 
-export default function TabBar({ activeTemplate, onTemplateChange }) {
+export default function TabBar({ activeTemplate, onTemplateChange, journalMode, onJournalModeChange }) {
   const [tabs, setTabs] = useState(() => {
     const saved = localStorage.getItem("planner_tabs_order");
     if (saved) {
@@ -65,19 +65,65 @@ export default function TabBar({ activeTemplate, onTemplateChange }) {
   if (activeTemplate === "JOURNAL") {
     return (
       <div 
-        className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center py-6 pointer-events-auto z-50" 
+        className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center py-6 pointer-events-auto z-50 justify-between" 
         style={{background: "#1A120B"}}
       >
+        <div className="w-full flex flex-col">
+          <button
+            onClick={() => onJournalModeChange("DAILY")}
+            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
+            style={{
+              color: journalMode === "DAILY" ? "#F97316" : "#8B7355",
+              backgroundColor: journalMode === "DAILY" ? "rgba(249, 115, 22, 0.1)" : "transparent",
+              textShadow: journalMode === "DAILY" ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
+            }}
+          >
+            <span className="text-[11px] font-medium tracking-wide">DAILY</span>
+            {journalMode === "DAILY" && (
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
+            )}
+          </button>
+          
+          <button
+            onClick={() => onJournalModeChange("WEEKEND")}
+            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
+            style={{
+              color: journalMode === "WEEKEND" ? "#F97316" : "#8B7355",
+              backgroundColor: journalMode === "WEEKEND" ? "rgba(249, 115, 22, 0.1)" : "transparent",
+              textShadow: journalMode === "WEEKEND" ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
+            }}
+          >
+            <span className="text-[11px] font-medium tracking-wide">WKND</span>
+            {journalMode === "WEEKEND" && (
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
+            )}
+          </button>
+
+          <button
+            onClick={() => onJournalModeChange("ANNUAL")}
+            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
+            style={{
+              color: journalMode === "ANNUAL" ? "#F97316" : "#8B7355",
+              backgroundColor: journalMode === "ANNUAL" ? "rgba(249, 115, 22, 0.1)" : "transparent",
+              textShadow: journalMode === "ANNUAL" ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
+            }}
+          >
+            <span className="text-[11px] font-medium tracking-wide">ANNUAL</span>
+            {journalMode === "ANNUAL" && (
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
+            )}
+          </button>
+        </div>
+
         <button
           onClick={() => onTemplateChange("DAILY")}
-          className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none hover:bg-white/5"
+          className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none hover:bg-white/5 mt-auto border-t border-[#3e2d1d]"
           title="Back to Planner"
           style={{
-            color: "#F97316",
-            textShadow: "0 0 8px rgba(249, 115, 22, 0.6)",
+            color: "#8B7355",
           }}
         >
-          <Calendar size={22} style={{ filter: "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" }} />
+          <Calendar size={22} />
           <span className="text-[10px] font-medium tracking-wide uppercase mt-1">Planner</span>
         </button>
       </div>

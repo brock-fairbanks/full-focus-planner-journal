@@ -33,6 +33,14 @@ export default function Planner() {
     setActiveTemplate(getTemplateFromPath(location.pathname));
   }, [location.pathname, getTemplateFromPath]);
 
+  useEffect(() => {
+    const isYearEnd = selectedDate.getMonth() === 11 && selectedDate.getDate() >= 25;
+    const isWknd = selectedDate.getDay() === 0 || selectedDate.getDay() === 6;
+    if (isYearEnd) setJournalMode("ANNUAL");
+    else if (isWknd) setJournalMode("WEEKEND");
+    else setJournalMode("DAILY");
+  }, [selectedDate]);
+
   // Global Palm Rejection
   useEffect(() => {
     const handlePointer = (e) => {
@@ -135,7 +143,12 @@ export default function Planner() {
       onPointerCancel={() => { pointerStartRef.current = null; }}
     >
       {/* Sidebar - Highest Z-index */}
-      <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTabChange} />
+      <TabBar 
+        activeTemplate={activeTemplate} 
+        onTemplateChange={handleTabChange} 
+        journalMode={journalMode}
+        onJournalModeChange={setJournalMode}
+      />
       
       <HeaderBar 
         selectedDate={selectedDate} 
@@ -149,7 +162,7 @@ export default function Planner() {
         <div className="relative min-h-full w-full flex flex-col">
           {/* Template Layer */}
           <div className="flex-1 w-full pointer-events-auto">
-            <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} />
+            <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} journalMode={journalMode} />
           </div>
           
           {/* Drawing Layer (z-20) */}

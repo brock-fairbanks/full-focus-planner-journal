@@ -1,26 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, MapPin, CloudSun, History, Compass, Sparkles, Mail } from "lucide-react";
-import { format, isWeekend, endOfMonth, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 
-export default function JournalSpread({ date, onSubSectionChange, onClearCanvas }) {
+export default function JournalSpread({ date, onSubSectionChange, onClearCanvas, journalMode = "DAILY" }) {
   const currentDate = date || new Date();
-  
-  // Detect layout mode
-  const isMonthEnd = differenceInDays(endOfMonth(currentDate), currentDate) <= 2; // Last 3 days of month
-  const isYearEnd = currentDate.getMonth() === 11 && currentDate.getDate() >= 25; // Last week of December
-  const isWknd = isWeekend(currentDate);
 
-  const [layoutMode, setLayoutMode] = useState("DAILY"); // DAILY, WEEKEND, ANNUAL
-  
-  useEffect(() => {
-    if (isYearEnd) {
-      setLayoutMode("ANNUAL");
-    } else if (isWknd) {
-      setLayoutMode("WEEKEND");
-    } else {
-      setLayoutMode("DAILY");
-    }
-  }, [currentDate, isYearEnd, isWknd]);
+  const layoutMode = journalMode;
 
   const LAYOUT_TABS = {
     DAILY: ["The Story", "Processing", "Gratitude", "Insights"],
@@ -107,18 +92,6 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas 
 
   return (
     <div className="flex flex-col w-full min-h-full bg-[#FAF9F6]">
-      {/* Mode Switcher Banner */}
-      <div className="bg-[#1e293b] text-white px-8 md:px-12 py-3 flex flex-wrap gap-4 justify-between items-center text-sm font-medium z-40 relative shadow-md">
-        <span>
-          {isYearEnd ? "It's the end of the year." : isWknd ? "It's the weekend." : "Journal Mode"} What would you like to reflect on?
-        </span>
-        <div className="flex gap-2">
-          <button onClick={() => setLayoutMode("DAILY")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "DAILY" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Daily</button>
-          <button onClick={() => setLayoutMode("WEEKEND")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "WEEKEND" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Weekend</button>
-          <button onClick={() => setLayoutMode("ANNUAL")} className={`px-4 py-1.5 rounded-md transition-colors ${layoutMode === "ANNUAL" ? "bg-white text-[#1e293b]" : "text-white/70 hover:text-white hover:bg-white/10"}`}>Annual</button>
-        </div>
-      </div>
-
       {/* Secondary Navigation Bar */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E2E8F0] px-8 md:px-12 h-[64px] md:h-[72px] shrink-0 bg-[#FAF9F6]">
         <div className="flex gap-2 md:gap-4 items-center">
