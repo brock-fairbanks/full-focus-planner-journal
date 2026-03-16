@@ -4,76 +4,79 @@ export default function InkCanvas({ savedImageData, onSave }) {
   const canvasRef = useRef(null);
   const isDrawing = useRef(false);
   const saveTimeout = useRef(null);
-  const hasLoaded = useRef(false);
+  const ctxRef = useRef(null);
 
-  // Initialize canvas with HiDPI support
-  const initCanvas = useCallback(() => {
+  const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return null;
     const parent = canvas.parentElement;
+    if (!parent) return null;
     const rect = parent.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
+    if (!rect.width || !rect.height) return null;
 
+    const dpr = window.devicePixelRatio || 1;
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     canvas.style.width = rect.width + "px";
     canvas.style.height = rect.height + "px";
 
     const ctx = canvas.getContext("2d", { desynchronized: true });
-    ctx.scale(dpr, dpr);
+    // Reset transform before scaling to avoid compounding
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.lineWidth = 2;
     ctx.strokeStyle = "#1E293B";
-
+    ctxRef.current = ctx;
     return ctx;
   }, []);
 
-  // Load saved image (ink only — transparent bg)
-  const loadImage = useCallback(() => {
-    if (!savedImageData || hasLoaded.current) return;
+  const loadImage = useCallback((ctx) => {
+    if (!savedImageData) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
-      const ctx = canvas.getContext("2d", { desynchronized: true });
-      // Clear first, then draw ink layer only
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.globalCompositeOperation = "source-over";
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       ctx.restore();
-      hasLoaded.current = true;
     };
     img.src = savedImageData;
   }, [savedImageData]);
 
-  // Debounced save
   const debouncedSave = useCallback(() => {
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
       const canvas = canvasRef.current;
       if (!canvas || !onSave) return;
-      const dataUrl = canvas.toDataURL("image/png");
-      onSave(dataUrl);
+      onSave(canvas.toDataURL("image/png"));
     }, 1000);
   }, [onSave]);
 
+  // Initial setup + load image
   useEffect(() => {
-    const ctx = initCanvas();
+    const ctx = setupCanvas();
     if (!ctx) return;
-    loadImage();
+    loadImage(ctx);
+  }, [savedImageData]); // re-run when tab changes (savedImageData changes)
 
+  // Event listeners (stable, only mount/unmount once)
+  useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const getCtx = () => ctxRef.current;
 
     const handlePointerDown = (e) => {
       if (e.pointerType !== "pen" && e.pointerType !== "mouse") return;
       e.preventDefault();
       isDrawing.current = true;
       const rect = canvas.getBoundingClientRect();
+      const ctx = getCtx();
+      if (!ctx) return;
       ctx.beginPath();
       ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
     };
@@ -83,47 +86,42 @@ export default function InkCanvas({ savedImageData, onSave }) {
       if (e.pointerType !== "pen" && e.pointerType !== "mouse") return;
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
+      const ctx = getCtx();
+      if (!ctx) return;
       ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
       ctx.stroke();
     };
 
     const handlePointerUp = (e) => {
       if (!isDrawing.current) return;
-      if (e.pointerType !== "pen" && e.pointerType !== "mouse") return;
       isDrawing.current = false;
-      ctx.closePath();
+      const ctx = getCtx();
+      if (ctx) ctx.closePath();
       debouncedSave();
+    };
+
+    const handleResize = () => {
+      const canvas = canvasRef.current;
+      if (!canvas || !canvas.width || !canvas.height) return;
+      // Snapshot current ink
+      const snap = canvas.toDataURL("image/png");
+      const ctx = setupCanvas();
+      if (!ctx) return;
+      // Restore ink after resize
+      const img = new Image();
+      img.onload = () => {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      };
+      img.src = snap;
     };
 
     canvas.addEventListener("pointerdown", handlePointerDown);
     canvas.addEventListener("pointermove", handlePointerMove);
     canvas.addEventListener("pointerup", handlePointerUp);
     canvas.addEventListener("pointerleave", handlePointerUp);
-
-    const handleResize = () => {
-      if (!canvas.width || !canvas.height) return;
-
-      // Save current content
-      const tempCanvas = document.createElement("canvas");
-      tempCanvas.width = canvas.width;
-      tempCanvas.height = canvas.height;
-      const tempCtx = tempCanvas.getContext("2d");
-      if (tempCtx && canvas.width > 0 && canvas.height > 0) {
-        tempCtx.drawImage(canvas, 0, 0);
-      }
-
-      initCanvas();
-
-      // Restore content
-      if (tempCanvas.width > 0 && tempCanvas.height > 0) {
-        const newCtx = canvas.getContext("2d", { desynchronized: true });
-        newCtx.save();
-        newCtx.setTransform(1, 0, 0, 1, 0, 0);
-        newCtx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
-        newCtx.restore();
-      }
-    };
-
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -134,27 +132,17 @@ export default function InkCanvas({ savedImageData, onSave }) {
       window.removeEventListener("resize", handleResize);
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
     };
-  }, [initCanvas, loadImage, debouncedSave]);
-
-  // When savedImageData changes (tab switch), reload
-  useEffect(() => {
-    hasLoaded.current = false;
-    const ctx = initCanvas();
-    if (!ctx) return;
-    if (savedImageData) {
-      loadImage();
-    }
-  }, [savedImageData, initCanvas, loadImage]);
+  }, [setupCanvas, debouncedSave]);
 
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
+      className="absolute inset-0"
       style={{
         touchAction: "none",
         cursor: "crosshair",
         background: "transparent",
-        opacity: 1,
+        display: "block",
       }}
     />
   );
