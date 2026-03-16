@@ -86,7 +86,7 @@ export default function Planner() {
       </div>
 
       {/* Drawing Canvas (overlay) */}
-      <div className="fixed left-20 right-0 top-16 bottom-0 z-30 pointer-events-none">
+      {false && <div className="fixed left-20 right-0 top-16 bottom-0 z-30 pointer-events-none">
 
         <div className="pointer-events-auto w-full h-full">
           <GlobalCanvas
@@ -98,7 +98,7 @@ export default function Planner() {
             pageKey={pageKey}
           />
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
