@@ -20,6 +20,7 @@ export default function Planner() {
   }, []);
 
   const [activeTemplate, setActiveTemplate] = useState(getTemplateFromPath(location.pathname));
+  const [subSection, setSubSection] = useState("");
 
   useEffect(() => {
     setActiveTemplate(getTemplateFromPath(location.pathname));
