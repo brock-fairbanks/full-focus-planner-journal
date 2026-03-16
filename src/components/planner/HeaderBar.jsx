@@ -15,23 +15,12 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
     }}>
       {/* Left: Logo and Title */}
       <div className="flex items-center h-full min-w-[280px]">
-        <div className="flex items-center justify-center w-36 h-full shrink-0 relative overflow-hidden ml-4 mr-1" style={{
-           maskImage: "radial-gradient(ellipse 80% 80% at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)",
-           WebkitMaskImage: "radial-gradient(ellipse 80% 80% at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)"
-        }}>
-          <img 
-            src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/8fdb2cd49_Gemini_Generated_Image_u8sxr4u8sxr4u8sx1920x1080.png" 
-            alt="Fairbanks Builders Logo" 
-            className="w-full h-full object-contain scale-[1.4]"
-            style={{ 
-              mixBlendMode: "screen",
-              filter: "contrast(2.2) brightness(0.9) saturate(1.3)"
-            }}
-          />
+        <div className="flex items-center justify-center w-12 h-full shrink-0 ml-4 mr-2">
+          <Compass size={32} style={{ color: "#f5deb3", dropShadow: "0 2px 4px rgba(0,0,0,0.5)" }} />
         </div>
-        <div className="flex flex-col ml-[-20px] z-10">
-          <span className="text-[#f5deb3] font-serif font-bold text-lg leading-tight tracking-wide whitespace-nowrap drop-shadow-md">
-            Fairbanks Builders
+        <div className="flex flex-col z-10">
+          <span className="text-[#f5deb3] font-serif font-bold text-xl leading-tight tracking-wide whitespace-nowrap drop-shadow-md">
+            Full Focus
           </span>
           <span 
             className="text-[10px] uppercase tracking-widest font-bold leading-none"
