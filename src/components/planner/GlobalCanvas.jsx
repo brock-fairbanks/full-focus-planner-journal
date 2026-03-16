@@ -89,7 +89,12 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     // Smart Line Snapping: Find the nearest line-like element
     const lineElements = Array.from(document.querySelectorAll(
       '.border-b, .border-b-2, .border-b-4, .border-b-dashed, [style*="gradient"]'
-    ));
+    )).filter(el => {
+       // Filter out structural containers that just happen to have a bottom border
+       if (el.children.length > 0 && !el.style.backgroundImage) return false;
+       if (el.tagName.toLowerCase() === 'button' || el.closest('button')) return false;
+       return true;
+    });
 
     let minDistance = Infinity;
     let bestLine = null;
@@ -98,18 +103,20 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       const elRect = el.getBoundingClientRect();
       if (elRect.width === 0) continue;
 
-      if (clientX >= elRect.left - 40 && clientX <= elRect.right + 40) {
-        let dist;
-        if (clientY >= elRect.top - 10 && clientY <= elRect.bottom + 10) {
-           dist = 0;
-        } else {
-           dist = Math.min(Math.abs(clientY - elRect.top), Math.abs(clientY - elRect.bottom));
-        }
+      let hDist = 0;
+      if (clientX < elRect.left) hDist = elRect.left - clientX;
+      else if (clientX > elRect.right) hDist = clientX - elRect.right;
 
-        if (dist < minDistance && dist < 60) {
-          minDistance = dist;
-          bestLine = el;
-        }
+      let vDist = 0;
+      if (clientY < elRect.top - 10) vDist = elRect.top - 10 - clientY;
+      else if (clientY > elRect.bottom + 10) vDist = clientY - (elRect.bottom + 10);
+
+      // Prioritize vertical proximity heavily. Horizontal distance is used as a tie-breaker between columns.
+      let dist = vDist * 10 + hDist;
+
+      if (dist < minDistance) {
+        minDistance = dist;
+        bestLine = el;
       }
     }
 
