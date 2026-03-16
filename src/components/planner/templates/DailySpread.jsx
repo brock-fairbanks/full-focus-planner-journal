@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from "react";
+import { Reorder } from "framer-motion";
 
 export default function DailySpread({ date, onSubSectionChange }) {
   const HOURS = Array.from({ length: 17 }, (_, i) => 5 + i); // 5 AM to 9 PM
   const [activeSubSection, setActiveSubSection] = useState("Big 3");
+
+  const [tabs, setTabs] = useState(() => {
+    const saved = localStorage.getItem("planner_daily_tabs_order");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return ["Big 3", "Schedule", "Tasks", "Notes"];
+  });
+
+  const handleReorder = (newOrder) => {
+    setTabs(newOrder);
+    localStorage.setItem("planner_daily_tabs_order", JSON.stringify(newOrder));
+  };
 
   useEffect(() => {
     if (onSubSectionChange) {
@@ -10,26 +26,35 @@ export default function DailySpread({ date, onSubSectionChange }) {
     }
   }, [activeSubSection, onSubSectionChange]);
 
-  const tabs = ["Big 3", "Schedule", "Tasks", "Notes"];
-
   return (
     <div className="flex flex-col h-full w-full bg-[#FAF9F6]">
       {/* Secondary Navigation Bar */}
-      <div className="flex border-b border-[#E2E8F0] px-8 pt-4 md:px-12 md:pt-6 gap-8 h-[64px] md:h-[72px] shrink-0">
+      <Reorder.Group 
+        axis="x" 
+        values={tabs} 
+        onReorder={handleReorder}
+        className="flex border-b border-[#E2E8F0] px-8 pt-4 md:px-12 md:pt-6 gap-8 h-[64px] md:h-[72px] shrink-0"
+      >
         {tabs.map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveSubSection(tab)}
-            className={`text-lg md:text-xl font-serif font-bold transition-colors pb-3 md:pb-4 border-b-2 h-full flex items-end ${
-              activeSubSection === tab 
-                ? "border-[#1e293b] text-[#1e293b]" 
-                : "border-transparent text-[#94a3b8] hover:text-[#1e293b]"
-            }`}
+          <Reorder.Item 
+            key={tab} 
+            value={tab}
+            className="h-full flex items-end cursor-grab active:cursor-grabbing"
+            dragConstraints={{ left: 0, right: 0 }}
           >
-            {tab}
-          </button>
+            <button
+              onClick={() => setActiveSubSection(tab)}
+              className={`text-lg md:text-xl font-serif font-bold transition-colors pb-3 md:pb-4 border-b-2 h-full flex items-end select-none ${
+                activeSubSection === tab 
+                  ? "border-[#1e293b] text-[#1e293b]" 
+                  : "border-transparent text-[#94a3b8] hover:text-[#1e293b]"
+              }`}
+            >
+              {tab}
+            </button>
+          </Reorder.Item>
         ))}
-      </div>
+      </Reorder.Group>
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto p-6 md:p-10 flex justify-center">
