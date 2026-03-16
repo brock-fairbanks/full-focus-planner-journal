@@ -11,7 +11,7 @@ const TABS = [
 
 export default function TabBar({ activeTemplate, onTemplateChange }) {
   return (
-    <div className="fixed left-0 top-0 bottom-0 z-50 flex flex-col gap-1 p-3 pointer-events-auto bg-white border-r border-gray-200">
+    <div className="fixed left-0 top-0 bottom-0 z-50 flex flex-col gap-1 p-3 pointer-events-auto border-r" style={{background: "#8B6F47", borderColor: "#6B5638"}}>
       {TABS.map((tab) => {
         const Icon = tab.icon;
         return (
@@ -20,8 +20,8 @@ export default function TabBar({ activeTemplate, onTemplateChange }) {
             className="flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors"
             onClick={() => onTemplateChange(tab.id)}
             style={{
-              background: activeTemplate === tab.id ? "#f3f4f6" : "transparent",
-              color: activeTemplate === tab.id ? "#1f2937" : "#6b7280",
+              background: activeTemplate === tab.id ? "#A0826D" : "transparent",
+              color: activeTemplate === tab.id ? "#F5E6D3" : "#D4C4B0",
               fontWeight: activeTemplate === tab.id ? "600" : "500",
             }}
           >
