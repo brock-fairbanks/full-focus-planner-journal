@@ -5,6 +5,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
   const saveTimeout = useRef(null);
+  const isErasing = useRef(false);
 
   // --- DRAWING THE PAPER GRID DIRECTLY TO CANVAS ---
   const drawPaperSubstrate = (ctx, width, height, template) => {
