@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, ShieldCheck, Compass } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { useAuth } from "@/lib/AuthContext";
 
-export default function HeaderBar({ selectedDate, onDateChange, isSynced }) {
+export default function HeaderBar({ selectedDate, onDateChange, isSynced, activeTemplate }) {
   const { user } = useAuth();
   
   return (
@@ -18,7 +18,7 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced }) {
             Full Focus
           </span>
           <span className="text-[#8B7355] text-[10px] uppercase tracking-widest font-semibold leading-none">
-            Planner
+            {activeTemplate === "JOURNAL" ? "Journal" : "Planner"}
           </span>
         </div>
       </div>

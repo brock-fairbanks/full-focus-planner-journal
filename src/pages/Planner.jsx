@@ -154,6 +154,7 @@ export default function Planner() {
         selectedDate={selectedDate} 
         onDateChange={setSelectedDate} 
         isSynced={true} 
+        activeTemplate={activeTemplate}
       />
 
       {/* Content Area */}
