@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import React, { useEffect, useRef, forwardRef, useImperativeHandle, useState } from "react";
 
 const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTemplate, onClear }, ref) => {
   const canvasRef = useRef(null);
@@ -53,7 +53,46 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     return () => clearTimeout(timer);
   }, [pageKey, savedImageData]);
 
+  const lastTapRef = useRef(0);
+  const [textInput, setTextInput] = useState({ visible: false, x: 0, y: 0, text: '' });
+  const inputRef = useRef(null);
+
+  const commitText = () => {
+    if (textInput.text.trim() && ctxRef.current && canvasRef.current) {
+      const ctx = ctxRef.current;
+      ctx.font = '16px sans-serif';
+      ctx.fillStyle = '#1e293b';
+      ctx.textBaseline = 'top';
+      ctx.fillText(textInput.text, textInput.x, textInput.y - 10);
+
+      if (saveTimeout.current) clearTimeout(saveTimeout.current);
+      if (canvasRef.current && onSave) {
+        onSave(canvasRef.current.toDataURL("image/png"));
+      }
+    }
+    setTextInput({ visible: false, x: 0, y: 0, text: '' });
+  };
+
   const startDrawing = (e) => {
+    if (textInput.visible) return;
+
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      setTextInput({
+        visible: true,
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+        text: ''
+      });
+      isDrawing.current = false;
+      lastTapRef.current = 0;
+      setTimeout(() => inputRef.current?.focus(), 50);
+      return;
+    }
+    lastTapRef.current = now;
+
     if (!ctxRef.current) return;
     isDrawing.current = true;
     const rect = canvasRef.current.getBoundingClientRect();
@@ -83,14 +122,39 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   };
 
   return (
-    <canvas
-      ref={canvasRef} // FIXED: Changed from ref__
-      onPointerDown={startDrawing}
-      onPointerMove={draw}
-      onPointerUp={endDrawing}
-      className="w-full h-full touch-none"
-      style={{ background: "transparent", display: "block" }}
-    />
+    <div className="relative w-full h-full">
+      <canvas
+        ref={canvasRef} // FIXED: Changed from ref__
+        onPointerDown={startDrawing}
+        onPointerMove={draw}
+        onPointerUp={endDrawing}
+        onPointerOut={endDrawing}
+        className="w-full h-full touch-none"
+        style={{ background: "transparent", display: "block" }}
+      />
+      {textInput.visible && (
+        <input
+          ref={inputRef}
+          type="text"
+          value={textInput.text}
+          onChange={(e) => setTextInput({ ...textInput, text: e.target.value })}
+          onBlur={commitText}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commitText();
+          }}
+          className="absolute bg-transparent border-b border-blue-500 outline-none"
+          style={{
+            left: textInput.x,
+            top: textInput.y - 10,
+            fontSize: '16px',
+            color: '#1e293b',
+            minWidth: '200px',
+            fontFamily: 'sans-serif'
+          }}
+          placeholder="Type here..."
+        />
+      )}
+    </div>
   );
 });
 
