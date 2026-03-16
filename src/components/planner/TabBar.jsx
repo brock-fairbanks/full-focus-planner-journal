@@ -11,7 +11,7 @@ const TABS = [
 
 export default function TabBar({ activeTemplate, onTemplateChange }) {
   return (
-    <div className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center py-6 pointer-events-auto border-r z-50" style={{background: "#1a120b", borderColor: "#0f0a07"}}>
+    <div className="fixed left-0 top-0 bottom-0 w-20 flex flex-col items-center py-6 pointer-events-auto z-50" style={{background: "#1A120B"}}>
       {TABS.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTemplate === tab.id;
@@ -19,15 +19,16 @@ export default function TabBar({ activeTemplate, onTemplateChange }) {
           <button
             key={tab.id}
             onClick={() => onTemplateChange(tab.id)}
-            className="relative flex items-center justify-center w-full aspect-square transition-all duration-200 min-h-[44px]"
+            className="relative flex items-center justify-center w-full h-16 transition-all duration-200"
             title={tab.label}
             style={{
-              color: isActive ? "#f59e0b" : "#8b7355",
+              color: isActive ? "#B8956A" : "#8B7355",
+              backgroundColor: isActive ? "rgba(184, 149, 106, 0.1)" : "transparent",
             }}
           >
             <Icon size={24} />
             {isActive && (
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 rounded-l" style={{background: "#f59e0b"}} />
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-12 w-1" style={{background: "#B8956A"}} />
             )}
           </button>
         );
