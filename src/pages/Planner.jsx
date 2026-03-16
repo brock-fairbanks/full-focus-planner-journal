@@ -68,14 +68,14 @@ export default function Planner() {
 
       {/* Navigation */}
       <TabBar activeTemplate={activeTemplate} onTemplateChange={setActiveTemplate} />
-      <div className="fixed top-4 right-6 z-40 pointer-events-auto">
+      <div className="fixed top-20 right-6 z-50 pointer-events-auto">
         <button
           onClick={handleClearInk}
-          className="p-2 rounded transition-colors"
-          style={{color: "#F5E6D3", background: "rgba(255,255,255,0.1)"}}
+          className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded transition-colors"
+          style={{color: "#b8956a"}}
           title="Clear ink from this page"
         >
-          <Trash2 size={18} />
+          <Trash2 size={20} />
         </button>
       </div>
       <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
