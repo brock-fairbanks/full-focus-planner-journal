@@ -91,17 +91,17 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                     className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
                     title={tab.label}
                     style={{
-                      color: isActive ? "#8B0000" : "rgba(0,0,0,0.5)",
+                      color: isActive ? "#ff4444" : "#555",
                       backgroundColor: "transparent",
                       textShadow: isActive 
-                        ? "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1), 0 0 8px rgba(139,0,0,0.8)" 
-                        : "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1)",
+                        ? "-1px -1px 2px rgba(0,0,0,1), 1px 1px 1px rgba(255,255,255,0.2), 0 0 10px rgba(255,0,0,0.6)" 
+                        : "-1px -1px 2px rgba(0,0,0,1), 1px 1px 1px rgba(255,255,255,0.3)",
                     }}
                   >
                     <Icon size={22} style={{ 
                       filter: isActive 
-                        ? "drop-shadow(0 0 6px rgba(139,0,0,0.8)) drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.1))" 
-                        : "drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.1))" 
+                        ? "drop-shadow(0 0 8px rgba(255,0,0,0.6)) drop-shadow(-1px -1px 2px rgba(0,0,0,1)) drop-shadow(1px 1px 1px rgba(255,255,255,0.2))" 
+                        : "drop-shadow(-1px -1px 2px rgba(0,0,0,1)) drop-shadow(1px 1px 1px rgba(255,255,255,0.3))" 
                     }} />
                     <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
                     {isActive && (

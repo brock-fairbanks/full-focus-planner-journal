@@ -36,8 +36,8 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
           <span 
             className="text-[10px] uppercase tracking-widest font-bold leading-none mt-1"
             style={{
-              color: "rgba(0,0,0,0.5)",
-              textShadow: "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1)"
+              color: "#555",
+              textShadow: "-1px -1px 2px rgba(0,0,0,1), 1px 1px 1px rgba(255,255,255,0.3)"
             }}
           >
             {activeTemplate === "JOURNAL" ? "Journal" : "Planner"}
@@ -51,8 +51,8 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
           onClick={() => onDateChange(addDays(selectedDate, -1))}
           className="p-2 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center hover:opacity-80"
           style={{
-            color: "rgba(0,0,0,0.5)",
-            filter: "drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.1))"
+            color: "#555",
+            filter: "drop-shadow(-1px -1px 2px rgba(0,0,0,1)) drop-shadow(1px 1px 1px rgba(255,255,255,0.3))"
           }}
           title="Previous"
         >
@@ -64,9 +64,9 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
             fontFamily: "'Playfair Display', serif", 
             fontSize: "24px", 
             fontWeight: "600", 
-            color: "rgba(0,0,0,0.5)", 
+            color: "#555", 
             letterSpacing: "0.5px",
-            textShadow: "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1)"
+            textShadow: "-1px -1px 2px rgba(0,0,0,1), 1px 1px 1px rgba(255,255,255,0.3)"
           }}>
             {format(selectedDate, "EEEE")}
           </div>
@@ -74,9 +74,9 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
             fontFamily: "'Playfair Display', serif", 
             fontSize: "18px", 
             fontWeight: "400", 
-            color: "rgba(0,0,0,0.5)", 
+            color: "#555", 
             letterSpacing: "0.3px",
-            textShadow: "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1)"
+            textShadow: "-1px -1px 2px rgba(0,0,0,1), 1px 1px 1px rgba(255,255,255,0.3)"
           }}>
             {format(selectedDate, "MMMM d, yyyy")}
           </div>
@@ -86,8 +86,8 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
           onClick={() => onDateChange(addDays(selectedDate, 1))}
           className="p-2 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center hover:opacity-80"
           style={{
-            color: "rgba(0,0,0,0.5)",
-            filter: "drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.1))"
+            color: "#555",
+            filter: "drop-shadow(-1px -1px 2px rgba(0,0,0,1)) drop-shadow(1px 1px 1px rgba(255,255,255,0.3))"
           }}
           title="Next"
         >
@@ -96,9 +96,9 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
 
         {user?.email && (
           <div className="hidden lg:block absolute left-1/2 ml-[170px] text-sm font-medium" style={{
-            color: "rgba(0,0,0,0.5)", 
+            color: "#555", 
             fontFamily: "'Playfair Display', serif",
-            textShadow: "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1)"
+            textShadow: "-1px -1px 2px rgba(0,0,0,1), 1px 1px 1px rgba(255,255,255,0.3)"
           }}>
             {user.email}
           </div>
@@ -111,16 +111,16 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
           <ShieldCheck 
             size={18} 
             style={{
-              color: "rgba(0,0,0,0.5)",
-              filter: "drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.1))",
+              color: "#555",
+              filter: "drop-shadow(-1px -1px 2px rgba(0,0,0,1)) drop-shadow(1px 1px 1px rgba(255,255,255,0.3))",
               animation: !isSynced ? "pulse 2s ease-in-out infinite" : "none"
             }} 
           />
           <span style={{
             fontSize: "12px", 
-            color: "rgba(0,0,0,0.5)", 
+            color: "#555", 
             fontWeight: "500",
-            textShadow: "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1)"
+            textShadow: "-1px -1px 2px rgba(0,0,0,1), 1px 1px 1px rgba(255,255,255,0.3)"
           }}>
             {isSynced ? "Synced" : "Syncing..."}
           </span>
