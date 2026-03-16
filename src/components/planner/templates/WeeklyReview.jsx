@@ -21,7 +21,7 @@ export default function WeeklyReview({ date }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 h-full gap-0 w-full overflow-auto" style={{ background: "#FAF9F6" }}>
+    <div className="grid grid-cols-2 h-full gap-0 w-full overflow-auto">
       {pages.map((page, idx) => (
         <div
           key={idx}
