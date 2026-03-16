@@ -1,9 +1,9 @@
 import React from "react";
-import DailySpread from "./templates/DailySpread";
-import IdealWeek from "./templates/IdealWeek";
-import QuarterlyGoals from "./templates/QuarterlyGoals";
-import Rituals from "./templates/Rituals";
-import WeeklyReview from "./templates/WeeklyReview";
+import DailySpread from "./templates/DailySpread.jsx";
+import IdealWeek from "./templates/IdealWeek.jsx";
+import QuarterlyGoals from "./templates/QuarterlyGoals.jsx";
+import Rituals from "./templates/Rituals.jsx";
+import WeeklyReview from "./templates/WeeklyReview.jsx";
 
 export default function TemplateRenderer({ template, date }) {
   const templates = {
