@@ -22,6 +22,7 @@ export default function Planner() {
 
   const [activeTemplate, setActiveTemplate] = useState(getTemplateFromPath(location.pathname));
   const [subSection, setSubSection] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     setActiveTemplate(getTemplateFromPath(location.pathname));
