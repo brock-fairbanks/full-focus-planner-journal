@@ -61,15 +61,22 @@ export default function Planner() {
         <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
       </div>
 
-      {/* Layer 2: All-In-One Flat Engine */}
-      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 z-10">
-        <GlobalCanvas
-          ref={canvasRef}
-          activeTemplate={activeTemplate}
-          onSave={handleSaveInk}
-          savedImageData={currentImageData}
-          pageKey={pageKey}
-        />
+      {/* Layer 2: Template Layout */}
+      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 z-10 overflow-auto">
+        <TemplateRenderer template={activeTemplate} date={selectedDate} />
+      </div>
+
+      {/* Layer 3: Drawing Canvas (on top) */}
+      <div className="fixed left-20 md:left-24 right-0 top-16 md:top-20 bottom-0 z-20 pointer-events-none">
+        <div className="pointer-events-auto w-full h-full">
+          <GlobalCanvas
+            ref={canvasRef}
+            activeTemplate={activeTemplate}
+            onSave={handleSaveInk}
+            savedImageData={currentImageData}
+            pageKey={pageKey}
+          />
+        </div>
       </div>
     </div>
   );
