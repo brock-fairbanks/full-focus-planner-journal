@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Target, Moon, TrendingUp, BookOpen, Sun, Coffee, CalendarDays } from "lucide-react";
 import { Reorder } from "framer-motion";
+import { useAuth } from "@/lib/AuthContext";
 
 const WeeklyIcon = ({ size = 24, ...props }) => (
   <svg
