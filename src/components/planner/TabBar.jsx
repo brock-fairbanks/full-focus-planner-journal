@@ -44,6 +44,11 @@ const ICONS_MAP = {
 };
 
 export default function TabBar({ activeTemplate, onTemplateChange, journalMode, onJournalModeChange }) {
+  const { user } = useAuth();
+  
+  const firstName = user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || "User";
+  const initial = firstName.charAt(0).toUpperCase();
+
   const [tabs, setTabs] = useState(() => {
     const saved = localStorage.getItem("planner_tabs_order");
     if (saved) {
