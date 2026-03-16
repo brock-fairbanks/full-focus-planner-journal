@@ -392,7 +392,6 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
 
   const handleInput = (e) => {
     setVal(e.target.value);
-    resizeTextarea();
   };
 
   useEffect(() => {
