@@ -19,16 +19,17 @@ export default function TabBar({ activeTemplate, onTemplateChange }) {
           <button
             key={tab.id}
             onClick={() => onTemplateChange(tab.id)}
-            className="relative flex items-center justify-center w-full h-16 transition-all duration-200"
+            className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1"
             title={tab.label}
             style={{
               color: isActive ? "#B8956A" : "#8B7355",
               backgroundColor: isActive ? "rgba(184, 149, 106, 0.1)" : "transparent",
             }}
           >
-            <Icon size={24} />
+            <Icon size={22} />
+            <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
             {isActive && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-12 w-1" style={{background: "#B8956A"}} />
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{background: "#B8956A"}} />
             )}
           </button>
         );
