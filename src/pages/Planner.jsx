@@ -9,7 +9,6 @@ export default function Planner() {
   const navigate = useNavigate();
   const canvasRef = useRef(null);
 
-  // Map URL path to template
   const getTemplateFromPath = useCallback((path) => {
     const p = path.toLowerCase();
     if (p.includes("today")) return "DAILY";
@@ -22,13 +21,10 @@ export default function Planner() {
 
   const [activeTemplate, setActiveTemplate] = useState(getTemplateFromPath(location.pathname));
 
-  // Sync URL to state
   useEffect(() => {
-    const newTemplate = getTemplateFromPath(location.pathname);
-    setActiveTemplate(newTemplate);
+    setActiveTemplate(getTemplateFromPath(location.pathname));
   }, [location.pathname, getTemplateFromPath]);
 
-  // Handle tab navigation
   const handleTabChange = (templateId) => {
     const pathMap = {
       DAILY: "/today",
@@ -43,18 +39,22 @@ export default function Planner() {
   const pageKey = `${activeTemplate}_${new Date().toISOString().split('T')[0]}`;
 
   return (
-    <div className="fixed inset-0 w-full h-full" style={{ backgroundColor: "#F4EFE4" }}>
-      {/* Sidebar Navigation */}
+    <div className="fixed inset-0 w-full h-full bg-[#F4EFE4]">
+      {/* Sidebar - Highest Z-index */}
       <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTabChange} />
-
-      {/* Template Content */}
-      <div className="fixed left-20 right-0 top-0 bottom-0 z-10 flex flex-col">
-        <TemplateRenderer template={activeTemplate} date={new Date()} />
-      </div>
-
-      {/* Drawing Canvas Overlay */}
-      <div className="fixed left-20 right-0 top-0 bottom-0 z-20 pointer-events-auto">
-        <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} />
+      
+      {/* Content Area */}
+      <div className="fixed left-20 right-0 top-0 bottom-0 bg-[#FAF9F6]">
+        {/* Template Layer (z-10) */}
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          <TemplateRenderer template={activeTemplate} date={new Date()} />
+        </div>
+        
+        {/* Drawing Layer (z-20) */}
+        <div className="absolute inset-0 z-20 pointer-events-auto">
+          {/* FIXED: Using standard 'ref' instead of 'ref__' */}
+          <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} />
+        </div>
       </div>
     </div>
   );
