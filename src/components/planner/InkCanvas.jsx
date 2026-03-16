@@ -98,21 +98,27 @@ export default function InkCanvas({ savedImageData, onSave }) {
     canvas.addEventListener("pointerleave", handlePointerUp);
 
     const handleResize = () => {
+      if (!canvas.width || !canvas.height) return;
+
       // Save current content
       const tempCanvas = document.createElement("canvas");
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
-      tempCanvas.getContext("2d").drawImage(canvas, 0, 0);
+      const tempCtx = tempCanvas.getContext("2d");
+      if (tempCtx && canvas.width > 0 && canvas.height > 0) {
+        tempCtx.drawImage(canvas, 0, 0);
+      }
 
       initCanvas();
 
       // Restore content
-      const newCtx = canvas.getContext("2d", { desynchronized: true });
-      const dpr = window.devicePixelRatio || 1;
-      newCtx.save();
-      newCtx.setTransform(1, 0, 0, 1, 0, 0);
-      newCtx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
-      newCtx.restore();
+      if (tempCanvas.width > 0 && tempCanvas.height > 0) {
+        const newCtx = canvas.getContext("2d", { desynchronized: true });
+        newCtx.save();
+        newCtx.setTransform(1, 0, 0, 1, 0, 0);
+        newCtx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+        newCtx.restore();
+      }
     };
 
     window.addEventListener("resize", handleResize);
