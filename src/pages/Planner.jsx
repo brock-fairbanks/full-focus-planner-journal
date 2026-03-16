@@ -86,20 +86,18 @@ export default function Planner() {
       </div>
 
       {/* Drawing Canvas (overlay) */}
-      {["DAILY", "IDEAL_WEEK", "QUARTERLY_GOALS"].includes(activeTemplate) && (
-        <div className="fixed left-20 right-0 top-16 bottom-0 z-30 pointer-events-none">
-          <div className="pointer-events-auto w-full h-full">
-            <GlobalCanvas
-              ref={canvasRef}
-              activeTemplate={activeTemplate}
-              onSave={handleSaveInk}
-              onClear={() => canvasRef.current?.clear?.()}
-              savedImageData={currentImageData}
-              pageKey={pageKey}
-            />
-          </div>
+      <div className="fixed left-20 right-0 top-16 bottom-0 z-30 pointer-events-none">
+        <div className="pointer-events-auto w-full h-full">
+          <GlobalCanvas
+            ref={canvasRef}
+            activeTemplate={activeTemplate}
+            onSave={handleSaveInk}
+            onClear={() => canvasRef.current?.clear?.()}
+            savedImageData={currentImageData}
+            pageKey={pageKey}
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 }
