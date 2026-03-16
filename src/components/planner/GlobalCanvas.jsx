@@ -377,9 +377,9 @@ const TextItem = ({ textObj, updateText, deleteText }) => {
 
   const resizeTextarea = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = '0px';
+      textareaRef.current.style.height = '1px';
       const scrollHeight = textareaRef.current.scrollHeight;
-      textareaRef.current.style.height = `${Math.max(scrollHeight, textObj.lineHeight || 32)}px`;
+      textareaRef.current.style.height = `${scrollHeight + 2}px`; // +2 for border
     }
   };
 
