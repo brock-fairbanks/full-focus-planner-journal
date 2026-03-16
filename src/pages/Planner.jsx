@@ -40,7 +40,7 @@ export default function Planner() {
   };
 
   const pageKey = getPageKey(activeTab);
-  const dateLabel = getDateLabel(activeTab);
+  const dateLabel = getDateLabel(activeTab, selectedDate);
 
   // Fetch saved drawing for current tab
   const { data: drawings } = useQuery({
