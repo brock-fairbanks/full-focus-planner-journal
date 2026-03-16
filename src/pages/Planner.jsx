@@ -48,22 +48,30 @@ export default function Planner() {
   // Get image data: prefer local cache, then server
   const currentImageData =
     localInkMemory.current[pageKey] ||
-    existingDrawing?.image_data ||
+    existingDrawing?.image_url ||
     null;
 
-  // Save mutation
+  // Save mutation — upload file first, then store URL
   const saveMutation = useMutation({
-    mutationFn: async (imageData) => {
+    mutationFn: async (dataUrl) => {
+      // Convert base64 data URL to a Blob
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `${pageKey}.png`, { type: "image/png" });
+
+      // Upload via UploadFile integration
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
       if (existingDrawing?.id) {
         return base44.entities.PageDrawing.update(existingDrawing.id, {
-          image_data: imageData,
+          image_url: file_url,
         });
       }
       return base44.entities.PageDrawing.create({
         page_key: pageKey,
         tab: activeTab,
         date_label: dateLabel,
-        image_data: imageData,
+        image_url: file_url,
       });
     },
     onSuccess: () => {
