@@ -1,4 +1,5 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -11,11 +12,29 @@ import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 import { Trash2 } from "lucide-react";
 
 export default function Planner() {
-  const [activeTemplate, setActiveTemplate] = useState("DAILY");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // 🛠️ Map URL path to your Template keys
+  const getTemplateFromPath = useCallback((path) => {
+    const p = path.toLowerCase();
+    if (p.includes("today")) return "DAILY";
+    if (p.includes("rituals")) return "RITUALS";
+    if (p.includes("weekly-review")) return "WEEKLY";
+    return "DAILY";
+  }, []);
+
+  const [activeTemplate, setActiveTemplate] = useState(getTemplateFromPath(location.pathname));
   const [selectedDate, setSelectedDate] = useState(new Date());
+  
   const canvasRef = useRef(null);
   const localInkMemory = useRef({});
-  const queryClient = useQueryClient();
+
+  // 🛠️ Sync template state if URL changes (back button / manual nav)
+  useEffect(() => {
+    setActiveTemplate(getTemplateFromPath(location.pathname));
+  }, [location.pathname, getTemplateFromPath]);
 
   const pageKey = `${activeTemplate}_${format(selectedDate, "yyyy-MM-dd")}`;
 
@@ -50,36 +69,45 @@ export default function Planner() {
   const handleSaveInk = useCallback((dataUrl) => {
     localInkMemory.current[pageKey] = dataUrl;
     saveMutation.mutate(dataUrl);
-  }, [pageKey, existingDrawing]);
+  }, [pageKey, existingDrawing, saveMutation]);
 
   const handleClearInk = () => {
     if (window.confirm("Clear all ink from this page?")) {
       localInkMemory.current[pageKey] = null;
       if (existingDrawing?.id) {
-        base44.entities.PageDrawing.delete(existingDrawing.id).catch(() => {
-          // Silently ignore if record doesn't exist
-        });
+        base44.entities.PageDrawing.delete(existingDrawing.id).catch(() => {});
         queryClient.invalidateQueries({ queryKey: ["pageDrawing", pageKey] });
       }
+      canvasRef.current?.clear?.();
     }
+  };
+
+  // 🛠️ When a tab is clicked, update the URL (this fixes the "Black Screen" navigation)
+  const handleTemplateChange = (newTemplate) => {
+    const pathMap = {
+      DAILY: "/today",
+      RITUALS: "/rituals",
+      WEEKLY: "/weekly-review"
+    };
+    navigate(pathMap[newTemplate] || "/today");
   };
 
   return (
     <div className="fixed inset-0 overflow-hidden" style={{background: "#F4EFE4"}}>
       <PortraitOverlay />
 
-      {/* Navigation */}
-      <TabBar activeTemplate={activeTemplate} onTemplateChange={setActiveTemplate} />
+      <TabBar activeTemplate={activeTemplate} onTemplateChange={handleTemplateChange} />
+      
       <div className="fixed top-20 right-6 z-50 pointer-events-auto">
         <button
           onClick={handleClearInk}
           className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded transition-colors"
           style={{color: "#b8956a"}}
-          title="Clear ink from this page"
         >
           <Trash2 size={20} />
         </button>
       </div>
+
       <HeaderBar selectedDate={selectedDate} onDateChange={setSelectedDate} isSynced={!saveMutation.isPending} />
 
       {/* Template Layout */}
@@ -87,7 +115,7 @@ export default function Planner() {
         <TemplateRenderer template={activeTemplate} date={selectedDate} />
       </div>
 
-      {/* Drawing Canvas (overlay) */}
+      {/* Drawing Canvas */}
       <div className="fixed left-20 right-0 top-16 bottom-0 z-20 pointer-events-auto">
         <GlobalCanvas
           ref={canvasRef}
