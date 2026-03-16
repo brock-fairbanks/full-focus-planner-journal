@@ -80,10 +80,49 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const handleDoubleClickAction = (clientX, clientY, pointerType) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const clickY = clientY - rect.top;
-    const snappedY = Math.round((clickY - 16) / 32) * 32;
+    let snappedY = Math.round((clickY - 16) / 32) * 32;
+
+    let startX = clientX - rect.left;
+
+    // Smart Line Snapping: Find the nearest line-like element
+    const lineElements = Array.from(document.querySelectorAll(
+      '.border-b, .border-b-2, .border-b-4, .border-b-dashed, [style*="gradient"]'
+    ));
+
+    let minDistance = Infinity;
+    let bestLine = null;
+
+    for (const el of lineElements) {
+      const elRect = el.getBoundingClientRect();
+      if (elRect.width === 0) continue;
+
+      if (clientX >= elRect.left - 40 && clientX <= elRect.right + 40) {
+        let dist;
+        if (clientY >= elRect.top - 10 && clientY <= elRect.bottom + 10) {
+           dist = 0;
+        } else {
+           dist = Math.min(Math.abs(clientY - elRect.top), Math.abs(clientY - elRect.bottom));
+        }
+
+        if (dist < minDistance && dist < 60) {
+          minDistance = dist;
+          bestLine = el;
+        }
+      }
+    }
+
+    if (bestLine) {
+      const bestRect = bestLine.getBoundingClientRect();
+      startX = bestRect.left - rect.left + 2; // +2px padding from line start
+      
+      // Snap Y precisely to the line if it's a discrete border line
+      if (bestLine.className && typeof bestLine.className === 'string' && bestLine.className.includes('border')) {
+        snappedY = (bestRect.bottom - rect.top) - 28; // Aligns text baseline nicely on the border
+      }
+    }
 
     updateTextsState(prev => {
-      const existingTextIndex = prev.findIndex(t => t.y === snappedY);
+      const existingTextIndex = prev.findIndex(t => Math.abs(t.y - snappedY) < 10);
       if (existingTextIndex !== -1) {
         const updated = [...prev];
         updated[existingTextIndex] = { ...updated[existingTextIndex], isEditing: true };
@@ -91,7 +130,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       } else {
         const newText = {
           id: Date.now().toString(),
-          x: clientX - rect.left,
+          x: startX,
           y: snappedY,
           text: '',
           isEditing: true
