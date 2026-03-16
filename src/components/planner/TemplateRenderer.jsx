@@ -17,8 +17,8 @@ export default function TemplateRenderer({ template, date }) {
   const component = templates[template];
   
   return (
-    <div className="w-full h-full overflow-hidden pointer-events-none">
-      {component}
+    <div className="w-full h-full overflow-hidden bg-[#FAF9F6]">
+      {component || <div className="p-10 text-slate-400">Template Loading...</div>}
     </div>
   );
 }
