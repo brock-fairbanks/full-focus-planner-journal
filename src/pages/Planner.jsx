@@ -16,7 +16,7 @@ const BINDER_TABS = [
   { key: "WEEKLY",  label: "WEEKLY",  subTabs: ["overview", "goals", "review"] },
   { key: "MONTHLY", label: "MONTHLY", subTabs: ["calendar", "goals", "review"] },
   { key: "GOALS",   label: "GOALS",   subTabs: ["annual", "quarterly", "vision"] },
-  { key: "INDEX",   label: "INDEX",   subTabs: ["contents", "habits", "notes"] },
+
 ];
 
 const SUB_TAB_LABELS = {
