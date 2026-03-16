@@ -11,24 +11,22 @@ const TABS = [
 
 export default function TabBar({ activeTemplate, onTemplateChange }) {
   return (
-    <div
-      className="fixed left-0 top-0 bottom-0 z-50 flex flex-col gap-2 p-3 md:p-4 pointer-events-auto"
-      style={{ background: "#1a120b", width: "80px", minWidth: "100px" }}
-    >
+    <div className="fixed left-0 top-0 bottom-0 z-50 flex flex-col gap-1 p-3 pointer-events-auto bg-white border-r border-gray-200">
       {TABS.map((tab) => {
         const Icon = tab.icon;
         return (
           <button
             key={tab.id}
-            className="active-anchor flex flex-col items-center gap-1 p-2 md:p-3 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors"
             onClick={() => onTemplateChange(tab.id)}
             style={{
-              background: activeTemplate === tab.id ? "#f59e0b" : "rgba(255,255,255,0.08)",
-              color: activeTemplate === tab.id ? "#1a120b" : "#e2e8f0",
+              background: activeTemplate === tab.id ? "#f3f4f6" : "transparent",
+              color: activeTemplate === tab.id ? "#1f2937" : "#6b7280",
+              fontWeight: activeTemplate === tab.id ? "600" : "500",
             }}
           >
-            <Icon size={20} className="md:w-6 md:h-6" />
-            <span className="text-[9px] md:text-[10px] font-semibold text-center">{tab.label}</span>
+            <Icon size={18} />
+            <span className="hidden md:inline">{tab.label}</span>
           </button>
         );
       })}
