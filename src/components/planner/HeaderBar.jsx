@@ -62,7 +62,7 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
       {/* Right: User Email & Sync Status */}
       <div className="flex items-center justify-between w-full min-w-0 pl-4 lg:pl-8 gap-4">
         {user?.email ? (
-          <div className="hidden md:block text-sm font-medium truncate text-right flex-1" style={{color: "#8B7355", fontFamily: "'Playfair Display', serif"}}>
+          <div className="hidden md:block text-sm font-medium truncate text-center flex-1" style={{color: "#8B7355", fontFamily: "'Playfair Display', serif"}}>
             {user.email}
           </div>
         ) : <div className="flex-1" />}
