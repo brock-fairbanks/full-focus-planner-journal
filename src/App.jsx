@@ -35,11 +35,9 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/BrandCompass" replace />} />
-      <Route path="/BrandCompass" element={<BrandCompass />} />
-      <Route path="/WeeklyPreviewWizard" element={<WeeklyPreviewWizard />} />
-      <Route path="/DailyPlan" element={<DailyPlan />} />
+      <Route path="/" element={<Navigate to="/Planner" replace />} />
       <Route path="/Planner" element={<Planner />} />
+      <Route path="/BrandCompass" element={<BrandCompass />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
