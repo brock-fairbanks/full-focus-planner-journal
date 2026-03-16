@@ -8,9 +8,8 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
   
   return (
     <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between pr-8 pointer-events-auto z-50 border-b" style={{
-      backgroundImage: "linear-gradient(to right, rgba(26,18,11,0.6), rgba(15,10,6,0.95)), url('https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/8fdb2cd49_Gemini_Generated_Image_u8sxr4u8sxr4u8sx1920x1080.png')",
-      backgroundSize: "800%",
-      backgroundPosition: "bottom right",
+      backgroundColor: "#1A120B",
+      backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.2)), url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E\")",
       borderColor: "#3e2d1d",
       boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
     }}>
