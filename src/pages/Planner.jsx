@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import TabBar from "../components/planner/TabBar.jsx";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
+import HeaderBar from "../components/planner/HeaderBar.jsx";
 
 export default function Planner() {
   const location = useLocation();
