@@ -37,7 +37,7 @@ export default function Planner() {
     navigate(pathMap[templateId] || "/today");
   };
 
-  const pageKey = `${activeTemplate}${subSection ? `_${subSection}` : ''}_${new Date().toISOString().split('T')[0]}`;
+  const pageKey = `${activeTemplate}${activeTemplate === "DAILY" && subSection ? `_${subSection}` : ''}_${new Date().toISOString().split('T')[0]}`;
 
   return (
     <div className="fixed inset-0 w-full h-full bg-[#F4EFE4]">
