@@ -143,7 +143,7 @@ const GlobalCanvas = React.forwardRef(({ onSave, savedImageData, pageKey }, ref)
       style={{
         touchAction: "none",
         cursor: "crosshair",
-        background: "#FAF9F6",
+        background: "transparent",
         display: "block",
         willChange: "transform",
         pointerEvents: "auto",
