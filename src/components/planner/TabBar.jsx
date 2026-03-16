@@ -66,12 +66,12 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     <>
       {/* Primary Navigation */}
       <div 
-        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar border-r" 
+        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 overflow-y-auto no-scrollbar" 
         style={{
-          backgroundColor: "#1A120B",
-          backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.02), rgba(0,0,0,0.2)), url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E\")",
-          borderColor: "#3e2d1d",
-          boxShadow: "4px 0 20px rgba(0,0,0,0.5)"
+          backgroundColor: "#111",
+          backgroundImage: "url('https://www.transparenttextures.com/patterns/black-leather.png')",
+          borderRight: "1px dashed rgba(255,255,255,0.15)",
+          boxShadow: "inset -2px 0 10px rgba(0,0,0,0.8), 4px 0 20px rgba(0,0,0,0.5)"
         }}
       >
         <div className="w-full flex-1 flex flex-col">
@@ -91,17 +91,23 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                     className="relative flex flex-col items-center justify-center w-full h-20 transition-all duration-200 gap-1 select-none"
                     title={tab.label}
                     style={{
-                      color: isActive ? "#F97316" : "#8B7355",
-                      backgroundColor: isActive ? "rgba(249, 115, 22, 0.1)" : "transparent",
-                      textShadow: isActive ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
+                      color: isActive ? "#8B0000" : "rgba(0,0,0,0.5)",
+                      backgroundColor: "transparent",
+                      textShadow: isActive 
+                        ? "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1), 0 0 8px rgba(139,0,0,0.8)" 
+                        : "-1px -1px 1px rgba(0,0,0,0.8), 1px 1px 1px rgba(255,255,255,0.1)",
                     }}
                   >
-                    <Icon size={22} style={{ filter: isActive ? "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" : "none" }} />
+                    <Icon size={22} style={{ 
+                      filter: isActive 
+                        ? "drop-shadow(0 0 6px rgba(139,0,0,0.8)) drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.1))" 
+                        : "drop-shadow(-1px -1px 1px rgba(0,0,0,0.8)) drop-shadow(1px 1px 1px rgba(255,255,255,0.1))" 
+                    }} />
                     <span className="text-[10px] font-medium tracking-wide uppercase">{tab.label}</span>
                     {isActive && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 h-14 w-1" style={{
-                        background: "#F97316",
-                        boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)"
+                        background: "#8B0000",
+                        boxShadow: "0 0 12px 2px rgba(139,0,0,0.8)"
                       }} />
                     )}
                   </button>
