@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronLeft, ChevronRight, ShieldCheck, Compass } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { useAuth } from "@/lib/AuthContext";
 
@@ -15,15 +15,19 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
     }}>
       {/* Left: Logo and Title */}
       <div className="flex items-center h-full min-w-[280px]">
-        <div className="flex items-center justify-center w-12 h-full shrink-0 ml-4 mr-2">
-          <Compass size={32} style={{ color: "#f5deb3", dropShadow: "0 2px 4px rgba(0,0,0,0.5)" }} />
+        <div className="flex items-center justify-center h-full shrink-0 ml-4 mr-3 py-2 w-48">
+          <img 
+            src="https://media.base44.com/images/public/69b75c76e85ef9b64b1a38bb/6bc2ee721_fb_textured_bg_1920_1080_1-removebg-preview.png"
+            alt="Fairbanks Builders"
+            className="w-full h-full object-contain"
+            style={{ 
+              filter: "drop-shadow(0px 1px 4px rgba(255,255,255,0.4)) brightness(1.2)"
+            }}
+          />
         </div>
-        <div className="flex flex-col z-10">
-          <span className="text-[#f5deb3] font-serif font-bold text-xl leading-tight tracking-wide whitespace-nowrap drop-shadow-md">
-            Full Focus
-          </span>
+        <div className="flex flex-col z-10 justify-center">
           <span 
-            className="text-[10px] uppercase tracking-widest font-bold leading-none"
+            className="text-[10px] uppercase tracking-widest font-bold leading-none mt-1"
             style={{
               color: "#F97316",
               textShadow: "0 0 8px rgba(249, 115, 22, 0.6)"
