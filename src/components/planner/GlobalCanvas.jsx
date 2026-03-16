@@ -485,13 +485,13 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
         onClick={() => setIsEditing(true)}
         className="w-full bg-transparent outline-none resize-none overflow-hidden pr-8"
         style={{
-          lineHeight: `${lh}px`,
-          fontSize: activeTemplate === 'IDEAL_WEEK' ? `${Math.max(12, Math.min(22, Math.round(lh * 0.6)))}px` : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
+          lineHeight: activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`,
+          fontSize: activeTemplate === 'IDEAL_WEEK' ? '16px' : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
           fontFamily: "'Caveat', cursive",
           color: '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
           minHeight: `${lh}px`,
-          padding: 0,
+          padding: activeTemplate === 'IDEAL_WEEK' ? '4px 4px 4px 8px' : 0,
           margin: 0
         }}
         placeholder={isEditing ? "Type here..." : ""}
