@@ -25,10 +25,47 @@ export default function Planner() {
   const [subSection, setSubSection] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const pointerStartRef = useRef(null);
+  const lastPenTimeRef = useRef(0);
 
   useEffect(() => {
     setActiveTemplate(getTemplateFromPath(location.pathname));
   }, [location.pathname, getTemplateFromPath]);
+
+  // Global Palm Rejection
+  useEffect(() => {
+    const handlePointer = (e) => {
+      if (e.pointerType === 'pen') {
+        lastPenTimeRef.current = Date.now();
+      } else if (e.pointerType === 'touch') {
+        if (Date.now() - lastPenTimeRef.current < 1000) {
+          e.stopPropagation();
+          if (e.cancelable) e.preventDefault();
+        }
+      }
+    };
+
+    const handleTouch = (e) => {
+      if (Date.now() - lastPenTimeRef.current < 1000) {
+        e.stopPropagation();
+        if (e.cancelable) e.preventDefault();
+      }
+    };
+
+    window.addEventListener('pointerdown', handlePointer, { capture: true, passive: false });
+    window.addEventListener('pointermove', handlePointer, { capture: true, passive: false });
+    window.addEventListener('pointerup', handlePointer, { capture: true, passive: false });
+    
+    window.addEventListener('touchstart', handleTouch, { capture: true, passive: false });
+    window.addEventListener('touchmove', handleTouch, { capture: true, passive: false });
+
+    return () => {
+      window.removeEventListener('pointerdown', handlePointer, { capture: true });
+      window.removeEventListener('pointermove', handlePointer, { capture: true });
+      window.removeEventListener('pointerup', handlePointer, { capture: true });
+      window.removeEventListener('touchstart', handleTouch, { capture: true });
+      window.removeEventListener('touchmove', handleTouch, { capture: true });
+    };
+  }, []);
 
   const handlePointerDown = (e) => {
     // Only allow swipe navigation with finger (touch), not stylus/pen or mouse
