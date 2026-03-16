@@ -1,10 +1,10 @@
 import React from "react";
-import { ChevronLeft, ChevronRight, PenTool } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
 import { format, addDays } from "date-fns";
 
 export default function HeaderBar({ selectedDate, onDateChange, isSynced }) {
   return (
-    <div className="fixed top-0 left-20 right-0 h-16 flex items-center justify-between px-8 pointer-events-auto z-50 border-b" style={{background: "#2c1f14", borderColor: "#1a120b"}}>
+    <div className="fixed top-0 left-20 right-0 h-16 flex items-center justify-between px-8 pointer-events-auto z-50 border-b" style={{background: "#2C1F14", borderColor: "#1A120B"}}>
       {/* Left: Navigation */}
       <div className="flex items-center gap-3">
         <button 
