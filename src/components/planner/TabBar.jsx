@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Target, Moon, TrendingUp, BookOpen } from "lucide-react";
+import { Calendar, Target, Moon, TrendingUp, BookOpen, Sun, Coffee, CalendarDays } from "lucide-react";
 import { Reorder } from "framer-motion";
 
 const WeeklyIcon = ({ size = 24, ...props }) => (
@@ -114,6 +114,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
               color: journalMode === "DAILY" ? "#F97316" : "#8B7355",
             }}
           >
+            <Sun size={18} />
             <span className="text-[10px] font-medium tracking-wide">DAILY</span>
             {journalMode === "DAILY" && (
               <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
@@ -127,6 +128,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
               color: journalMode === "WEEKEND" ? "#F97316" : "#8B7355",
             }}
           >
+            <Coffee size={18} />
             <span className="text-[10px] font-medium tracking-wide">WKND</span>
             {journalMode === "WEEKEND" && (
               <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
@@ -140,6 +142,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
               color: journalMode === "ANNUAL" ? "#F97316" : "#8B7355",
             }}
           >
+            <CalendarDays size={18} />
             <span className="text-[10px] font-medium tracking-wide">ANNUAL</span>
             {journalMode === "ANNUAL" && (
               <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1" style={{ background: "#F97316", boxShadow: "0 0 12px 2px rgba(249, 115, 22, 0.8)" }} />
