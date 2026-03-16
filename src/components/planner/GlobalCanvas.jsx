@@ -75,7 +75,8 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       onPointerDown={startDrawing}
       onPointerMove={draw}
       onPointerUp={endDrawing}
-      className="w-full h-full touch-none bg-[#FAF9F6]"
+      className="w-full h-full touch-none absolute inset-0"
+      style={{ background: "transparent" }}
     />
   );
 });
