@@ -22,11 +22,10 @@ function getPageKey(tab) {
   return `monthly_${format(now, "yyyy-MM")}`;
 }
 
-function getDateLabel(tab) {
-  const now = new Date();
-  if (tab === "today") return format(now, "EEEE, MMMM d, yyyy");
-  if (tab === "weekly") return `Week ${format(now, "II")}, ${format(now, "yyyy")}`;
-  return format(now, "MMMM yyyy");
+function getDateLabel(tab, date) {
+  if (tab === "today") return format(date, "EEEE, MMMM d, yyyy");
+  if (tab === "weekly") return `Week ${format(date, "II")}, ${format(date, "yyyy")}`;
+  return format(date, "MMMM yyyy");
 }
 
 export default function Planner() {
