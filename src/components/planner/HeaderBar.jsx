@@ -1,12 +1,24 @@
 import React from "react";
-import { ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShieldCheck, Compass } from "lucide-react";
 import { format, addDays } from "date-fns";
 
 export default function HeaderBar({ selectedDate, onDateChange, isSynced }) {
   return (
     <div className="fixed top-0 left-20 right-0 h-16 flex items-center justify-between px-8 pointer-events-auto z-50 border-b" style={{background: "#2C1F14", borderColor: "#1A120B"}}>
-      {/* Left: Spacer to balance layout */}
-      <div className="min-w-[100px]"></div>
+      {/* Left: Logo and Title */}
+      <div className="flex items-center gap-3 min-w-[100px]">
+        <div className="flex items-center justify-center w-8 h-8 rounded bg-[#1A120B] border border-[#3e2d1d] shrink-0">
+          <Compass size={18} style={{ color: "#B8956A" }} />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-[#f5deb3] font-serif font-bold text-lg leading-tight tracking-wide whitespace-nowrap">
+            Full Focus
+          </span>
+          <span className="text-[#8B7355] text-[10px] uppercase tracking-widest font-semibold leading-none">
+            Planner
+          </span>
+        </div>
+      </div>
 
       {/* Center: Date with Navigation */}
       <div className="flex flex-1 items-center justify-center gap-4">
