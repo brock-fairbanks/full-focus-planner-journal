@@ -68,6 +68,7 @@ export default function WakeWordListener() {
 
     const closeAssistant = () => {
         setAssistantState('idle');
+        setLatestResponse('');
         isAssistantActiveRef.current = false;
         if (audioPlayerRef.current) {
             audioPlayerRef.current.pause();
