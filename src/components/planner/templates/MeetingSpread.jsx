@@ -282,6 +282,22 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
     // Trigger ondataavailable every 5 seconds to accurately track chunk size
     mediaRecorder.start(5000);
+    if (isPausedRef.current) {
+      mediaRecorder.pause();
+    }
+  };
+
+  const togglePause = () => {
+    if (!mediaRecorderRef.current) return;
+    if (mediaRecorderRef.current.state === "recording") {
+      mediaRecorderRef.current.pause();
+      manualPauseRef.current = true;
+      setIsPaused(true);
+    } else if (mediaRecorderRef.current.state === "paused") {
+      mediaRecorderRef.current.resume();
+      manualPauseRef.current = false;
+      setIsPaused(false);
+    }
   };
 
   const startRecording = async () => {
