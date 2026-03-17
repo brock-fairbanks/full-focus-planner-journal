@@ -136,7 +136,7 @@ const MessageBubble = ({ message, isVoiceMuted, isLatest, isSending }) => {
         try {
             setIsLoadingAudio(true);
             audioRequestInProgress.current = true;
-            const response = await base44.functions.invoke('generateSpeech', { text: message.content, voice: 'onyx' });
+            const response = await base44.functions.invoke('generateSpeech', { text: message.content, voice: 'echo' });
             
             const audioUrl = `data:audio/mp3;base64,${response.data.audioContent}`;
             const audio = new Audio(audioUrl);

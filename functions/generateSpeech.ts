@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
         }
 
         const body = await req.json();
-        const { text, voice = 'onyx' } = body; 
+        const { text, voice = 'echo' } = body; 
 
         if (!text) {
             return Response.json({ error: 'Text is required' }, { status: 400 });

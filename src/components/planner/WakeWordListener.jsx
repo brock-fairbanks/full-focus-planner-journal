@@ -84,7 +84,7 @@ export default function WakeWordListener() {
     const playAIResponse = async (text) => {
         setAssistantState('speaking');
         try {
-            const response = await base44.functions.invoke('generateSpeech', { text, voice: 'onyx' });
+            const response = await base44.functions.invoke('generateSpeech', { text, voice: 'echo' });
             const audioUrl = `data:audio/mp3;base64,${response.data.audioContent}`;
             const audio = new Audio(audioUrl);
             audioPlayerRef.current = audio;
