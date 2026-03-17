@@ -18,6 +18,35 @@ Deno.serve(async (req) => {
 
         const { accessToken } = await base44.asServiceRole.connectors.getConnection('googledrive');
 
+        const FOLDER_NAME = 'Planner Recordings';
+        const query = `name='${FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+        
+        // 1. Check if folder exists
+        const searchRes = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}`, {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        const searchData = await searchRes.json();
+        
+        let folderId = null;
+        if (searchData.files && searchData.files.length > 0) {
+            folderId = searchData.files[0].id;
+        } else {
+            // 2. Create the folder if it doesn't exist
+            const createFolderRes = await fetch('https://www.googleapis.com/drive/v3/files', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: FOLDER_NAME,
+                    mimeType: 'application/vnd.google-apps.folder'
+                })
+            });
+            const folderData = await createFolderRes.json();
+            folderId = folderData.id;
+        }
+
         // Fetch the file from the URL
         const fileResponse = await fetch(file_url);
         const fileBlob = await fileResponse.blob();
@@ -26,6 +55,7 @@ Deno.serve(async (req) => {
         const metadata = {
             name: file_name,
             mimeType: mime_type,
+            parents: [folderId],
         };
 
         const form = new FormData();
