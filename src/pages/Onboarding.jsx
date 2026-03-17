@@ -175,9 +175,22 @@ export default function Onboarding() {
                   <p className="text-xs text-[#64748b]">Save recordings directly to your drive</p>
                 </div>
               </div>
-              <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => alert('We will set this up next!')}>
-                Connect
-              </Button>
+              {user.drive_connected ? (
+                <div className="flex items-center gap-1.5 text-sm font-medium text-green-600">
+                  <CheckCircle2 className="w-4 h-4" /> Connected
+                </div>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  className="text-blue-600 border-blue-200 hover:bg-blue-50" 
+                  onClick={async () => {
+                    await base44.auth.updateMe({ drive_connected: true });
+                    window.location.reload();
+                  }}
+                >
+                  Connect
+                </Button>
+              )}
             </div>
             
             <div className="flex gap-3 mt-8">
