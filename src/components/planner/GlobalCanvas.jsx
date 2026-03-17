@@ -24,6 +24,8 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    
+    let resizeTimer = null;
 
     const initCanvas = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -34,13 +36,13 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       
-      // 🛠️ FIX 3: Removed desynchronized: true which causes the Canvas to render as an opaque black screen on some platforms
       const ctx = canvas.getContext('2d', { alpha: true });
       if (!ctx) return;
       
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      // Ensure canvas starts transparent
       ctx.clearRect(0, 0, width, height);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       ctxRef.current = ctx;
 
       const localImageData = savedImageData || localStorage.getItem(`planner_drawing_${pageKey}`);
@@ -54,9 +56,46 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       }
     };
 
+    const resizeCanvas = () => {
+      if (!canvas || !ctxRef.current) return;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const newWidth = rect.width;
+      const newHeight = rect.height;
+
+      if (newWidth === 0 || newHeight === 0) return;
+      if (Math.abs(canvas.width - newWidth * dpr) < 2 && Math.abs(canvas.height - newHeight * dpr) < 2) return;
+
+      const dataUrl = canvas.toDataURL("image/png");
+      
+      canvas.width = newWidth * dpr;
+      canvas.height = newHeight * dpr;
+      
+      const ctx = ctxRef.current;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, newWidth, newHeight);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const img = new Image();
+      img.onload = () => {
+        if (canvasRef.current) ctx.drawImage(img, 0, 0, newWidth, newHeight);
+      };
+      img.src = dataUrl;
+    };
+
     const timer = setTimeout(initCanvas, 50);
+
+    const ro = new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resizeCanvas, 150);
+    });
+    ro.observe(canvas);
+
     return () => {
       clearTimeout(timer);
+      clearTimeout(resizeTimer);
+      ro.disconnect();
       if (saveTimeout.current) {
         clearTimeout(saveTimeout.current);
         saveTimeout.current = null;
