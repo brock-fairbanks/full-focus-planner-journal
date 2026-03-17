@@ -107,7 +107,7 @@ ${locationContext || ""}
 
 ${modePrompt}`;
 
-        let result = await generateContent(contents, systemInstruction, model);
+        let result = await generateContent(contents, systemInstruction, resolvedModel);
         
         const candidate = result.candidates?.[0];
         if (!candidate) {
