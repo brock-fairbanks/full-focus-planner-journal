@@ -82,52 +82,11 @@ ${locationContext || ""}`;
             throw new Error("No response from Gemini");
         }
 
-        let functionCall = null;
-        for (const part of candidate.content.parts) {
-            if (part.functionCall) {
-                functionCall = part.functionCall;
-                break;
-            }
-        }
-
         let finalResponseText = "";
 
-        if (functionCall) {
-            if (functionCall.name === 'getWeather') {
-                const { lat, lon } = functionCall.args;
-                try {
-                    const weatherData = await fetchWeather(lat, lon);
-                    
-                    // Append the assistant's function call message to contents
-                    contents.push(candidate.content);
-                    
-                    // Append the function response
-                    contents.push({
-                        role: 'function',
-                        parts: [{
-                            functionResponse: {
-                                name: 'getWeather',
-                                response: weatherData
-                            }
-                        }]
-                    });
-                    
-                    const secondResult = await generateContent(contents, systemInstruction, resolvedModel);
-                    const secondCandidate = secondResult.candidates?.[0];
-                    for (const part of secondCandidate.content.parts) {
-                        if (part.text) {
-                            finalResponseText += part.text;
-                        }
-                    }
-                } catch (e) {
-                    finalResponseText = "Sorry, I couldn't fetch the weather right now.";
-                }
-            }
-        } else {
-            for (const part of candidate.content.parts) {
-                if (part.text) {
-                    finalResponseText += part.text;
-                }
+        for (const part of candidate.content.parts) {
+            if (part.text) {
+                finalResponseText += part.text;
             }
         }
 
