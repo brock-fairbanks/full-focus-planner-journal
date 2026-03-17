@@ -29,8 +29,6 @@ const WeeklyIcon = ({ size = 24, ...props }) => (
 const DEFAULT_TABS = [
   { id: "DAILY", label: "Today", icon: Calendar },
   { id: "JOURNAL", label: "Journal", icon: BookOpen },
-  { id: "MEETING", label: "Meeting", icon: Mic },
-  { id: "CHAT", label: "AI Chat", icon: MessagesSquare },
   { id: "IDEAL_WEEK", label: "Ideal Week", icon: TrendingUp },
   { id: "QUARTERLY_GOALS", label: "Goals", icon: Target },
   { id: "RITUALS", label: "Rituals", icon: Moon },
@@ -40,8 +38,6 @@ const DEFAULT_TABS = [
 const ICONS_MAP = {
   DAILY: Calendar,
   JOURNAL: BookOpen,
-  MEETING: Mic,
-  CHAT: MessagesSquare,
   IDEAL_WEEK: TrendingUp,
   QUARTERLY_GOALS: Target,
   RITUALS: Moon,
