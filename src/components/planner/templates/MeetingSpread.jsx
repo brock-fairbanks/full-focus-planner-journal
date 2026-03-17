@@ -58,15 +58,17 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         await base44.entities.MeetingNote.update(currentNoteId, updateData);
         setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, ...updateData } : n));
       } else {
-        const title = `${type === 'lecture' ? 'Lecture' : 'Meeting'} ${new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}`;
+        const defaultTitle = `${type === 'lecture' ? 'Lecture' : 'Meeting'} ${new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}`;
+        const finalTitle = titleRef.current || defaultTitle;
         const newNote = await base44.entities.MeetingNote.create({
           date: new Date().toISOString().slice(0, 10),
-          title: title,
+          title: finalTitle,
           type: type,
           session_id: sessionIdRef.current || `manual-${Date.now()}`,
           ...updateData
         });
         setCurrentNoteId(newNote.id);
+        if (!titleRef.current) setTitle(finalTitle);
         setSavedNotes(prev => [newNote, ...prev]);
       }
 
@@ -104,10 +106,22 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
+  const handleTitleBlur = async () => {
+    if (currentNoteId && title) {
+      try {
+        await base44.entities.MeetingNote.update(currentNoteId, { title });
+        setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, title } : n));
+      } catch (err) {
+        console.error("Failed to update title", err);
+      }
+    }
+  };
+
   const loadNote = (note) => {
     setTranscription(note.transcription || "");
     setSummary(note.summary || "");
     setRecordingType(note.type || "meeting");
+    setTitle(note.title || "");
     recordingTypeRef.current = note.type || "meeting";
     setCurrentNoteId(note.id);
     sessionIdRef.current = note.session_id;
@@ -123,6 +137,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const startNew = () => {
     setTranscription("");
     setSummary("");
+    setTitle("");
     setCurrentNoteId(null);
     setDriveTextFileId(null);
     sessionIdRef.current = null;
@@ -527,10 +542,15 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       </button>
 
       <div className="flex justify-between items-center w-full max-w-5xl mb-8 relative z-30 pointer-events-auto">
-        <h1 className="text-3xl font-serif font-bold text-[#1e293b]">
-          {recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes'}
-        </h1>
-        <div className="flex gap-2">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onBlur={handleTitleBlur}
+          placeholder={recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes'}
+          className="text-3xl font-serif font-bold text-[#1e293b] bg-transparent border-b-2 border-transparent hover:border-[#cbd5e1] focus:border-[#F97316] outline-none placeholder:text-[#94a3b8] w-full max-w-[60%] transition-colors pb-1"
+        />
+        <div className="flex gap-2 shrink-0 ml-4">
           {(transcription || summary) && (
             <button 
               onClick={startNew}
