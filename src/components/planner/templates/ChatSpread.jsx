@@ -114,13 +114,15 @@ const MessageBubble = ({ message }) => {
         const utterance = new SpeechSynthesisUtterance(message.content);
         
         const voices = window.speechSynthesis.getVoices();
-        // Prefer natural-sounding voices, Google's, or specific high-quality OS voices
+        // Prefer natural-sounding male voices across different platforms
         const preferredVoice = voices.find(v => 
-            v.name.includes('Premium') || 
-            v.name.includes('Enhanced') || 
-            v.name.includes('Natural') || 
-            v.name === 'Google US English' || 
-            v.name === 'Samantha'
+            v.name.includes('David') || 
+            v.name.includes('Alex') || 
+            v.name.includes('Daniel') || 
+            v.name.includes('Arthur') || 
+            v.name.includes('Male') || 
+            v.name.includes('Mark') ||
+            v.name.includes('Aaron')
         ) || voices.find(v => v.lang.startsWith('en-'));
         
         if (preferredVoice) {
