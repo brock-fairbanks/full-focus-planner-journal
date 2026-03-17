@@ -12,6 +12,12 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [summary, setSummary] = useState("");
   const [audioUrl, setAudioUrl] = useState(null);
   const [recordingType, setRecordingType] = useState("meeting");
+  const [title, setTitleState] = useState("");
+  const titleRef = useRef("");
+  const setTitle = (t) => {
+    setTitleState(t);
+    titleRef.current = t;
+  };
   const [isPaused, setIsPaused] = useState(false);
   const manualPauseRef = useRef(false);
   const isPausedRef = useRef(false);
