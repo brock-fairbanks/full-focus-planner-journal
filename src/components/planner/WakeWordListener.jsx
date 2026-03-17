@@ -92,10 +92,29 @@ export default function WakeWordListener() {
         } catch (e) {}
     };
 
+    const playWakeSound = () => {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.05);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.15);
+        } catch (e) {}
+    };
+
     const triggerAssistant = async () => {
         if (isAssistantActiveRef.current || !conversation) return;
         isAssistantActiveRef.current = true;
         setAssistantState('listening');
+        playWakeSound();
         
         // Stop wake word listener temporarily
         try {
