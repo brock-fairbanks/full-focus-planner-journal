@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, MessageSquare, Plus, MessagesSquare, Volume2, Square, VolumeX, Mic } from 'lucide-react';
+import { Send, Loader2, MessageSquare, Plus, MessagesSquare, Volume2, Square, VolumeX, Mic, Paperclip, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Copy, Zap, CheckCircle2, AlertCircle, ChevronRight, Clock, Sparkles } from 'lucide-react';
 import { cn } from "@/lib/utils";
