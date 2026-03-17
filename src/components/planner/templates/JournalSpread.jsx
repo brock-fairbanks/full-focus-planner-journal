@@ -206,7 +206,7 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
       <div className="px-8 md:px-12 py-6 flex flex-wrap gap-8 items-center border-b border-[#E2E8F0]">
         <div className="flex flex-col">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1">Date</span>
-          <span className="font-serif text-xl text-[#1e293b]">{format(currentDate, 'EEEE, MMMM d, yyyy')}</span>
+          <span className="font-serif text-xl text-[#1e293b]">{format(currentDate, 'EEEE, MM/dd/yyyy')}</span>
         </div>
         <div className="flex flex-col flex-1 min-w-[200px]">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1 flex items-center gap-1"><MapPin size={12}/> Location</span>
