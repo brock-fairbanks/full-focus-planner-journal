@@ -269,10 +269,12 @@ export default function WakeWordListener() {
 
     // Wake word listener
     useEffect(() => {
-        if (!hasSupport) return;
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth < 768);
+        if (!hasSupport || isMobileDevice) return;
 
         let isMounted = true;
         let recognition = null;
+        let restartDelay = 1000;
 
         const initListener = async () => {
             try {
@@ -301,6 +303,7 @@ export default function WakeWordListener() {
             recognition.interimResults = true;
             
             recognition.onresult = (event) => {
+                restartDelay = 1000; // Reset backoff on success
                 if (isAssistantActiveRef.current) return;
 
                 const current = event.resultIndex;
@@ -328,7 +331,7 @@ export default function WakeWordListener() {
                         if (isMounted && recognitionRef.current === recognition) {
                             try { recognition.start(); } catch (e) {}
                         }
-                    }, 1000);
+                    }, restartDelay);
                 }
             };
 
@@ -337,6 +340,8 @@ export default function WakeWordListener() {
                 if (e.error === 'not-allowed') {
                     recognitionRef.current = null;
                     toast.error("Microphone access denied. Wake word disabled.");
+                } else if (e.error === 'aborted' || e.error === 'network') {
+                    restartDelay = Math.min(restartDelay * 1.5, 10000); // Exponential backoff to avoid looping
                 }
             };
 
