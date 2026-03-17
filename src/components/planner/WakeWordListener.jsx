@@ -54,6 +54,21 @@ export default function WakeWordListener() {
         initChat();
     }, []);
 
+    // Subscribe to conversation for streaming text
+    useEffect(() => {
+        if (!conversation) return;
+        const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
+            if (isAssistantActiveRef.current) {
+                const finalMessages = data.messages || [];
+                const latestMsg = finalMessages[finalMessages.length - 1];
+                if (latestMsg && latestMsg.role === 'model') {
+                    setLatestResponse(latestMsg.content);
+                }
+            }
+        });
+        return () => unsubscribe();
+    }, [conversation]);
+
     const playAIResponse = async (text) => {
         setAssistantState('speaking');
         try {
@@ -79,6 +94,7 @@ export default function WakeWordListener() {
     const closeAssistant = () => {
         setAssistantState('idle');
         setLatestResponse('');
+        setUserTranscript('');
         isAssistantActiveRef.current = false;
         if (audioPlayerRef.current) {
             audioPlayerRef.current.pause();
@@ -171,6 +187,8 @@ export default function WakeWordListener() {
                             if (text && text.trim()) {
                                 // Add user message and wait for AI to finish responding
                                 const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}]\n`;
+                                setUserTranscript(text.trim());
+                                setLatestResponse('');
                                 const updatedConv = await base44.agents.addMessage(currentConv, {
                                     role: "user",
                                     content: timeContext + text.trim()
@@ -229,10 +247,10 @@ export default function WakeWordListener() {
                     hasSpoken = true;
                     silenceStart = Date.now();
                 } else {
-                    if (hasSpoken && Date.now() - silenceStart > 800) {
+                    if (hasSpoken && Date.now() - silenceStart > 600) {
                         mediaRecorder.stop();
                         return;
-                    } else if (!hasSpoken && Date.now() - silenceStart > 7000) {
+                    } else if (!hasSpoken && Date.now() - silenceStart > 5000) {
                         mediaRecorder.stop();
                         return;
                     }
@@ -343,16 +361,30 @@ export default function WakeWordListener() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center justify-center pointer-events-auto gap-4">
             
             {/* Show AI text response if we are not on the chat page and there is a response */}
-            {latestResponse && assistantState === 'speaking' && location.pathname !== '/chat' && (
+            {assistantState !== 'idle' && assistantState !== 'listening' && location.pathname !== '/chat' && (
                 <div className="bg-white text-slate-800 rounded-2xl p-4 shadow-xl border border-slate-200 max-w-md w-full animate-in slide-in-from-bottom-4 fade-in duration-300">
+                    {userTranscript && (
+                        <div className="mb-3 pb-3 border-b border-slate-100">
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+                                You:
+                            </span>
+                            <div className="text-sm text-slate-600 italic">"{userTranscript}"</div>
+                        </div>
+                    )}
                     <div className="flex justify-between items-start mb-2 border-b border-slate-100 pb-2">
                         <span className="text-xs font-bold text-[#F97316] uppercase tracking-wider flex items-center gap-1">
-                            <Volume2 size={12} />
+                            {assistantState === 'speaking' ? <Volume2 size={12} /> : <Loader2 size={12} className="animate-spin" />}
                             Alex says:
                         </span>
                     </div>
                     <div className="text-sm prose prose-sm max-w-none prose-p:leading-relaxed max-h-[30vh] overflow-y-auto">
-                        <ReactMarkdown>{latestResponse}</ReactMarkdown>
+                        {latestResponse ? (
+                            <ReactMarkdown>{latestResponse}</ReactMarkdown>
+                        ) : (
+                            <span className="text-slate-400 flex items-center gap-2 italic">
+                                Thinking...
+                            </span>
+                        )}
                     </div>
                 </div>
             )}
