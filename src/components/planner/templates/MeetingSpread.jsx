@@ -616,7 +616,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {savedNotes.length > 0 ? savedNotes.map(note => (
+            {filteredNotes.length > 0 ? filteredNotes.map(note => (
               <div 
                 key={note.id} 
                 onClick={() => loadNote(note)}
