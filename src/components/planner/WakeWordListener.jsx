@@ -300,7 +300,7 @@ export default function WakeWordListener() {
             if (recognitionRef.current && !isAssistantActiveRef.current) {
                 setTimeout(() => {
                     try { recognition.start(); } catch (e) {}
-                }, 100);
+                }, 1000); // Increased from 100ms to 1000ms to prevent rapid 'aborted' loop
             }
         };
 
