@@ -538,11 +538,8 @@ export default function ChatSpread({ onClearCanvas }) {
                         onChange={(e) => setSelectedModel(e.target.value)}
                         className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]"
                     >
-                        <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
-                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                        <option value="gemini-3.1-pro-preview">Gemini 3 Pro</option>
+                        <option value="gemini-2.5-flash">Gemini 3 Flash</option>
                     </select>
                     <button
                         onClick={() => setIsVoiceMuted(!isVoiceMuted)}
