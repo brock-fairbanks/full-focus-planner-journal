@@ -27,6 +27,54 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       console.error("Failed to load history", e);
     }
   };
+
+  const saveNote = async (newTranscription, newSummary) => {
+    if (!newTranscription && !newSummary) return;
+    try {
+      const type = recordingTypeRef.current;
+      
+      if (currentNoteId) {
+        await base44.entities.MeetingNote.update(currentNoteId, {
+          transcription: newTranscription || transcription,
+          summary: newSummary || summary
+        });
+        setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, transcription: newTranscription || transcription, summary: newSummary || summary } : n));
+      } else {
+        const title = `${type === 'lecture' ? 'Lecture' : 'Meeting'} ${new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}`;
+        const newNote = await base44.entities.MeetingNote.create({
+          date: new Date().toISOString().slice(0, 10),
+          title: title,
+          type: type,
+          transcription: newTranscription || transcription,
+          summary: newSummary || "",
+          session_id: sessionIdRef.current || `manual-${Date.now()}`
+        });
+        setCurrentNoteId(newNote.id);
+        setSavedNotes(prev => [newNote, ...prev]);
+      }
+    } catch (e) {
+      console.error("Failed to save note", e);
+    }
+  };
+
+  const loadNote = (note) => {
+    setTranscription(note.transcription || "");
+    setSummary(note.summary || "");
+    setRecordingType(note.type || "meeting");
+    recordingTypeRef.current = note.type || "meeting";
+    setCurrentNoteId(note.id);
+    sessionIdRef.current = note.session_id;
+    setAudioUrl(null);
+    setShowHistory(false);
+  };
+
+  const startNew = () => {
+    setTranscription("");
+    setSummary("");
+    setCurrentNoteId(null);
+    sessionIdRef.current = null;
+    setAudioUrl(null);
+  };
   
   const recordingTypeRef = useRef("meeting");
   const mediaRecorderRef = useRef(null);
@@ -181,6 +229,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         model: "gemini_3_flash"
       });
       setSummary(result);
+      saveNote(null, result);
     } catch (err) {
       console.error("Summary error", err);
       alert("Failed to generate summary.");
@@ -200,12 +249,67 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         <span className="hidden md:inline">Clear Page</span>
       </button>
 
-      <h1 className="text-3xl font-serif font-bold mb-8 text-[#1e293b] self-start w-full max-w-5xl">
-        {recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes'}
-      </h1>
+      <div className="flex justify-between items-center w-full max-w-5xl mb-8 relative z-30 pointer-events-auto">
+        <h1 className="text-3xl font-serif font-bold text-[#1e293b]">
+          {recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes'}
+        </h1>
+        <div className="flex gap-2">
+          {(transcription || summary) && (
+            <button 
+              onClick={startNew}
+              className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
+            >
+              Start New
+            </button>
+          )}
+          <button 
+            onClick={() => setShowHistory(!showHistory)}
+            className="flex items-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
+          >
+            <History size={18} />
+            History
+          </button>
+        </div>
+      </div>
 
-      <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-8 mb-8 shadow-sm relative z-30 pointer-events-auto">
-        <div className="flex flex-col items-center justify-center gap-6">
+      {showHistory ? (
+        <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-8 mb-8 shadow-sm relative z-30 pointer-events-auto">
+          <div className="flex items-center gap-2 mb-6">
+            <button onClick={() => setShowHistory(false)} className="p-1 hover:bg-slate-100 rounded-md text-[#64748b]">
+              <ChevronLeft size={20} />
+            </button>
+            <h2 className="text-xl font-bold text-[#1e293b]">Past Recordings</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {savedNotes.length > 0 ? savedNotes.map(note => (
+              <div 
+                key={note.id} 
+                onClick={() => loadNote(note)}
+                className="p-4 border border-slate-200 rounded-lg hover:border-[#F97316] hover:shadow-md cursor-pointer transition-all bg-slate-50 hover:bg-white"
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-xs font-medium text-slate-500">{note.date}</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 capitalize">
+                    {note.type}
+                  </span>
+                </div>
+                <h3 className="font-medium text-[#1e293b] mb-2 truncate" title={note.title}>{note.title}</h3>
+                <p className="text-sm text-slate-500 line-clamp-3">
+                  {note.summary || note.transcription || "No content"}
+                </p>
+              </div>
+            )) : (
+              <div className="col-span-full text-center py-8 text-[#94a3b8]">
+                No saved recordings found.
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-8 mb-8 shadow-sm relative z-30 pointer-events-auto">
+            <div className="flex flex-col items-center justify-center gap-6">
           <div className="text-center">
             <h2 className="text-xl font-bold text-[#1e293b] mb-2">Record Audio</h2>
             <p className="text-[#64748b] text-sm">Record your audio, and AI will transcribe it for you.</p>
@@ -337,6 +441,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
