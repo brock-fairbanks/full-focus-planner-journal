@@ -14,7 +14,8 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   
   const [fullName, setFullName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [cellNumber, setCellNumber] = useState('');
+  const [businessNumber, setBusinessNumber] = useState('');
   const [locations, setLocations] = useState([]);
   const [newLocation, setNewLocation] = useState('');
   const [newAddress, setNewAddress] = useState('');
@@ -22,7 +23,8 @@ export default function Settings() {
   useEffect(() => {
     if (user) {
       setFullName(user.full_name || '');
-      setPhoneNumber(user.phone_number || '');
+      setCellNumber(user.cell_number || '');
+      setBusinessNumber(user.business_number || '');
       fetchLocations();
     }
   }, [user]);
@@ -68,7 +70,8 @@ export default function Settings() {
     try {
       await base44.auth.updateMe({
         full_name: fullName,
-        phone_number: phoneNumber
+        cell_number: cellNumber,
+        business_number: businessNumber
       });
       toast.success("Profile updated");
     } catch (e) {
@@ -107,8 +110,12 @@ export default function Settings() {
                 <Input value={user.email} disabled className="bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label>Phone Number</Label>
-                <Input value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
+                <Label>Cell Number</Label>
+                <Input value={cellNumber} onChange={e => setCellNumber(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Business Number</Label>
+                <Input value={businessNumber} onChange={e => setBusinessNumber(e.target.value)} />
               </div>
             </div>
             <Button onClick={handleSaveProfile} disabled={loading} className="bg-[#1e293b] hover:bg-[#0f172a] text-white">

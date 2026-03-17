@@ -15,7 +15,8 @@ export default function Onboarding() {
   
   // Step 1: Profile
   const [fullName, setFullName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [cellNumber, setCellNumber] = useState('');
+  const [businessNumber, setBusinessNumber] = useState('');
   
   // Step 2: Locations
   const [locations, setLocations] = useState([{ name: 'Home', address: '' }, { name: 'Office', address: '' }]);
@@ -28,7 +29,8 @@ export default function Onboarding() {
         navigate('/today');
       }
       setFullName(user.full_name || '');
-      setPhoneNumber(user.phone_number || '');
+      setCellNumber(user.cell_number || '');
+      setBusinessNumber(user.business_number || '');
     }
   }, [user, navigate]);
 
@@ -52,7 +54,8 @@ export default function Onboarding() {
     try {
       await base44.auth.updateMe({
         full_name: fullName,
-        phone_number: phoneNumber,
+        cell_number: cellNumber,
+        business_number: businessNumber,
         onboarding_completed: true
       });
       
@@ -90,8 +93,12 @@ export default function Onboarding() {
               <Input value={user.email} disabled className="bg-slate-50" />
             </div>
             <div className="space-y-2">
-              <Label>Phone Number</Label>
-              <Input value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} placeholder="+1 555 123 4567" />
+              <Label>Cell Number</Label>
+              <Input value={cellNumber} onChange={e => setCellNumber(e.target.value)} placeholder="+1 555 123 4567" />
+            </div>
+            <div className="space-y-2">
+              <Label>Business Number</Label>
+              <Input value={businessNumber} onChange={e => setBusinessNumber(e.target.value)} placeholder="+1 555 987 6543" />
             </div>
             <Button onClick={handleNext} className="w-full mt-6 bg-[#1e293b] hover:bg-[#0f172a] text-white">
               Next <ArrowRight className="ml-2 h-4 w-4" />
