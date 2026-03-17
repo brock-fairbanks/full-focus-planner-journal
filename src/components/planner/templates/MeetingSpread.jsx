@@ -441,6 +441,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           </div>
         </div>
       </div>
+        </>
       )}
     </div>
   );
