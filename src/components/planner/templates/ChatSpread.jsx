@@ -314,11 +314,21 @@ export default function ChatSpread({ onClearCanvas }) {
         }
     }, []);
 
-    const [selectedModel, setSelectedModel] = useState("gemini-3.1-pro-preview");
+    const [selectedModel, setSelectedModel] = useState(() => {
+        return localStorage.getItem("planner_chat_model") || "gemini-3.1-pro-preview";
+    });
     const selectedModelRef = useRef(selectedModel);
-    useEffect(() => { selectedModelRef.current = selectedModel; }, [selectedModel]);
+    useEffect(() => {
+        selectedModelRef.current = selectedModel;
+        localStorage.setItem("planner_chat_model", selectedModel);
+    }, [selectedModel]);
 
-    const [isVoiceMuted, setIsVoiceMuted] = useState(false);
+    const [isVoiceMuted, setIsVoiceMuted] = useState(() => {
+        return localStorage.getItem("planner_chat_voice_muted") === "true";
+    });
+    useEffect(() => {
+        localStorage.setItem("planner_chat_voice_muted", isVoiceMuted);
+    }, [isVoiceMuted]);
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
