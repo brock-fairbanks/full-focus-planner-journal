@@ -64,12 +64,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           const file = new File([audioBlob], `meeting_audio.${extension}`, { type: actualMimeType });
           const uploadRes = await base44.integrations.Core.UploadFile({ file });
           
-          // Trigger Google Drive upload in the background
-          base44.functions.invoke('uploadToGoogleDrive', {
-            file_url: uploadRes.file_url,
-            file_name: `Meeting_Recording_${new Date().toISOString().slice(0,10)}.${extension}`,
-            mime_type: actualMimeType
-          }).catch(e => console.error("Drive upload failed", e));
+          // Trigger Google Drive upload in the background if connected
+          if (user?.drive_connected) {
+            base44.functions.invoke('uploadToGoogleDrive', {
+              file_url: uploadRes.file_url,
+              file_name: `Meeting_Recording_${new Date().toISOString().slice(0,10)}.${extension}`,
+              mime_type: actualMimeType
+            }).catch(e => console.error("Drive upload failed", e));
+          }
           
           const text = await base44.integrations.Core.InvokeLLM({
             prompt: "Please transcribe the following audio file. Return only the transcription text.",
