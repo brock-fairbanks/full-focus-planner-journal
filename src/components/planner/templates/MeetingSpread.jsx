@@ -563,16 +563,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
   return (
     <div className="relative w-full min-h-full p-4 md:p-8 flex flex-col items-center bg-[#FAF9F6] pb-32">
-      <button 
-        onClick={onClearCanvas}
-        className="absolute top-4 right-4 md:top-6 md:right-6 z-30 flex items-center gap-1.5 text-sm font-medium text-[#94a3b8] hover:text-red-500 transition-colors bg-white/80 backdrop-blur-sm border border-[#E2E8F0] px-3 py-1.5 rounded-md hover:bg-red-50 shadow-sm"
-        title="Clear entire page"
-      >
-        <Trash2 size={16} />
-        <span className="hidden md:inline">Clear Page</span>
-      </button>
-
-      <div className="flex flex-col sm:flex-row justify-between items-center w-full max-w-5xl mb-6 md:mb-8 relative z-30 pointer-events-auto gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center w-full max-w-5xl mb-2 relative z-30 pointer-events-auto gap-4">
         <input
           type="text"
           value={title}
@@ -582,14 +573,6 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b] bg-transparent border-b-2 border-transparent hover:border-[#cbd5e1] focus:border-[#F97316] outline-none placeholder:text-[#94a3b8] w-full sm:max-w-[40%] md:max-w-[50%] transition-colors pb-1 text-center sm:text-left"
         />
         <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0 items-center justify-center w-full sm:w-auto">
-          {(transcription || summary) && (
-            <button 
-              onClick={startNew}
-              className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-3 py-2 rounded-lg font-medium transition-colors shadow-sm text-sm flex-1 sm:flex-none"
-            >
-              Start New
-            </button>
-          )}
           <button 
             onClick={() => setShowHistory(!showHistory)}
             className="flex items-center justify-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-3 py-2 rounded-lg font-medium transition-colors shadow-sm text-sm flex-1 sm:flex-none"
@@ -598,6 +581,17 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             History
           </button>
         </div>
+      </div>
+
+      <div className="w-full max-w-5xl flex justify-end mb-6 md:mb-8 relative z-30 pointer-events-auto">
+        <button 
+          onClick={startNew}
+          className="flex items-center gap-1.5 text-sm font-medium text-[#94a3b8] hover:text-red-500 transition-colors bg-white/80 backdrop-blur-sm border border-[#E2E8F0] px-3 py-1.5 rounded-md hover:bg-red-50 shadow-sm"
+          title="Reset page for next setup"
+        >
+          <Trash2 size={16} />
+          <span>Reset Page</span>
+        </button>
       </div>
 
       {showHistory ? (
