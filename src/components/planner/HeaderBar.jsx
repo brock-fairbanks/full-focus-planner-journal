@@ -15,7 +15,7 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
         </div>
         <div className="flex flex-col min-w-0">
           <span className="text-[#f5deb3] font-serif font-bold text-lg leading-tight tracking-wide truncate">
-            Fairbanks Builders
+            My Planner
           </span>
           <span 
             className="text-[10px] uppercase tracking-widest font-bold leading-none truncate"
