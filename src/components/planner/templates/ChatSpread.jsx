@@ -100,54 +100,58 @@ const FunctionDisplay = ({ toolCall }) => {
 const MessageBubble = ({ message }) => {
     const isUser = message.role === 'user';
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+    const audioRef = useRef(null);
 
-    const toggleSpeech = () => {
-        if (isSpeaking) {
-            window.speechSynthesis.cancel();
+    const toggleSpeech = async () => {
+        if (isSpeaking || isLoadingAudio) {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            }
             setIsSpeaking(false);
+            setIsLoadingAudio(false);
             return;
         }
         
         if (!message.content) return;
         
-        window.speechSynthesis.cancel(); // Stop any ongoing speech
-        const utterance = new SpeechSynthesisUtterance(message.content);
-        
-        const voices = window.speechSynthesis.getVoices();
-        // Prefer natural-sounding male voices across different platforms
-        const preferredVoice = voices.find(v => 
-            v.name.includes('David') || 
-            v.name.includes('Alex') || 
-            v.name.includes('Daniel') || 
-            v.name.includes('Arthur') || 
-            v.name.includes('Male') || 
-            v.name.includes('Mark') ||
-            v.name.includes('Aaron')
-        ) || voices.find(v => v.lang.startsWith('en-'));
-        
-        if (preferredVoice) {
-            utterance.voice = preferredVoice;
+        try {
+            setIsLoadingAudio(true);
+            const response = await base44.functions.invoke('generateSpeech', { text: message.content, voice: 'onyx' });
+            
+            const audioUrl = `data:audio/mp3;base64,${response.data.audioContent}`;
+            const audio = new Audio(audioUrl);
+            audioRef.current = audio;
+            
+            audio.onended = () => {
+                setIsSpeaking(false);
+            };
+            audio.onerror = () => {
+                setIsSpeaking(false);
+                setIsLoadingAudio(false);
+                toast.error("Failed to play audio");
+            };
+            
+            await audio.play();
+            setIsSpeaking(true);
+            setIsLoadingAudio(false);
+        } catch (error) {
+            console.error("Audio generation failed:", error);
+            toast.error("Failed to generate speech");
+            setIsLoadingAudio(false);
         }
-        
-        // Adjust rate slightly for a more conversational pace
-        utterance.rate = 1.05;
-        utterance.pitch = 1.0;
-        
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
-        
-        setIsSpeaking(true);
-        window.speechSynthesis.speak(utterance);
     };
 
     // Cleanup when component unmounts
     useEffect(() => {
         return () => {
-            if (isSpeaking) {
-                window.speechSynthesis.cancel();
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.src = "";
             }
         };
-    }, [isSpeaking]);
+    }, []);
     
     return (
         <div className={cn("flex gap-3", isUser ? "justify-end" : "justify-start group")}>
@@ -222,7 +226,12 @@ const MessageBubble = ({ message }) => {
                             className="flex items-center gap-1 text-xs text-slate-500 hover:text-[#F97316] transition-colors px-1"
                             title={isSpeaking ? "Stop speaking" : "Read aloud"}
                         >
-                            {isSpeaking ? (
+                            {isLoadingAudio ? (
+                                <>
+                                    <Loader2 size={12} className="animate-spin" />
+                                    <span>Loading...</span>
+                                </>
+                            ) : isSpeaking ? (
                                 <>
                                     <Square size={12} className="fill-current" />
                                     <span>Stop</span>
