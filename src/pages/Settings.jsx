@@ -82,7 +82,7 @@ export default function Settings() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#F4EFE4] p-4 md:p-8 font-sans">
+    <div className="h-screen overflow-y-auto bg-[#F4EFE4] p-4 md:p-8 font-sans pb-32">
       <div className="max-w-3xl mx-auto">
         <button 
           onClick={() => navigate('/today')}
