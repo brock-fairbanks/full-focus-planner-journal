@@ -788,7 +788,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           </div>
           <div className="bg-white border-2 border-[#cbd5e1] rounded-xl p-6 flex-1 h-[400px] max-h-[50vh] whitespace-pre-wrap overflow-y-auto">
             {transcription ? (
-              <span className="text-[#334155] leading-relaxed font-sans">{transcription}</span>
+              <span className="text-[#334155] leading-relaxed font-sans">
+                <HighlightText text={transcription} highlight={searchQuery} />
+              </span>
             ) : (
               <span className="text-[#94a3b8] italic font-sans">Transcription will appear here...</span>
             )}
