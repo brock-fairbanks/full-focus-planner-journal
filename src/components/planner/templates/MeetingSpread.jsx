@@ -230,6 +230,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       setAudioUrl(null);
       setIsRecording(true);
       
+      await requestWakeLock();
+      
       startRecorderInstance(stream);
     } catch (err) {
       console.error("Failed to start recording", err);
@@ -243,6 +245,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       setIsProcessing(true);
       setIsRecording(false);
       mediaRecorderRef.current.stop();
+      releaseWakeLock();
     }
   };
 
