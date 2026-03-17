@@ -188,7 +188,7 @@ const MessageBubble = ({ message, isVoiceMuted, isLatest, isSending }) => {
                         isUser ? "bg-[#F97316] text-white" : "bg-white border border-slate-200 text-slate-800"
                     )}>
                         {isUser ? (
-                            <p className="text-sm leading-relaxed">{message.content}</p>
+                            <p className="text-sm leading-relaxed">{message.content.replace(/\[System Context:.*?\]\n?/g, '')}</p>
                         ) : (
                             <ReactMarkdown 
                                 className="text-sm prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-p:leading-relaxed"
