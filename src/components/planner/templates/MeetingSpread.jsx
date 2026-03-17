@@ -86,7 +86,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         await base44.entities.MeetingNote.update(currentNoteId, updateData);
         setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, ...updateData } : n));
       } else {
-        const defaultTitle = `${type === 'lecture' ? 'Lecture' : 'Meeting'} ${new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}`;
+        const defaultTitle = `${type === 'lecture' ? 'Lecture' : 'Meeting'} ${format(new Date(), "MM/dd/yyyy h:mm a")}`;
         const finalTitle = titleRef.current || defaultTitle;
         const newNote = await base44.entities.MeetingNote.create({
           date: new Date().toISOString().slice(0, 10),
