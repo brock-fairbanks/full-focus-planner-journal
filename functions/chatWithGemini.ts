@@ -81,31 +81,14 @@ Deno.serve(async (req) => {
 
         contents.push({ role: 'user', parts: [{ text: userText }] });
 
-        // Map model selection to operational mode
-        const modeInstructions = {
-            'gemini-2.5-flash': `OPERATIONAL MODE: Fast Site Notes
-You are processing raw audio dictation from a Shure MV88+ microphone on a construction site. Clean up dictation into concise bullet points. Fix grammar, remove filler words ("um", "uh", "like"), but preserve all raw field observations exactly as stated. Do not infer or add information not present in the audio. If material costs are mentioned, format them as a markdown table with columns: | Item | Estimated Cost | Quantity |. End every response with a bold "**Next Step for Fairbanks:**" action item.`,
-            'gemini-3.1-pro-preview': `OPERATIONAL MODE: Structural Analysis
-You are a senior construction analyst processing field notes and transcripts for Fairbanks Builders. Perform deep structural analysis. Flag any potential code violations mentioned using ⚠️. Highlight changes to structural members, load paths, or load-bearing elements with 🔴. Use correct construction terminology: punch list, sub-floor, load-bearing, RFI, LVL, OSB, shear wall, etc. If material costs are mentioned, format them as a markdown table: | Item | Estimated Cost | Quantity |. End every response with a bold "**Next Step for Fairbanks:**" action item.`
-        };
-
-        const meetingMode = `OPERATIONAL MODE: Meeting Summary
-Extract and organize into three sections:
-**Action Items** — who owns it and by when.
-**Deadlines** — hard dates mentioned.
-**Decisions Made** — final choices confirmed in the meeting.
-Group all items by trade where applicable: Electrical, Plumbing, Framing, General. Use correct construction terminology. If material costs are mentioned, format them as a markdown table: | Item | Estimated Cost | Quantity |. End every response with a bold "**Next Step for Fairbanks:**" action item.`;
-
-        const isMeetingModel = model === 'meeting';
-        const resolvedModel = isMeetingModel ? 'gemini-3.1-pro-preview' : model;
-        const modePrompt = isMeetingModel ? meetingMode : (modeInstructions[model] || modeInstructions['gemini-3.1-pro-preview']);
-
-        const systemInstruction = `You are the Fairbanks Builders AI Project Assistant. Brand voice: professional, rugged, concise, structural. Never use filler phrases like "I hope this helps." Just give the data.
-
+        const userFirstName = user?.full_name ? user.full_name.split(' ')[0] : 'User';
+        
+        const systemInstruction = `You are a helpful planner assistant. Always address the user by their first name: ${userFirstName}.
+        
 Current Date/Time: ${new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })} (America/Chicago).
-${locationContext || ""}
+${locationContext || ""}`;
 
-${modePrompt}`;
+        const resolvedModel = model === 'meeting' ? 'gemini-3.1-pro-preview' : model;
 
         let result = await generateContent(contents, systemInstruction, resolvedModel);
         
