@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Target, Moon, TrendingUp, BookOpen, Sun, Coffee, CalendarDays, LogOut, Mic, Settings } from "lucide-react";
+import { Calendar, Target, Moon, TrendingUp, BookOpen, Sun, Coffee, CalendarDays, LogOut, Mic, Settings, MessagesSquare } from "lucide-react";
 import { Reorder } from "framer-motion";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
@@ -30,6 +30,7 @@ const DEFAULT_TABS = [
   { id: "DAILY", label: "Today", icon: Calendar },
   { id: "JOURNAL", label: "Journal", icon: BookOpen },
   { id: "MEETING", label: "Meeting", icon: Mic },
+  { id: "CHAT", label: "AI Chat", icon: MessagesSquare },
   { id: "IDEAL_WEEK", label: "Ideal Week", icon: TrendingUp },
   { id: "QUARTERLY_GOALS", label: "Goals", icon: Target },
   { id: "RITUALS", label: "Rituals", icon: Moon },
@@ -40,6 +41,7 @@ const ICONS_MAP = {
   DAILY: Calendar,
   JOURNAL: BookOpen,
   MEETING: Mic,
+  CHAT: MessagesSquare,
   IDEAL_WEEK: TrendingUp,
   QUARTERLY_GOALS: Target,
   RITUALS: Moon,

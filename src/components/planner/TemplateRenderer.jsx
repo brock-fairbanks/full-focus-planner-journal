@@ -6,6 +6,7 @@ import Rituals from "./templates/Rituals.jsx";
 import WeeklyReview from "./templates/WeeklyReview.jsx";
 import JournalSpread from "./templates/JournalSpread.jsx";
 import MeetingSpread from "./templates/MeetingSpread.jsx";
+import ChatSpread from "./templates/ChatSpread.jsx";
 
 export default function TemplateRenderer({ template, date, onSubSectionChange, onClearCanvas, journalMode }) {
   const templates = {
@@ -16,6 +17,7 @@ export default function TemplateRenderer({ template, date, onSubSectionChange, o
     WEEKLY: <WeeklyReview date={date} onClearCanvas={onClearCanvas} />,
     JOURNAL: <JournalSpread date={date} onSubSectionChange={onSubSectionChange} onClearCanvas={onClearCanvas} journalMode={journalMode} />,
     MEETING: <MeetingSpread date={date} onClearCanvas={onClearCanvas} />,
+    CHAT: <ChatSpread date={date} onClearCanvas={onClearCanvas} />,
   };
 
   const component = templates[template];

@@ -28,6 +28,7 @@ const AuthenticatedApp = () => {
       <Route path="/goals" element={<Planner />} />
       <Route path="/journal" element={<Planner />} />
       <Route path="/meeting" element={<Planner />} />
+      <Route path="/chat" element={<Planner />} />
       {/* Safety Fallback */}
       <Route path="*" element={<div className="h-screen w-screen bg-[#F4EFE4] flex items-center justify-center font-serif">Path Not Found</div>} />
     </Routes>

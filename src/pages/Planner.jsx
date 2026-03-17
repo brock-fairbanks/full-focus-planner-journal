@@ -20,6 +20,7 @@ export default function Planner() {
     if (p.includes("goals")) return "QUARTERLY_GOALS";
     if (p.includes("journal")) return "JOURNAL";
     if (p.includes("meeting")) return "MEETING";
+    if (p.includes("chat")) return "CHAT";
     return "DAILY";
   }, []);
 
@@ -120,7 +121,8 @@ export default function Planner() {
       IDEAL_WEEK: "/ideal-week",
       QUARTERLY_GOALS: "/goals",
       JOURNAL: "/journal",
-      MEETING: "/meeting"
+      MEETING: "/meeting",
+      CHAT: "/chat"
     };
     navigate(pathMap[templateId] || "/today");
   };
