@@ -171,7 +171,7 @@ export default function Planner() {
                 onClick={() => handleTabChange("MEETING")}
                 className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-md transition-colors ${activeTemplate === 'MEETING' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
             >
-                <Mic size={16} /> Meeting Notes
+                <Mic size={16} /> Meeting/Lecture
             </button>
             <button 
                 onClick={() => handleTabChange("CHAT")}
