@@ -29,26 +29,26 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
-  const saveNote = async (newTranscription, newSummary) => {
-    if (!newTranscription && !newSummary) return;
+  const saveNote = async (newTranscription, newSummary, newAudioUrl = null) => {
+    if (!newTranscription && !newSummary && !newAudioUrl) return;
     try {
       const type = recordingTypeRef.current;
+      const updateData = {};
+      if (newTranscription !== null) updateData.transcription = newTranscription || transcription;
+      if (newSummary !== null) updateData.summary = newSummary || summary;
+      if (newAudioUrl !== null) updateData.audio_url = newAudioUrl;
       
       if (currentNoteId) {
-        await base44.entities.MeetingNote.update(currentNoteId, {
-          transcription: newTranscription || transcription,
-          summary: newSummary || summary
-        });
-        setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, transcription: newTranscription || transcription, summary: newSummary || summary } : n));
+        await base44.entities.MeetingNote.update(currentNoteId, updateData);
+        setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, ...updateData } : n));
       } else {
         const title = `${type === 'lecture' ? 'Lecture' : 'Meeting'} ${new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}`;
         const newNote = await base44.entities.MeetingNote.create({
           date: new Date().toISOString().slice(0, 10),
           title: title,
           type: type,
-          transcription: newTranscription || transcription,
-          summary: newSummary || "",
-          session_id: sessionIdRef.current || `manual-${Date.now()}`
+          session_id: sessionIdRef.current || `manual-${Date.now()}`,
+          ...updateData
         });
         setCurrentNoteId(newNote.id);
         setSavedNotes(prev => [newNote, ...prev]);
@@ -65,7 +65,12 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     recordingTypeRef.current = note.type || "meeting";
     setCurrentNoteId(note.id);
     sessionIdRef.current = note.session_id;
-    setAudioUrl(null);
+    if (note.audio_url) {
+      const ext = note.audio_url.split('.').pop()?.split('?')[0] || 'webm';
+      setAudioUrl({ url: note.audio_url, extension: ext });
+    } else {
+      setAudioUrl(null);
+    }
     setShowHistory(false);
   };
 
@@ -149,7 +154,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       
       setTranscription(prev => {
         const newText = prev ? prev + "\n\n" + text : text;
-        saveNote(newText, null);
+        saveNote(newText, null, uploadRes.file_url);
         return newText;
       });
     } catch (err) {
