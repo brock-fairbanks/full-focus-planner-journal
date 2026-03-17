@@ -184,6 +184,16 @@ export default function Settings() {
               </Button>
             </div>
           </div>
+
+          {/* Advanced Section */}
+          <div className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-6">
+            <h2 className="text-xl font-bold text-[#1e293b] mb-4">Advanced</h2>
+            <div className="flex flex-col gap-2 max-w-md">
+              <Button onClick={() => navigate('/onboarding')} variant="outline" className="w-full text-[#64748b] hover:text-[#1e293b]">
+                Re-run Onboarding Wizard
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
