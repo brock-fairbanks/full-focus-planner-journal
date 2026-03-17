@@ -665,14 +665,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               <button
                 onClick={() => handleTypeChange('meeting')}
                 title="Shorter, action-focused summary tailored for meetings and decisions"
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'meeting' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'meeting' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
               >
                 Meeting
               </button>
               <button
                 onClick={() => handleTypeChange('lecture')}
                 title="Detailed, comprehensive summary tailored for educational lectures and concepts"
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'lecture' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'lecture' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
               >
                 Lecture
               </button>
