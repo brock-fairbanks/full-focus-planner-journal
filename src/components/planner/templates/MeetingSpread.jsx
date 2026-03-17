@@ -386,6 +386,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     } else if (mediaRecorderRef.current.state === "paused") {
       mediaRecorderRef.current.resume();
       manualPauseRef.current = false;
+      autoPausedRef.current = false;
       setIsPaused(false);
     }
   };
