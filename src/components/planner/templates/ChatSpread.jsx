@@ -347,7 +347,7 @@ export default function ChatSpread({ onClearCanvas }) {
                             const text = res.data.text;
                             
                             if (text && text.trim()) {
-                                setMessages(prev => [...prev, { role: 'user', content: text.trim() }]);
+                                setMessages(prev => [...prev, { role: 'user', content: text.trim(), isOptimistic: true }]);
                                 await base44.functions.invoke('chatWithGemini', {
                                     userText: text.trim(),
                                     locationContext,
@@ -504,7 +504,7 @@ export default function ChatSpread({ onClearCanvas }) {
 
         try {
             // Optimistic update
-            setMessages(prev => [...prev, { role: 'user', content: userText }]);
+            setMessages(prev => [...prev, { role: 'user', content: userText, isOptimistic: true }]);
             
             await base44.functions.invoke('chatWithGemini', {
                 userText,
