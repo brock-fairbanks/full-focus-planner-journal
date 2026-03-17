@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import Planner from './pages/Planner.jsx';
 import Onboarding from './pages/Onboarding.jsx';
 import Settings from './pages/Settings.jsx';
+import WakeWordListener from '@/components/planner/WakeWordListener.jsx';
 
 const AuthenticatedApp = () => {
   const { user } = useAuth();
@@ -15,7 +16,9 @@ const AuthenticatedApp = () => {
   }
 
   return (
-    <Routes>
+    <>
+      <WakeWordListener />
+      <Routes>
       <Route path="/" element={<Navigate to="/today" replace />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/settings" element={<Settings />} />
@@ -32,6 +35,7 @@ const AuthenticatedApp = () => {
       {/* Safety Fallback */}
       <Route path="*" element={<div className="h-screen w-screen bg-[#F4EFE4] flex items-center justify-center font-serif">Path Not Found</div>} />
     </Routes>
+    </>
   );
 };
 

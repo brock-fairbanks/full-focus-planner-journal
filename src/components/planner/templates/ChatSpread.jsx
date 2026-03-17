@@ -398,6 +398,33 @@ export default function ChatSpread({ onClearCanvas }) {
         }
     }, [messages]);
 
+    const isRecordingRef = useRef(isRecording);
+    const isLoadingRef = useRef(isLoading);
+    const isSendingRef = useRef(isSending);
+    
+    useEffect(() => { isRecordingRef.current = isRecording; }, [isRecording]);
+    useEffect(() => { isLoadingRef.current = isLoading; }, [isLoading]);
+    useEffect(() => { isSendingRef.current = isSending; }, [isSending]);
+
+    useEffect(() => {
+        const handleWakeWord = () => {
+            if (!isRecordingRef.current && !isLoadingRef.current && !isSendingRef.current) {
+                const recordBtn = document.getElementById('voice-record-btn');
+                if (recordBtn) recordBtn.click();
+            }
+        };
+
+        window.addEventListener('wakeword-detected', handleWakeWord);
+        
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('autoRecord') === 'true') {
+            window.history.replaceState({}, '', '/chat');
+            setTimeout(() => handleWakeWord(), 800);
+        }
+
+        return () => window.removeEventListener('wakeword-detected', handleWakeWord);
+    }, []);
+
     const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim() || !conversation) return;
@@ -520,6 +547,7 @@ export default function ChatSpread({ onClearCanvas }) {
                                     disabled={isLoading || isSending}
                                     className="bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 p-3 rounded-xl shadow-sm h-full aspect-square"
                                     title="Voice Message"
+                                    id="voice-record-btn"
                                 >
                                     <Mic className="w-5 h-5" />
                                 </Button>
