@@ -450,7 +450,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       let silenceStart = null;
-      let autoPaused = false;
+      autoPausedRef.current = false;
 
       const checkAudioLevel = () => {
         if (!isRecordingRef.current) {
@@ -467,19 +467,19 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
         if (average < 2) {
           if (!silenceStart) silenceStart = Date.now();
-          else if (Date.now() - silenceStart > 10000 && !autoPaused && !manualPauseRef.current) { 
+          else if (Date.now() - silenceStart > 10000 && !autoPausedRef.current && !manualPauseRef.current) { 
             if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
               mediaRecorderRef.current.pause();
-              autoPaused = true;
+              autoPausedRef.current = true;
               setIsPaused(true);
             }
           }
         } else {
           silenceStart = null;
-          if (autoPaused && !manualPauseRef.current) {
+          if (autoPausedRef.current && !manualPauseRef.current) {
             if (mediaRecorderRef.current && mediaRecorderRef.current.state === "paused") {
               mediaRecorderRef.current.resume();
-              autoPaused = false;
+              autoPausedRef.current = false;
               setIsPaused(false);
             }
           }
