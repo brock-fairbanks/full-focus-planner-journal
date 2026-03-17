@@ -755,6 +755,58 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         </div>
       </div>
 
+      <div className="w-full max-w-5xl mb-6 relative z-30 pointer-events-auto">
+        <div className="relative w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+          <input 
+            type="text" 
+            placeholder="Search through all transcriptions and summaries..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 hover:border-[#cbd5e1] rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white shadow-sm transition-all"
+          />
+        </div>
+      </div>
+
+      {searchQuery.trim() ? (
+        <div className="w-full max-w-5xl flex flex-col gap-6 relative z-30 pointer-events-auto mb-8">
+          {filteredNotes.length > 0 ? filteredNotes.map(note => (
+            <div key={note.id} className="bg-white border-2 border-[#cbd5e1] rounded-xl p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-serif font-bold text-[#1e293b]">{note.title || "Untitled"}</h3>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 capitalize">
+                    {note.type}
+                  </span>
+                </div>
+                <span className="text-sm font-medium text-slate-500">{note.date}</span>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="flex flex-col">
+                  <h4 className="text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+                    <FileText size={16} /> Transcription
+                  </h4>
+                  <div className="bg-slate-50 border border-slate-100 p-4 rounded-lg text-sm text-[#334155] max-h-60 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+                    <HighlightText text={note.transcription || "No transcription"} highlight={searchQuery} />
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <h4 className="text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+                    <Sparkles size={16} className="text-[#F97316]" /> AI Summary
+                  </h4>
+                  <div className="bg-slate-50 border border-slate-100 p-4 rounded-lg text-sm text-[#334155] max-h-60 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+                    <HighlightText text={note.summary || "No summary"} highlight={searchQuery} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )) : (
+            <div className="bg-white border-2 border-[#cbd5e1] rounded-xl p-8 text-center text-slate-500 shadow-sm">
+              No results found for "{searchQuery}"
+            </div>
+          )}
+        </div>
+      ) : (
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-30 pointer-events-auto">
         {/* Transcription Area */}
         <div className="flex flex-col h-full pointer-events-auto">
