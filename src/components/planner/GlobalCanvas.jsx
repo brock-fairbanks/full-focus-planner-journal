@@ -330,15 +330,38 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       const y = (ev.clientY - rect.top) * scaleY;
       pointsRef.current.push({x, y});
       
-      ctxRef.current.lineTo(x, y);
+      const pts = pointsRef.current;
       
-      if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
-         ctxRef.current.lineWidth = ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2;
+      if (pts.length >= 3) {
+        const lastTwo = pts[pts.length - 2];
+        const lastOne = pts[pts.length - 1];
+        const lastThree = pts[pts.length - 3];
+        
+        const midX1 = (lastThree.x + lastTwo.x) / 2;
+        const midY1 = (lastThree.y + lastTwo.y) / 2;
+        const midX2 = (lastTwo.x + lastOne.x) / 2;
+        const midY2 = (lastTwo.y + lastOne.y) / 2;
+        
+        ctxRef.current.beginPath();
+        ctxRef.current.moveTo(midX1, midY1);
+        ctxRef.current.quadraticCurveTo(lastTwo.x, lastTwo.y, midX2, midY2);
+        
+        if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
+           ctxRef.current.lineWidth = ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2;
+        }
+        
+        ctxRef.current.stroke();
+      } else if (pts.length === 2) {
+        ctxRef.current.beginPath();
+        ctxRef.current.moveTo(pts[0].x, pts[0].y);
+        ctxRef.current.lineTo(pts[1].x, pts[1].y);
+        
+        if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
+           ctxRef.current.lineWidth = ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2;
+        }
+        
+        ctxRef.current.stroke();
       }
-      
-      ctxRef.current.stroke();
-      ctxRef.current.beginPath();
-      ctxRef.current.moveTo(x, y);
     }
   };
 
