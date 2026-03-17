@@ -15,18 +15,19 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const partNumberRef = useRef(1);
   const streamRef = useRef(null);
   const isRecordingRef = useRef(false);
+  const sessionIdRef = useRef(null);
 
   const processChunk = async (audioBlob, partNum, mimeType, extension, isFinal) => {
     if (isFinal) setIsProcessing(true);
     try {
-      const fileName = partNum > 1 ? `meeting_audio_part${partNum}.${extension}` : `meeting_audio.${extension}`;
+      const dateStr = new Date().toISOString().slice(0,10);
+      const sessionId = sessionIdRef.current || 'unknown';
+      const fileName = `meeting_${dateStr}_${sessionId}_part${partNum}.${extension}`;
       const file = new File([audioBlob], fileName, { type: mimeType });
       const uploadRes = await base44.integrations.Core.UploadFile({ file });
       
       if (user?.drive_connected) {
-        const driveFileName = partNum > 1 
-          ? `Meeting_Recording_${new Date().toISOString().slice(0,10)}_Part${partNum}.${extension}`
-          : `Meeting_Recording_${new Date().toISOString().slice(0,10)}.${extension}`;
+        const driveFileName = `Meeting_${dateStr}_ID-${sessionId}_Part${partNum}.${extension}`;
           
         base44.functions.invoke('uploadToGoogleDrive', {
           file_url: uploadRes.file_url,
