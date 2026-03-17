@@ -45,9 +45,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     if (isRecording) {
       document.title = isPaused ? "⏸ Paused - Planner" : "🔴 Recording - Planner";
     } else {
-      document.title = "Fairbanks Builders";
+      document.title = "Planner";
     }
-    return () => { document.title = "Fairbanks Builders"; };
+    return () => { document.title = "Planner"; };
   }, [isPaused, isRecording]);
   const [savedNotes, setSavedNotes] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
