@@ -271,14 +271,6 @@ export default function ChatSpread({ onClearCanvas }) {
                     <h1 className="text-3xl font-serif font-bold text-[#1e293b]">AI Assistant</h1>
                 </div>
                 <div className="flex gap-3 items-center">
-                    <a 
-                        href={base44.agents.getWhatsAppConnectURL('planner_assistant')} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm font-semibold text-green-600 hover:text-green-700 bg-green-50 px-4 py-2 rounded-lg transition-colors border border-green-100 flex items-center gap-2"
-                    >
-                        💬 WhatsApp
-                    </a>
                     <button 
                         onClick={startNewConversation}
                         className="flex items-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm text-sm"
