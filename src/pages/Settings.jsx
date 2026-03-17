@@ -17,6 +17,7 @@ export default function Settings() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [locations, setLocations] = useState([]);
   const [newLocation, setNewLocation] = useState('');
+  const [newAddress, setNewAddress] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -39,9 +40,13 @@ export default function Settings() {
   const addLocation = async () => {
     if (!newLocation.trim()) return;
     try {
-      const loc = await base44.entities.Location.create({ name: newLocation.trim() });
+      const loc = await base44.entities.Location.create({ 
+        name: newLocation.trim(),
+        address: newAddress.trim()
+      });
       setLocations([...locations, loc]);
       setNewLocation('');
+      setNewAddress('');
     } catch (e) {
       console.error(e);
       toast.error("Failed to add location");
@@ -117,27 +122,39 @@ export default function Settings() {
             <h2 className="text-xl font-bold text-[#1e293b] mb-4">Locations</h2>
             <div className="space-y-2 mb-4 max-w-md">
               {locations.map((loc) => (
-                <div key={loc.id} className="flex items-center justify-between bg-slate-50 px-3 py-2 rounded-lg border border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-[#F97316]" />
-                    <span className="text-[#334155]">{loc.name}</span>
+                <div key={loc.id} className="flex flex-col bg-slate-50 px-3 py-2 rounded-lg border border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-[#F97316]" />
+                      <span className="text-[#334155] font-medium">{loc.name}</span>
+                    </div>
+                    <button onClick={() => removeLocation(loc.id)} className="text-slate-400 hover:text-red-500">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
-                  <button onClick={() => removeLocation(loc.id)} className="text-slate-400 hover:text-red-500">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  {loc.address && (
+                    <div className="mt-1 ml-6 text-sm text-[#64748b]">
+                      {loc.address}
+                    </div>
+                  )}
                 </div>
               ))}
               {locations.length === 0 && <p className="text-sm text-[#64748b]">No locations saved yet.</p>}
             </div>
-            <div className="flex gap-2 max-w-md">
+            <div className="flex flex-col gap-2 max-w-md">
               <Input 
                 value={newLocation} 
                 onChange={e => setNewLocation(e.target.value)} 
-                placeholder="New location name..." 
+                placeholder="Location name (e.g. Home)" 
+              />
+              <Input 
+                value={newAddress} 
+                onChange={e => setNewAddress(e.target.value)} 
+                placeholder="Physical address (optional)" 
                 onKeyDown={e => e.key === 'Enter' && addLocation()}
               />
-              <Button onClick={addLocation} variant="outline" className="shrink-0">
-                <Plus className="h-4 w-4" /> Add
+              <Button onClick={addLocation} variant="outline" className="w-full">
+                <Plus className="h-4 w-4 mr-2" /> Add Location
               </Button>
             </div>
           </div>
