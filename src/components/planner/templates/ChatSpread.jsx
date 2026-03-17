@@ -298,6 +298,23 @@ export default function ChatSpread({ onClearCanvas }) {
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
+    const handlePaste = (e) => {
+        const items = e.clipboardData?.items;
+        if (!items) return;
+        
+        const filesToUpload = [];
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1 || items[i].type.indexOf('pdf') !== -1) {
+                const file = items[i].getAsFile();
+                if (file) filesToUpload.push(file);
+            }
+        }
+        
+        if (filesToUpload.length > 0) {
+            setSelectedFiles(prev => [...prev, ...filesToUpload]);
+        }
+    };
+
     const removeFile = (index) => {
         setSelectedFiles(prev => prev.filter((_, i) => i !== index));
     };
