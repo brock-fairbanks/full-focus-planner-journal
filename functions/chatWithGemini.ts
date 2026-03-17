@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
         if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
         const body = await req.json();
-        const { userText, locationContext, model = 'gemini-3.1-pro-preview' } = body;
+        const { userText, locationContext, model = 'gemini-3.1-pro-preview', files = [] } = body;
         
         // Fetch recent history
         const rawHistory = await base44.entities.GeminiMessage.list('-created_date', 10);
@@ -45,7 +45,35 @@ Deno.serve(async (req) => {
             parts: [{ text: m.content || '' }]
         }));
 
-        contents.push({ role: 'user', parts: [{ text: userText }] });
+        let fileParts = [];
+        for (const file of files) {
+            try {
+                const fileRes = await fetch(file.url);
+                if (!fileRes.ok) continue;
+                const fileBuffer = await fileRes.arrayBuffer();
+
+                const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Goog-Upload-Protocol': 'raw',
+                        'X-Goog-Upload-Header-Content-Type': file.mimeType || 'application/octet-stream',
+                        'Content-Type': file.mimeType || 'application/octet-stream',
+                    },
+                    body: fileBuffer
+                });
+                
+                if (uploadRes.ok) {
+                    const uploadData = await uploadRes.json();
+                    fileParts.push({ fileData: { mimeType: file.mimeType || 'application/octet-stream', fileUri: uploadData.file.uri } });
+                }
+            } catch (e) {
+                console.error("File upload failed", e);
+            }
+        }
+
+        const userParts = [{ text: userText }];
+        userParts.push(...fileParts);
+        contents.push({ role: 'user', parts: userParts });
 
         const userFirstName = user?.full_name ? user.full_name.split(' ')[0] : 'User';
         
