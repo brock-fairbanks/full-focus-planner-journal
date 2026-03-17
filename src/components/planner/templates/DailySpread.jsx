@@ -5,7 +5,7 @@ import { Trash2 } from "lucide-react";
 
 export default function DailySpread({ date, onSubSectionChange, onClearCanvas }) {
   const HOURS = Array.from({ length: 17 }, (_, i) => 5 + i); // 5 AM to 9 PM
-  const [activeSubSection, setActiveSubSection] = useState("Big 3");
+  const [activeSubSection, setActiveSubSection] = useState("Schedule");
 
   const [tabs, setTabs] = useState(() => {
     const saved = localStorage.getItem("planner_daily_tabs_order");
@@ -14,7 +14,7 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
         return JSON.parse(saved);
       } catch (e) {}
     }
-    return ["Big 3", "Schedule", "Tasks", "Notes"];
+    return ["Schedule", "Big 3", "Tasks", "Notes"];
   });
 
   const handleReorder = (newOrder) => {
