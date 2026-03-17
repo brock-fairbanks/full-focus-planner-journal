@@ -1,9 +1,88 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, MapPin, CloudSun, History, Compass, Sparkles, Mail } from "lucide-react";
 import { format } from "date-fns";
+import { base44 } from "@/api/base44Client";
 
 export default function JournalSpread({ date, onSubSectionChange, onClearCanvas, journalMode = "DAILY" }) {
   const currentDate = date || new Date();
+  
+  const [currentLocationName, setCurrentLocationName] = useState("");
+  const [isLocating, setIsLocating] = useState(false);
+
+  useEffect(() => {
+    const detectLocation = async () => {
+      setIsLocating(true);
+      try {
+        const locs = await base44.entities.Location.list();
+        
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            
+            let matchedName = "";
+            let minDistance = Infinity;
+
+            for (const loc of locs) {
+              if (!loc.address) continue;
+              
+              try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc.address)}`);
+                const data = await res.json();
+                if (data && data.length > 0) {
+                  const locLat = parseFloat(data[0].lat);
+                  const locLon = parseFloat(data[0].lon);
+                  
+                  const R = 6371e3;
+                  const phi1 = latitude * Math.PI/180;
+                  const phi2 = locLat * Math.PI/180;
+                  const dPhi = (locLat-latitude) * Math.PI/180;
+                  const dLam = (locLon-longitude) * Math.PI/180;
+
+                  const a = Math.sin(dPhi/2) * Math.sin(dPhi/2) +
+                            Math.cos(phi1) * Math.cos(phi2) *
+                            Math.sin(dLam/2) * Math.sin(dLam/2);
+                  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                  const d = R * c;
+
+                  // 500 meters threshold
+                  if (d < 500 && d < minDistance) {
+                    minDistance = d;
+                    matchedName = loc.name;
+                  }
+                }
+                // Be nice to Nominatim AUP
+                await new Promise(r => setTimeout(r, 1000));
+              } catch (e) {
+                console.error(e);
+              }
+            }
+            
+            if (matchedName) {
+              setCurrentLocationName(matchedName);
+            } else {
+               const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+               const revData = await revRes.json();
+               if (revData && revData.address) {
+                 const city = revData.address.city || revData.address.town || revData.address.village || revData.address.county || "";
+                 setCurrentLocationName(city);
+               }
+            }
+            setIsLocating(false);
+          }, (error) => {
+            console.error("Geolocation error:", error);
+            setIsLocating(false);
+          });
+        } else {
+          setIsLocating(false);
+        }
+      } catch (err) {
+        console.error(err);
+        setIsLocating(false);
+      }
+    };
+    
+    detectLocation();
+  }, []);
 
   const layoutMode = journalMode;
 
@@ -131,7 +210,9 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
         </div>
         <div className="flex flex-col flex-1 min-w-[200px]">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1 flex items-center gap-1"><MapPin size={12}/> Location</span>
-          <div className="border-b-2 border-[#cbd5e1] h-7 w-full max-w-[300px]"></div>
+          <div className="border-b-2 border-[#cbd5e1] h-7 w-full max-w-[300px] flex items-end pb-1 text-[#334155] font-serif italic text-lg leading-none">
+            {isLocating ? <span className="text-sm text-[#94a3b8] animate-pulse not-italic font-sans">Locating...</span> : currentLocationName}
+          </div>
         </div>
         <div className="flex flex-col">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1 flex items-center gap-1"><CloudSun size={12}/> Weather</span>
