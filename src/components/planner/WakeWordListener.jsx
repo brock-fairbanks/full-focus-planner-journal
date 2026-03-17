@@ -148,6 +148,7 @@ export default function WakeWordListener() {
                                 const latestMsg = finalMessages[finalMessages.length - 1];
                                 
                                 if (latestMsg && latestMsg.role === 'model' && latestMsg.content) {
+                                    setLatestResponse(latestMsg.content);
                                     playAIResponse(latestMsg.content);
                                 } else {
                                     closeAssistant();
