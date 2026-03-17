@@ -3,6 +3,7 @@ import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download, History, Ch
 import { base44 } from "@/api/base44Client";
 import { jsPDF } from "jspdf";
 import { useAuth } from '@/lib/AuthContext';
+import { format } from 'date-fns';
 
 const HighlightText = ({ text, highlight }) => {
   if (!highlight || !highlight.trim()) {
