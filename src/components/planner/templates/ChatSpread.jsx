@@ -113,6 +113,24 @@ const MessageBubble = ({ message }) => {
         window.speechSynthesis.cancel(); // Stop any ongoing speech
         const utterance = new SpeechSynthesisUtterance(message.content);
         
+        const voices = window.speechSynthesis.getVoices();
+        // Prefer natural-sounding voices, Google's, or specific high-quality OS voices
+        const preferredVoice = voices.find(v => 
+            v.name.includes('Premium') || 
+            v.name.includes('Enhanced') || 
+            v.name.includes('Natural') || 
+            v.name === 'Google US English' || 
+            v.name === 'Samantha'
+        ) || voices.find(v => v.lang.startsWith('en-'));
+        
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+        }
+        
+        // Adjust rate slightly for a more conversational pace
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+        
         utterance.onend = () => setIsSpeaking(false);
         utterance.onerror = () => setIsSpeaking(false);
         
