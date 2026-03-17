@@ -103,7 +103,7 @@ const MessageBubble = ({ message, isVoiceMuted, isLatest, isSending }) => {
     const [isLoadingAudio, setIsLoadingAudio] = useState(false);
     const audioRef = useRef(null);
     const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
-    const [wasGeneratedInSession] = useState(isSending);
+    const [wasGeneratedInSession] = useState(isSending || message.isNew);
     const audioRequestInProgress = useRef(false);
 
     useEffect(() => {
