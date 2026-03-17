@@ -141,6 +141,18 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 Stop Recording
               </button>
             )}
+            {!isRecording && !transcription && (
+              <button
+                onClick={() => {
+                  setTranscription("Good morning everyone. Let's get started with today's team sync. First on the agenda is the website redesign project. Sarah, could you give us an update? Yes, we've completed the initial wireframes and the client has approved the new color scheme. We're on track to start development next week. That's great news. John, how are we looking on the backend API integration? The API is mostly complete, but we're still waiting on some documentation from the third-party payment gateway. I'll follow up with them today. Okay, please keep us posted on that. Finally, let's talk about the upcoming marketing campaign for the launch. We need to finalize the budget by Friday. Who is owning that? I am, I'll have the final numbers ready for review by tomorrow afternoon. Perfect. Let's aim to have everything wrapped up by end of week. Any other questions? No? Alright, let's get back to work.");
+                }}
+                disabled={isProcessing}
+                className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm border border-slate-200"
+              >
+                <FileText size={20} />
+                Load Sample
+              </button>
+            )}
           </div>
           
           {isProcessing && (
