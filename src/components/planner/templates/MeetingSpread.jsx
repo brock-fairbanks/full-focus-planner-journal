@@ -68,7 +68,11 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         model: "gemini_3_flash"
       });
       
-      setTranscription(prev => prev ? prev + "\n\n" + text : text);
+      setTranscription(prev => {
+        const newText = prev ? prev + "\n\n" + text : text;
+        saveNote(newText, null);
+        return newText;
+      });
     } catch (err) {
       console.error("Transcription error", err);
       if (isFinal) alert("Failed to transcribe audio.");
