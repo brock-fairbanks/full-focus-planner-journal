@@ -611,7 +611,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 className="p-4 border border-slate-200 rounded-lg hover:border-[#F97316] hover:shadow-md cursor-pointer transition-all bg-slate-50 hover:bg-white"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-xs font-medium text-slate-500">{note.date}</span>
+                  <span className="text-xs font-medium text-slate-500">
+                    {note.date ? `${note.date.split('-')[1]}/${note.date.split('-')[2]}/${note.date.split('-')[0]}` : ''}
+                  </span>
                   <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 capitalize">
                     {note.type}
                   </span>
