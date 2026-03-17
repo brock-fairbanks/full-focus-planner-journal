@@ -270,7 +270,23 @@ export default function WakeWordListener() {
     if (assistantState === 'idle') return null;
 
     return (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex items-center justify-center pointer-events-auto">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center justify-center pointer-events-auto gap-4">
+            
+            {/* Show AI text response if we are not on the chat page and there is a response */}
+            {latestResponse && assistantState === 'speaking' && location.pathname !== '/chat' && (
+                <div className="bg-white text-slate-800 rounded-2xl p-4 shadow-xl border border-slate-200 max-w-md w-full animate-in slide-in-from-bottom-4 fade-in duration-300">
+                    <div className="flex justify-between items-start mb-2 border-b border-slate-100 pb-2">
+                        <span className="text-xs font-bold text-[#F97316] uppercase tracking-wider flex items-center gap-1">
+                            <Volume2 size={12} />
+                            Alex says:
+                        </span>
+                    </div>
+                    <div className="text-sm prose prose-sm max-w-none prose-p:leading-relaxed max-h-[30vh] overflow-y-auto">
+                        <ReactMarkdown>{latestResponse}</ReactMarkdown>
+                    </div>
+                </div>
+            )}
+
             <div className="bg-slate-900/90 backdrop-blur-md text-white rounded-full pl-2 pr-4 py-2 shadow-2xl flex items-center gap-3 border border-slate-700/50">
                 <div className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
