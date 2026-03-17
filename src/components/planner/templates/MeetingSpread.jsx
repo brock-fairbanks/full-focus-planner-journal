@@ -572,39 +572,39 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         <span className="hidden md:inline">Clear Page</span>
       </button>
 
-      <div className="flex justify-between items-center w-full max-w-5xl mb-8 relative z-30 pointer-events-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-center w-full max-w-5xl mb-6 md:mb-8 relative z-30 pointer-events-auto gap-4">
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onBlur={handleTitleBlur}
           placeholder={recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes'}
-          className="text-3xl font-serif font-bold text-[#1e293b] bg-transparent border-b-2 border-transparent hover:border-[#cbd5e1] focus:border-[#F97316] outline-none placeholder:text-[#94a3b8] w-full max-w-[50%] transition-colors pb-1"
+          className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b] bg-transparent border-b-2 border-transparent hover:border-[#cbd5e1] focus:border-[#F97316] outline-none placeholder:text-[#94a3b8] w-full sm:max-w-[40%] md:max-w-[50%] transition-colors pb-1 text-center sm:text-left"
         />
-        <div className="flex gap-2 shrink-0 ml-4 items-center">
-          <div className="relative">
+        <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0 items-center justify-center w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto order-last sm:order-none mt-2 sm:mt-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input 
               type="text" 
               placeholder="Search..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white shadow-sm w-48 transition-all focus:w-64"
+              className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white shadow-sm w-full sm:w-48 transition-all focus:w-full sm:focus:w-64"
             />
           </div>
           {(transcription || summary) && (
             <button 
               onClick={startNew}
-              className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
+              className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-3 py-2 rounded-lg font-medium transition-colors shadow-sm text-sm flex-1 sm:flex-none"
             >
               Start New
             </button>
           )}
           <button 
             onClick={() => setShowHistory(!showHistory)}
-            className="flex items-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
+            className="flex items-center justify-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-3 py-2 rounded-lg font-medium transition-colors shadow-sm text-sm flex-1 sm:flex-none"
           >
-            <History size={18} />
+            <History size={16} />
             History
           </button>
         </div>
@@ -670,13 +670,13 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             </div>
           )}
 
-          <div className="flex flex-wrap justify-center items-center gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 sm:gap-4 w-full">
             {!isRecording ? (
               <>
                 <button 
                   onClick={startRecording}
                   disabled={isProcessing}
-                  className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm"
+                  className="flex justify-center items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm w-full sm:w-auto"
                 >
                   <Mic size={20} />
                   Record Mic
@@ -684,24 +684,24 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 <button 
                   onClick={startSystemAudioRecording}
                   disabled={isProcessing}
-                  className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm"
+                  className="flex justify-center items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm w-full sm:w-auto"
                 >
                   <Monitor size={20} />
                   Record System Audio
                 </button>
               </>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                 <button 
                   onClick={togglePause}
-                  className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-full font-medium transition-all shadow-sm"
+                  className="flex justify-center items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-full font-medium transition-all shadow-sm w-full sm:w-auto"
                 >
                   {isPaused ? <Play size={20} className="fill-current" /> : <Pause size={20} className="fill-current" />}
                   {isPaused ? "Resume" : "Pause"}
                 </button>
                 <button 
                   onClick={stopRecording}
-                  className={`flex items-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-6 py-3 rounded-full font-medium transition-all shadow-sm ${!isPaused ? 'animate-pulse' : ''}`}
+                  className={`flex justify-center items-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-6 py-3 rounded-full font-medium transition-all shadow-sm w-full sm:w-auto ${!isPaused ? 'animate-pulse' : ''}`}
                 >
                   <Square size={20} className="fill-current" />
                   Stop Recording
@@ -720,7 +720,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isProcessing}
-                  className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm border border-slate-200"
+                  className="flex justify-center items-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm border border-slate-200 w-full sm:w-auto"
                 >
                   <Upload size={20} />
                   Upload Audio
@@ -737,27 +737,29 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           )}
 
           {audioUrl && !isRecording && !isProcessing && (
-            <div className="flex items-center gap-4 mt-2">
-              <audio controls src={audioUrl.url} className="h-10" />
-              <a 
-                href={audioUrl.url} 
-                download={`meeting_recording.${audioUrl.extension}`}
-                className="flex items-center gap-2 text-sm font-medium text-[#1e293b] hover:text-[#F97316] bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition-colors"
-              >
-                <Download size={16} />
-                Download (.{audioUrl.extension})
-              </a>
-              <button
-                onClick={() => {
-                  setAudioUrl(null);
-                  setTranscription("");
-                  setSummary("");
-                }}
-                className="flex items-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors"
-              >
-                <Trash2 size={16} />
-                Delete
-              </button>
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-4 w-full justify-center">
+              <audio controls src={audioUrl.url} className="h-10 w-full sm:w-auto max-w-[300px]" />
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <a 
+                  href={audioUrl.url} 
+                  download={`meeting_recording.${audioUrl.extension}`}
+                  className="flex flex-1 sm:flex-none justify-center items-center gap-2 text-sm font-medium text-[#1e293b] hover:text-[#F97316] bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg transition-colors"
+                >
+                  <Download size={16} />
+                  <span className="hidden sm:inline">Download</span> (.{audioUrl.extension})
+                </a>
+                <button
+                  onClick={() => {
+                    setAudioUrl(null);
+                    setTranscription("");
+                    setSummary("");
+                  }}
+                  className="flex flex-1 sm:flex-none justify-center items-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors"
+                >
+                  <Trash2 size={16} />
+                  Delete
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -768,21 +770,21 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         <div className="flex flex-col h-full pointer-events-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <FileText size={20} className="text-[#1e293b]" />
-              <h3 className="text-xl font-serif font-bold text-[#1e293b]">Transcription</h3>
+              <FileText size={20} className="text-[#1e293b] shrink-0" />
+              <h3 className="text-lg md:text-xl font-serif font-bold text-[#1e293b]">Transcription</h3>
             </div>
             {transcription && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   onClick={() => printContent('Transcription', transcription)}
-                  className="p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
+                  className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
                   title="Print Transcription"
                 >
                   <Printer size={18} />
                 </button>
                 <button
                   onClick={() => downloadPdf('Transcription', transcription)}
-                  className="p-2 text-[#64748b] hover:text-[#F97316] hover:bg-orange-50 rounded-md transition-colors"
+                  className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#F97316] hover:bg-orange-50 rounded-md transition-colors"
                   title="Download PDF"
                 >
                   <Download size={18} />
@@ -805,22 +807,22 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         <div className="flex flex-col h-full pointer-events-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Sparkles size={20} className="text-[#F97316]" />
-              <h3 className="text-xl font-serif font-bold text-[#1e293b]">AI Summary</h3>
+              <Sparkles size={20} className="text-[#F97316] shrink-0" />
+              <h3 className="text-lg md:text-xl font-serif font-bold text-[#1e293b]">AI Summary</h3>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap justify-end items-center gap-1 sm:gap-2">
               {summary && (
                 <>
                   <button
                     onClick={() => printContent('AI Summary', summary)}
-                    className="p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
+                    className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
                     title="Print Summary"
                   >
                     <Printer size={18} />
                   </button>
                   <button
                     onClick={() => downloadPdf('AI Summary', summary)}
-                    className="p-2 text-[#64748b] hover:text-[#F97316] hover:bg-orange-50 rounded-md transition-colors"
+                    className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#F97316] hover:bg-orange-50 rounded-md transition-colors"
                     title="Download PDF"
                   >
                     <Download size={18} />
@@ -831,7 +833,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 <button
                   onClick={generateSummary}
                   disabled={isProcessing}
-                  className="text-sm font-medium text-white bg-[#F97316] hover:bg-[#ea580c] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+                  className="text-xs sm:text-sm font-medium text-white bg-[#F97316] hover:bg-[#ea580c] px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-colors disabled:opacity-50 shadow-sm whitespace-nowrap"
                 >
                   Generate Summary
                 </button>
