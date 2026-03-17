@@ -514,15 +514,35 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               <Sparkles size={20} className="text-[#F97316]" />
               <h3 className="text-xl font-serif font-bold text-[#1e293b]">AI Summary</h3>
             </div>
-            {transcription && !summary && (
-              <button
-                onClick={generateSummary}
-                disabled={isProcessing}
-                className="text-sm font-medium text-white bg-[#F97316] hover:bg-[#ea580c] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 shadow-sm"
-              >
-                Generate Summary
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {summary && (
+                <>
+                  <button
+                    onClick={() => printContent('AI Summary', summary)}
+                    className="p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
+                    title="Print Summary"
+                  >
+                    <Printer size={18} />
+                  </button>
+                  <button
+                    onClick={() => downloadPdf('AI Summary', summary)}
+                    className="p-2 text-[#64748b] hover:text-[#F97316] hover:bg-orange-50 rounded-md transition-colors"
+                    title="Download PDF"
+                  >
+                    <Download size={18} />
+                  </button>
+                </>
+              )}
+              {transcription && !summary && (
+                <button
+                  onClick={generateSummary}
+                  disabled={isProcessing}
+                  className="text-sm font-medium text-white bg-[#F97316] hover:bg-[#ea580c] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+                >
+                  Generate Summary
+                </button>
+              )}
+            </div>
           </div>
           <div className="bg-white border-2 border-[#cbd5e1] rounded-xl p-6 flex-1 h-[400px] max-h-[50vh] whitespace-pre-wrap overflow-y-auto">
             {summary ? (
