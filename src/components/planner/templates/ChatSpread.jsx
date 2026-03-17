@@ -658,6 +658,9 @@ export default function ChatSpread({ onClearCanvas }) {
                         <div className="flex flex-wrap gap-2 mb-3">
                             {selectedFiles.map((file, idx) => (
                                 <div key={idx} className="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-sm shadow-sm">
+                                    {file.type.startsWith('image/') && (
+                                        <img src={URL.createObjectURL(file)} alt="preview" className="h-6 w-6 object-cover rounded-sm border border-slate-100" />
+                                    )}
                                     <span className="truncate max-w-[150px] text-slate-700">{file.name}</span>
                                     <button type="button" onClick={() => removeFile(idx)} className="text-slate-400 hover:text-red-500">
                                         <X size={14} />
