@@ -99,9 +99,38 @@ const FunctionDisplay = ({ toolCall }) => {
 
 const MessageBubble = ({ message }) => {
     const isUser = message.role === 'user';
+    const [isSpeaking, setIsSpeaking] = useState(false);
+
+    const toggleSpeech = () => {
+        if (isSpeaking) {
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+            return;
+        }
+        
+        if (!message.content) return;
+        
+        window.speechSynthesis.cancel(); // Stop any ongoing speech
+        const utterance = new SpeechSynthesisUtterance(message.content);
+        
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+        
+        setIsSpeaking(true);
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Cleanup when component unmounts
+    useEffect(() => {
+        return () => {
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, [isSpeaking]);
     
     return (
-        <div className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}>
+        <div className={cn("flex gap-3", isUser ? "justify-end" : "justify-start group")}>
             {!isUser && (
                 <div className="h-8 w-8 rounded-full bg-[#1e293b] text-white flex items-center justify-center mt-0.5 shadow-sm shrink-0">
                     <Sparkles size={14} />
