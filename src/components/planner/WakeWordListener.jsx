@@ -44,42 +44,16 @@ export default function WakeWordListener() {
         }
     }, []);
 
-    // Initialize conversation for the assistant
     useEffect(() => {
-        const initChat = async () => {
-            try {
-                const convs = await base44.agents.listConversations({ agent_name: "planner_assistant" });
-                let currentConv;
-                if (convs.length > 0) {
-                    currentConv = await base44.agents.getConversation(convs[0].id);
-                } else {
-                    currentConv = await base44.agents.createConversation({
-                        agent_name: "planner_assistant",
-                        metadata: { name: "Planner Assistant Chat" }
-                    });
-                }
-                setConversation(currentConv);
-            } catch (err) {
-                console.error("Failed to initialize background chat", err);
-            }
-        };
-        initChat();
-    }, []);
-
-    // Subscribe to conversation for streaming text
-    useEffect(() => {
-        if (!conversation) return;
-        const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
-            if (isAssistantActiveRef.current) {
-                const finalMessages = data.messages || [];
-                const latestMsg = finalMessages[finalMessages.length - 1];
-                if (latestMsg && latestMsg.role === 'model') {
-                    setLatestResponse(latestMsg.content);
+        const unsubscribe = base44.entities.GeminiMessage.subscribe((event) => {
+            if (isAssistantActiveRef.current && event.type === 'create') {
+                if (event.data.role === 'model') {
+                    setLatestResponse(event.data.content);
                 }
             }
         });
         return () => unsubscribe();
-    }, [conversation]);
+    }, []);
 
     const playAIResponse = async (text) => {
         setAssistantState('speaking');

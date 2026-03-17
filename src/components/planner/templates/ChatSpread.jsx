@@ -343,10 +343,10 @@ export default function ChatSpread({ onClearCanvas }) {
                             const text = res.data.text;
                             
                             if (text && text.trim()) {
-                                const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}. ${locationContext}]\n`;
-                                await base44.agents.addMessage(conversation, {
-                                    role: "user",
-                                    content: timeContext + text.trim()
+                                setMessages(prev => [...prev, { role: 'user', content: text.trim() }]);
+                                await base44.functions.invoke('chatWithGemini', {
+                                    userText: text.trim(),
+                                    locationContext
                                 });
                             }
                         } catch (err) {
@@ -482,17 +482,19 @@ export default function ChatSpread({ onClearCanvas }) {
 
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!input.trim() || !conversation) return;
+        if (!input.trim()) return;
         
         const userText = input.trim();
         setInput("");
         setIsSending(true);
 
         try {
-            const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}. ${locationContext}]\n`;
-            await base44.agents.addMessage(conversation, {
-                role: "user",
-                content: timeContext + userText
+            // Optimistic update
+            setMessages(prev => [...prev, { role: 'user', content: userText }]);
+            
+            await base44.functions.invoke('chatWithGemini', {
+                userText,
+                locationContext
             });
         } catch (err) {
             console.error("Send failed", err);
@@ -505,11 +507,10 @@ export default function ChatSpread({ onClearCanvas }) {
     const startNewConversation = async () => {
         setIsLoading(true);
         try {
-            const newConv = await base44.agents.createConversation({
-                agent_name: "planner_assistant",
-                metadata: { name: "Planner Assistant Chat" }
-            });
-            setConversation(newConv);
+            const history = await base44.entities.GeminiMessage.list();
+            for (const msg of history) {
+                await base44.entities.GeminiMessage.delete(msg.id);
+            }
             setMessages([]);
         } catch (err) {
             console.error("New conversation failed", err);
