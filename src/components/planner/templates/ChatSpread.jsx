@@ -301,6 +301,10 @@ export default function ChatSpread({ onClearCanvas }) {
         }
     }, []);
 
+    const [selectedModel, setSelectedModel] = useState("gemini-3.1-pro-preview");
+    const selectedModelRef = useRef(selectedModel);
+    useEffect(() => { selectedModelRef.current = selectedModel; }, [selectedModel]);
+
     const [isVoiceMuted, setIsVoiceMuted] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef(null);
@@ -346,7 +350,8 @@ export default function ChatSpread({ onClearCanvas }) {
                                 setMessages(prev => [...prev, { role: 'user', content: text.trim() }]);
                                 await base44.functions.invoke('chatWithGemini', {
                                     userText: text.trim(),
-                                    locationContext
+                                    locationContext,
+                                    model: selectedModelRef.current
                                 });
                             }
                         } catch (err) {
@@ -494,7 +499,8 @@ export default function ChatSpread({ onClearCanvas }) {
             
             await base44.functions.invoke('chatWithGemini', {
                 userText,
-                locationContext
+                locationContext,
+                model: selectedModelRef.current
             });
         } catch (err) {
             console.error("Send failed", err);
@@ -527,6 +533,17 @@ export default function ChatSpread({ onClearCanvas }) {
                     <h1 className="text-3xl font-serif font-bold text-[#1e293b]">AI Assistant</h1>
                 </div>
                 <div className="flex gap-3 items-center">
+                    <select
+                        value={selectedModel}
+                        onChange={(e) => setSelectedModel(e.target.value)}
+                        className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]"
+                    >
+                        <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
+                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    </select>
                     <button
                         onClick={() => setIsVoiceMuted(!isVoiceMuted)}
                         className={cn(

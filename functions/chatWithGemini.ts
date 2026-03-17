@@ -21,7 +21,7 @@ const fetchWeather = async (lat, lon) => {
     return data;
 };
 
-async function generateContent(contents, systemInstruction) {
+async function generateContent(contents, systemInstruction, model) {
     const tools = [
         {
             functionDeclarations: [
@@ -49,7 +49,7 @@ async function generateContent(contents, systemInstruction) {
         tools: tools
     };
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model || 'gemini-3.1-pro-preview'}:generateContent?key=${apiKey}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
         if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
         const body = await req.json();
-        const { userText, locationContext } = body;
+        const { userText, locationContext, model = 'gemini-3.1-pro-preview' } = body;
         
         // Fetch recent history
         const rawHistory = await base44.entities.GeminiMessage.list('-created_date', 10);
@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
 
         const systemInstruction = "You are a helpful planner assistant. Current Date/Time: " + new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }) + " (UTC-5). " + (locationContext || "");
 
-        let result = await generateContent(contents, systemInstruction);
+        let result = await generateContent(contents, systemInstruction, model);
         
         const candidate = result.candidates?.[0];
         if (!candidate) {
@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
                         }]
                     });
                     
-                    const secondResult = await generateContent(contents, systemInstruction);
+                    const secondResult = await generateContent(contents, systemInstruction, model);
                     const secondCandidate = secondResult.candidates?.[0];
                     for (const part of secondCandidate.content.parts) {
                         if (part.text) {
