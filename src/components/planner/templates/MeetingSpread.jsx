@@ -115,7 +115,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         const rType = type === 'lecture' ? 'Lecture' : 'Meeting';
         const dateStr = new Date().toISOString().slice(0,10);
         const sId = sessionIdRef.current || 'manual';
-        const fileName = `${rType}_Notes_${dateStr}_ID-${sId}.txt`;
+        const fileName = `${titleRef.current || rType}_Notes_${dateStr}_ID-${sId}.txt`;
         
         const payload = {
             text_content: content,
@@ -227,13 +227,13 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       const dateStr = new Date().toISOString().slice(0,10);
       const sessionId = sessionIdRef.current || 'unknown';
       const rType = recordingTypeRef.current;
-      const prefix = rType === 'lecture' ? 'lecture' : 'meeting';
-      const fileName = `${prefix}_${dateStr}_${sessionId}_part${partNum}.${extension}`;
+      const safeTitle = titleRef.current ? titleRef.current.replace(/[^a-zA-Z0-9-_]/g, '_') : (rType === 'lecture' ? 'lecture' : 'meeting');
+      const fileName = `${safeTitle}_${dateStr}_${sessionId}_part${partNum}.${extension}`;
       const file = new File([audioBlob], fileName, { type: mimeType });
       const uploadRes = await base44.integrations.Core.UploadFile({ file });
       
       if (user?.drive_connected) {
-        const drivePrefix = rType === 'lecture' ? 'Lecture' : 'Meeting';
+        const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : 'Meeting');
         const driveFileName = `${drivePrefix}_${dateStr}_ID-${sessionId}_Part${partNum}.${extension}`;
           
         base44.functions.invoke('uploadToGoogleDrive', {
