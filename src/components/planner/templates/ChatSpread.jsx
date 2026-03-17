@@ -460,7 +460,7 @@ export default function ChatSpread({ onClearCanvas }) {
                             <div className="text-center">
                                 <h3 className="text-lg font-semibold text-[#1e293b]">How can I help you today?</h3>
                                 <p className="text-sm text-slate-500 mt-1 max-w-sm">
-                                    I can recall meeting notes, summarize plans, check your daily tasks, and track quarterly goals.
+                                    I can recall meeting notes, summarize plans, check your daily tasks, track quarterly goals, and search the web for anything else you need.
                                 </p>
                             </div>
                         </div>
