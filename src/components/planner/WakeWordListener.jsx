@@ -19,6 +19,7 @@ export default function WakeWordListener() {
         conversationRef.current = conversation;
     }, [conversation]);
     const [latestResponse, setLatestResponse] = useState('');
+    const [userTranscript, setUserTranscript] = useState('');
     
     const pathnameRef = useRef(location.pathname);
     useEffect(() => {
