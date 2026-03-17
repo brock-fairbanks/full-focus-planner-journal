@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
             model: "tts-1",
             voice: voice,
             input: text.substring(0, 4096), // Truncate to avoid exceeding max limit
-            speed: 1.25,
+            speed: 1.5,
         });
 
         const arrayBuffer = await mp3.arrayBuffer();
