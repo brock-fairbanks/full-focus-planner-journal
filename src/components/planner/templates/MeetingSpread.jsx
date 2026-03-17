@@ -301,11 +301,13 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         }).catch(e => console.error("Drive upload failed", e));
       }
       
-      const text = await base44.integrations.Core.InvokeLLM({
+      const res = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe',
         prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. If this is a continuation, just transcribe what you hear without comments.`,
-        file_urls: [uploadRes.file_url],
-        model: "gemini_3_flash"
+        fileUrl: uploadRes.file_url,
+        mimeType: mimeType
       });
+      const text = res.data.text;
       
       setTranscription(prev => {
         const newText = prev ? prev + "\n\n" + text : text;
@@ -354,11 +356,13 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         }).catch(err => console.error("Drive upload failed", err));
       }
 
-      const text = await base44.integrations.Core.InvokeLLM({
+      const res = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe',
         prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text.`,
-        file_urls: [uploadRes.file_url],
-        model: "gemini_3_flash"
+        fileUrl: uploadRes.file_url,
+        mimeType: mimeType
       });
+      const text = res.data.text;
       
       setTranscription(text);
       saveNote(text, null, uploadRes.file_url);
@@ -626,10 +630,12 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         ? `Please provide a highly detailed, in-depth summary of the following lecture transcription. Include key concepts, comprehensive explanations, important examples or case studies, and a structured outline of the topics covered:\n\n${transcription}`
         : `Please summarize the following meeting transcription concisely, highlighting the main points, decisions, and action items:\n\n${transcription}`;
 
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        model: "gemini_3_flash"
+      const res = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'summarize',
+        transcription,
+        recordingType
       });
+      const result = res.data.text;
       setSummary(result);
       saveNote(null, result);
     } catch (err) {
