@@ -424,19 +424,8 @@ export default function ChatSpread({ onClearCanvas }) {
     useEffect(() => {
         const initChat = async () => {
             try {
-                // Try to get latest conversation or create new
-                const convs = await base44.agents.listConversations({ agent_name: "planner_assistant" });
-                let currentConv;
-                if (convs.length > 0) {
-                    currentConv = await base44.agents.getConversation(convs[0].id);
-                } else {
-                    currentConv = await base44.agents.createConversation({
-                        agent_name: "planner_assistant",
-                        metadata: { name: "Planner Assistant Chat" }
-                    });
-                }
-                setConversation(currentConv);
-                setMessages(currentConv.messages || []);
+                const history = await base44.entities.GeminiMessage.list('-created_date', 50);
+                setMessages(history.reverse());
             } catch (err) {
                 console.error("Failed to initialize chat", err);
                 toast.error("Could not load chat.");
@@ -445,15 +434,18 @@ export default function ChatSpread({ onClearCanvas }) {
             }
         };
         initChat();
-    }, []);
 
-    useEffect(() => {
-        if (!conversation) return;
-        const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
-            setMessages(data.messages || []);
+        const unsubscribe = base44.entities.GeminiMessage.subscribe((event) => {
+            if (event.type === 'create') {
+                setMessages(prev => {
+                    if (prev.find(m => m.id === event.data.id)) return prev;
+                    return [...prev, event.data];
+                });
+            }
         });
+
         return () => unsubscribe();
-    }, [conversation]);
+    }, []);
 
     useEffect(() => {
         if (scrollRef.current) {
