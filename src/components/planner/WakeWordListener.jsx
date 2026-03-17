@@ -118,8 +118,7 @@ export default function WakeWordListener() {
     };
 
     const triggerAssistant = async () => {
-        const currentConv = conversationRef.current;
-        if (isAssistantActiveRef.current || !currentConv) return;
+        if (isAssistantActiveRef.current) return;
         isAssistantActiveRef.current = true;
         setAssistantState('listening');
         playWakeSound();
