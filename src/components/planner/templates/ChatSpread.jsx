@@ -377,7 +377,7 @@ export default function ChatSpread({ onClearCanvas }) {
                     hasSpoken = true;
                     silenceStart = Date.now();
                 } else {
-                    if (hasSpoken && Date.now() - silenceStart > 1500) {
+                    if (hasSpoken && Date.now() - silenceStart > 800) {
                         mediaRecorder.stop();
                         setIsRecording(false);
                         return;
