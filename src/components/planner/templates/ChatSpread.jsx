@@ -97,7 +97,7 @@ const FunctionDisplay = ({ toolCall }) => {
     );
 };
 
-const MessageBubble = ({ message, autoPlay }) => {
+const MessageBubble = ({ message, isVoiceMuted, isLatest }) => {
     const isUser = message.role === 'user';
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isLoadingAudio, setIsLoadingAudio] = useState(false);
@@ -105,16 +105,20 @@ const MessageBubble = ({ message, autoPlay }) => {
     const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
 
     useEffect(() => {
-        if (autoPlay && !hasAutoPlayed && message.content && !isUser) {
-            const timer = setTimeout(() => {
-                if (!isSpeaking && !isLoadingAudio && !hasAutoPlayed) {
-                    setHasAutoPlayed(true);
-                    toggleSpeech();
-                }
-            }, 2000);
-            return () => clearTimeout(timer);
+        // Only autoplay if it's the latest AI message, voice is not muted, has content, and hasn't played yet
+        if (isUser || !isLatest || isVoiceMuted || hasAutoPlayed || !message.content) {
+            return;
         }
-    }, [message.content, autoPlay, hasAutoPlayed, isSpeaking, isLoadingAudio, isUser]);
+
+        // Debounce: wait for content to stop changing for 1.5s
+        const timer = setTimeout(() => {
+            setHasAutoPlayed(true);
+            toggleSpeech();
+        }, 1500);
+
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [message.content, isUser, isLatest, isVoiceMuted, hasAutoPlayed]);
 
     const toggleSpeech = async () => {
         if (isSpeaking || isLoadingAudio) {
