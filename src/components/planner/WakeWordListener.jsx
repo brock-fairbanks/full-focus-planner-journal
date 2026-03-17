@@ -303,16 +303,19 @@ export default function WakeWordListener() {
             recognition.interimResults = true;
             
             recognition.onresult = (event) => {
-                restartDelay = 1000; // Reset backoff on success
+                restartDelay = 500; // Reset backoff on success
                 if (isAssistantActiveRef.current) return;
 
                 const current = event.resultIndex;
                 if (!event.results[current]) return;
                 
-                const transcript = event.results[current][0].transcript.toLowerCase();
+                let transcript = '';
+                for (let i = Math.max(0, event.resultIndex - 2); i < event.results.length; ++i) {
+                    transcript += event.results[i][0].transcript.toLowerCase() + ' ';
+                }
                 console.log("Wake word listener heard:", transcript);
                 
-                if (transcript.includes('alex')) {
+                if (transcript.includes('alex') || transcript.includes('alec') || transcript.includes('alix') || transcript.includes('alice')) {
                     const now = Date.now();
                     if (now - lastTriggerRef.current < 3000) return; // Debounce triggers
                     lastTriggerRef.current = now;
