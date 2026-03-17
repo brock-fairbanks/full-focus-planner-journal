@@ -644,12 +644,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             <div className="flex bg-slate-100 p-1 rounded-lg">
               <button
                 onClick={() => handleTypeChange('meeting')}
+                title="Shorter, action-focused summary tailored for meetings and decisions"
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'meeting' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
               >
                 Meeting
               </button>
               <button
                 onClick={() => handleTypeChange('lecture')}
+                title="Detailed, comprehensive summary tailored for educational lectures and concepts"
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'lecture' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
               >
                 Lecture
@@ -663,6 +665,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 <button 
                   onClick={startRecording}
                   disabled={isProcessing}
+                  title="Record audio from your computer's microphone"
                   className="flex justify-center items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm w-full sm:w-auto"
                 >
                   <Mic size={20} />
@@ -671,6 +674,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 <button 
                   onClick={startSystemAudioRecording}
                   disabled={isProcessing}
+                  title="Record audio directly from your computer speakers or a specific browser tab"
                   className="flex justify-center items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm w-full sm:w-auto"
                 >
                   <Monitor size={20} />
