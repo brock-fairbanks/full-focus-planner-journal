@@ -686,6 +686,7 @@ export default function ChatSpread({ onClearCanvas }) {
                         <Input
                             value={input}
                             onChange={e => setInput(e.target.value)}
+                            onPaste={handlePaste}
                             placeholder={isRecording ? "Recording..." : "Ask about your schedule, goals, or meeting notes..."}
                             className="flex-1 bg-white border-slate-200 focus-visible:ring-[#F97316] text-base py-6 rounded-xl shadow-sm"
                             disabled={isLoading || isSending || isRecording}
