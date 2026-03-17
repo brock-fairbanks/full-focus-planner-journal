@@ -1,8 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from '@/lib/AuthContext';
 
 export default function MeetingSpread({ date, onClearCanvas }) {
+  const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcription, setTranscription] = useState("");
