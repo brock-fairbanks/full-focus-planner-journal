@@ -87,6 +87,36 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const streamRef = useRef(null);
   const isRecordingRef = useRef(false);
   const sessionIdRef = useRef(null);
+  const wakeLockRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release().catch(console.error);
+      }
+    };
+  }, []);
+
+  const requestWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await navigator.wakeLock.request('screen');
+      }
+    } catch (err) {
+      console.error("Wake Lock error:", err);
+    }
+  };
+
+  const releaseWakeLock = async () => {
+    try {
+      if (wakeLockRef.current) {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
+    } catch (err) {
+      console.error("Wake Lock release error:", err);
+    }
+  };
 
   const processChunk = async (audioBlob, partNum, mimeType, extension, isFinal) => {
     if (isFinal) setIsProcessing(true);
