@@ -118,6 +118,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     setTranscription("");
     setSummary("");
     setCurrentNoteId(null);
+    setDriveTextFileId(null);
     sessionIdRef.current = null;
     setAudioUrl(null);
   };
