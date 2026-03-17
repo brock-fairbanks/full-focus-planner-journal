@@ -232,32 +232,7 @@ const MessageBubble = ({ message, autoPlay }) => {
                     </div>
                 )}
                 
-                {!isUser && message.content && (
-                    <div className="flex justify-start mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                            onClick={toggleSpeech}
-                            className="flex items-center gap-1 text-xs text-slate-500 hover:text-[#F97316] transition-colors px-1"
-                            title={isSpeaking ? "Stop speaking" : "Read aloud"}
-                        >
-                            {isLoadingAudio ? (
-                                <>
-                                    <Loader2 size={12} className="animate-spin" />
-                                    <span>Loading...</span>
-                                </>
-                            ) : isSpeaking ? (
-                                <>
-                                    <Square size={12} className="fill-current" />
-                                    <span>Stop</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Volume2 size={14} />
-                                    <span>Read Aloud</span>
-                                </>
-                            )}
-                        </button>
-                    </div>
-                )}
+
 
                 {message.tool_calls?.length > 0 && (
                     <div className="space-y-1">
