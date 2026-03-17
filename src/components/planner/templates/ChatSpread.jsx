@@ -626,8 +626,36 @@ export default function ChatSpread({ onClearCanvas }) {
                     )}
                 </div>
 
-                <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+                <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex flex-col">
+                    {selectedFiles.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {selectedFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-sm shadow-sm">
+                                    <span className="truncate max-w-[150px] text-slate-700">{file.name}</span>
+                                    <button type="button" onClick={() => removeFile(idx)} className="text-slate-400 hover:text-red-500">
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                     <form onSubmit={handleSend} className="flex gap-3">
+                        <input
+                            type="file"
+                            multiple
+                            className="hidden"
+                            ref={fileInputRef}
+                            onChange={handleFileSelect}
+                        />
+                        <Button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isLoading || isSending || isRecording}
+                            className="bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 p-3 rounded-xl shadow-sm h-full aspect-square"
+                            title="Attach Files"
+                        >
+                            <Paperclip className="w-5 h-5" />
+                        </Button>
                         <Input
                             value={input}
                             onChange={e => setInput(e.target.value)}
@@ -660,7 +688,7 @@ export default function ChatSpread({ onClearCanvas }) {
                         </div>
                         <Button 
                             type="submit" 
-                            disabled={!input.trim() || isLoading || isSending || isRecording}
+                            disabled={(!input.trim() && selectedFiles.length === 0) || isLoading || isSending || isRecording}
                             className="bg-[#F97316] hover:bg-[#ea580c] text-white px-6 rounded-xl shadow-sm h-auto"
                         >
                             {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
