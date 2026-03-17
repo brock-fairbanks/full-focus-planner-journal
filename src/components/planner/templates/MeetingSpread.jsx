@@ -100,7 +100,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       }
 
       if (user?.drive_connected && (newTranscription !== null || newSummary !== null)) {
-        let content = `${type === 'lecture' ? 'Lecture' : 'Meeting'} Notes\nDate: ${new Date().toLocaleDateString()}\n\n`;
+        let content = `${type === 'lecture' ? 'Lecture' : 'Meeting'} Notes\nDate: ${format(new Date(), "MM/dd/yyyy")}\n\n`;
         if (currentSumm) content += `--- AI SUMMARY ---\n${currentSumm}\n\n`;
         if (currentTrans) content += `--- TRANSCRIPTION ---\n${currentTrans}\n`;
         
