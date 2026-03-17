@@ -688,7 +688,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 </button>
                 <button 
                   onClick={stopRecording}
-                  className={`flex justify-center items-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-6 py-3 rounded-full font-medium transition-all shadow-sm w-full sm:w-auto ${!isPaused ? 'animate-pulse' : ''}`}
+                  className={`flex justify-center items-center gap-2 text-white px-6 py-3 rounded-full font-medium transition-all shadow-sm w-full sm:w-auto ${!isPaused ? 'bg-red-600 hover:bg-red-700 animate-pulse' : 'bg-[#1e293b] hover:bg-[#0f172a]'}`}
                 >
                   <Square size={20} className="fill-current" />
                   Stop Recording
