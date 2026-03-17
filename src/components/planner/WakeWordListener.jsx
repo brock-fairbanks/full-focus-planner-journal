@@ -14,6 +14,10 @@ export default function WakeWordListener() {
     
     const [assistantState, setAssistantState] = useState('idle'); // idle, listening, processing, speaking
     const [conversation, setConversation] = useState(null);
+    const conversationRef = useRef(null);
+    useEffect(() => {
+        conversationRef.current = conversation;
+    }, [conversation]);
     const [latestResponse, setLatestResponse] = useState('');
     
     const pathnameRef = useRef(location.pathname);
@@ -111,7 +115,8 @@ export default function WakeWordListener() {
     };
 
     const triggerAssistant = async () => {
-        if (isAssistantActiveRef.current || !conversation) return;
+        const currentConv = conversationRef.current;
+        if (isAssistantActiveRef.current || !currentConv) return;
         isAssistantActiveRef.current = true;
         setAssistantState('listening');
         playWakeSound();
@@ -165,7 +170,7 @@ export default function WakeWordListener() {
                             if (text && text.trim()) {
                                 // Add user message and wait for AI to finish responding
                                 const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}]\n`;
-                                const updatedConv = await base44.agents.addMessage(conversation, {
+                                const updatedConv = await base44.agents.addMessage(currentConv, {
                                     role: "user",
                                     content: timeContext + text.trim()
                                 });
@@ -247,9 +252,12 @@ export default function WakeWordListener() {
     useEffect(() => {
         if (!hasSupport) return;
 
-        const checkDevices = async () => {
+        let isMounted = true;
+        let recognition = null;
+
+        const initListener = async () => {
             try {
-                // Get permission to read device labels
+                // Get permission to read device labels (also warms up mic)
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 const audioInputs = devices.filter(d => d.kind === 'audioinput');
@@ -257,69 +265,76 @@ export default function WakeWordListener() {
                 
                 if (defaultMic && defaultMic.label) {
                     toast.info(`Listening via: ${defaultMic.label}`, { duration: 4000 });
-                    console.log("Available microphones:", audioInputs.map(m => m.label));
                 }
                 
                 stream.getTracks().forEach(t => t.stop());
             } catch (err) {
                 console.error("Could not check microphones:", err);
             }
-        };
-        checkDevices();
 
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognitionRef.current = recognition;
-        
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        
-        recognition.onresult = (event) => {
-            if (isAssistantActiveRef.current) return;
+            if (!isMounted) return;
 
-            const current = event.resultIndex;
-            if (!event.results[current]) return;
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognitionRef.current = recognition;
             
-            const transcript = event.results[current][0].transcript.toLowerCase();
-            console.log("Wake word listener heard:", transcript);
+            recognition.continuous = true;
+            recognition.interimResults = true;
             
-            if (transcript.includes('alex')) {
-                const now = Date.now();
-                if (now - lastTriggerRef.current < 3000) return; // Debounce triggers
-                lastTriggerRef.current = now;
+            recognition.onresult = (event) => {
+                if (isAssistantActiveRef.current) return;
 
-                if (pathnameRef.current === '/chat') {
-                    window.dispatchEvent(new CustomEvent('wakeword-detected'));
-                } else {
-                    triggerAssistant();
+                const current = event.resultIndex;
+                if (!event.results[current]) return;
+                
+                const transcript = event.results[current][0].transcript.toLowerCase();
+                console.log("Wake word listener heard:", transcript);
+                
+                if (transcript.includes('alex')) {
+                    const now = Date.now();
+                    if (now - lastTriggerRef.current < 3000) return; // Debounce triggers
+                    lastTriggerRef.current = now;
+
+                    if (pathnameRef.current === '/chat') {
+                        window.dispatchEvent(new CustomEvent('wakeword-detected'));
+                    } else {
+                        triggerAssistant();
+                    }
                 }
-            }
+            };
+
+            recognition.onend = () => {
+                if (isMounted && recognitionRef.current === recognition && !isAssistantActiveRef.current) {
+                    setTimeout(() => {
+                        if (isMounted && recognitionRef.current === recognition) {
+                            try { recognition.start(); } catch (e) {}
+                        }
+                    }, 1000);
+                }
+            };
+
+            recognition.onerror = (e) => {
+                console.error("Speech recognition error:", e.error);
+                if (e.error === 'not-allowed') {
+                    recognitionRef.current = null;
+                    toast.error("Microphone access denied. Wake word disabled.");
+                }
+            };
+
+            try { recognition.start(); } catch (e) {}
         };
 
-        recognition.onend = () => {
-            if (recognitionRef.current && !isAssistantActiveRef.current) {
-                setTimeout(() => {
-                    try { recognition.start(); } catch (e) {}
-                }, 1000); // Increased from 100ms to 1000ms to prevent rapid 'aborted' loop
-            }
-        };
-
-        recognition.onerror = (e) => {
-            console.error("Speech recognition error:", e.error);
-            if (e.error === 'not-allowed') {
-                recognitionRef.current = null;
-                toast.error("Microphone access denied. Wake word disabled.");
-            }
-        };
-
-        try { recognition.start(); } catch (e) {}
+        initListener();
 
         return () => {
+            isMounted = false;
             const rec = recognitionRef.current;
             recognitionRef.current = null;
-            if (rec) rec.stop();
+            if (rec) {
+                try { rec.abort(); } catch (e) {}
+            }
         };
-    }, [hasSupport, conversation]);
+    }, [hasSupport]); // Removed conversation dependency to prevent restarts
 
     if (assistantState === 'idle') return null;
 
