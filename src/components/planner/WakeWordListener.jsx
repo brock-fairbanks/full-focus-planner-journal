@@ -178,21 +178,17 @@ export default function WakeWordListener() {
                             const text = res.data.text;
                             
                             if (text && text.trim()) {
-                                // Add user message and wait for AI to finish responding
-                                const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}. ${locationContext}]\n`;
                                 setUserTranscript(text.trim());
                                 setLatestResponse('');
-                                const updatedConv = await base44.agents.addMessage(currentConv, {
-                                    role: "user",
-                                    content: timeContext + text.trim()
+                                
+                                const response = await base44.functions.invoke('chatWithGemini', {
+                                    userText: text.trim(),
+                                    locationContext
                                 });
                                 
-                                const finalMessages = updatedConv.messages || [];
-                                const latestMsg = finalMessages[finalMessages.length - 1];
-                                
-                                if (latestMsg && latestMsg.role === 'model' && latestMsg.content) {
-                                    setLatestResponse(latestMsg.content);
-                                    playAIResponse(latestMsg.content);
+                                if (response.data && response.data.text) {
+                                    setLatestResponse(response.data.text);
+                                    playAIResponse(response.data.text);
                                 } else {
                                     closeAssistant();
                                 }
