@@ -497,32 +497,36 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
-  const downloadPdf = (title, content) => {
+  const downloadPdf = (sectionTitle, content) => {
     if (!content) return;
     const doc = new jsPDF();
+    const mainTitle = title || (recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes');
     doc.setFontSize(16);
-    doc.text(title, 20, 20);
+    doc.text(`${mainTitle} - ${sectionTitle}`, 20, 20);
     doc.setFontSize(10);
     const splitText = doc.splitTextToSize(content, 170);
     doc.text(splitText, 20, 30);
-    doc.save(`${title.toLowerCase().replace(/\s+/g, '_')}.pdf`);
+    doc.save(`${mainTitle.toLowerCase().replace(/\s+/g, '_')}_${sectionTitle.toLowerCase()}.pdf`);
   };
 
-  const printContent = (title, content) => {
+  const printContent = (sectionTitle, content) => {
     if (!content) return;
     const printWindow = window.open('', '_blank');
+    const mainTitle = title || (recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes');
     printWindow.document.write(`
       <html>
         <head>
-          <title>${title}</title>
+          <title>${mainTitle} - ${sectionTitle}</title>
           <style>
             body { font-family: sans-serif; padding: 40px; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; }
-            h1 { margin-bottom: 24px; color: #111; }
+            h1 { margin-bottom: 8px; color: #111; }
+            h2 { margin-bottom: 24px; color: #666; font-size: 1.25rem; font-weight: normal; }
             p { white-space: pre-wrap; }
           </style>
         </head>
         <body>
-          <h1>${title}</h1>
+          <h1>${mainTitle}</h1>
+          <h2>${sectionTitle}</h2>
           <p>${content}</p>
           <script>
             window.onload = () => { 
