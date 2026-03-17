@@ -455,7 +455,8 @@ export default function ChatSpread({ onClearCanvas }) {
                             <MessageBubble 
                                 key={i} 
                                 message={msg} 
-                                autoPlay={!isVoiceMuted && !isSending && i === messages.length - 1} 
+                                isVoiceMuted={isVoiceMuted}
+                                isLatest={i === messages.length - 1} 
                             />
                         ))
                     )}
