@@ -250,6 +250,44 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
+  const downloadPdf = (title, content) => {
+    if (!content) return;
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text(title, 20, 20);
+    doc.setFontSize(10);
+    const splitText = doc.splitTextToSize(content, 170);
+    doc.text(splitText, 20, 30);
+    doc.save(`${title.toLowerCase().replace(/\s+/g, '_')}.pdf`);
+  };
+
+  const printContent = (title, content) => {
+    if (!content) return;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body { font-family: sans-serif; padding: 40px; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; }
+            h1 { margin-bottom: 24px; color: #111; }
+            p { white-space: pre-wrap; }
+          </style>
+        </head>
+        <body>
+          <h1>${title}</h1>
+          <p>${content}</p>
+          <script>
+            window.onload = () => { 
+              setTimeout(() => { window.print(); window.close(); }, 250);
+            }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   const generateSummary = async () => {
     if (!transcription) return;
     setIsProcessing(true);
