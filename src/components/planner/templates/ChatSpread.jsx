@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Loader2, MessageSquare, Plus, MessagesSquare } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { Copy, Zap, CheckCircle2, AlertCircle, ChevronRight, Clock } from 'lucide-react';
+import { Copy, Zap, CheckCircle2, AlertCircle, ChevronRight, Clock, Sparkles } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
