@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
         ];
 
         const model = genAI.getGenerativeModel({ 
-            model: "gemini-1.5-flash",
+            model: "gemini-pro",
             systemInstruction: "You are a helpful planner assistant. Current Date/Time: " + new Date().toLocaleString() + ". " + (locationContext || ""),
             tools: tools
         });
