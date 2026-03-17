@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, MessageSquare, Plus, MessagesSquare, Volume2, Square } from 'lucide-react';
+import { Send, Loader2, MessageSquare, Plus, MessagesSquare, Volume2, Square, VolumeX, Mic } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Copy, Zap, CheckCircle2, AlertCircle, ChevronRight, Clock, Sparkles } from 'lucide-react';
 import { cn } from "@/lib/utils";
@@ -97,11 +97,24 @@ const FunctionDisplay = ({ toolCall }) => {
     );
 };
 
-const MessageBubble = ({ message }) => {
+const MessageBubble = ({ message, autoPlay }) => {
     const isUser = message.role === 'user';
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isLoadingAudio, setIsLoadingAudio] = useState(false);
     const audioRef = useRef(null);
+    const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
+
+    useEffect(() => {
+        if (autoPlay && !hasAutoPlayed && message.content && !isUser) {
+            const timer = setTimeout(() => {
+                if (!isSpeaking && !isLoadingAudio && !hasAutoPlayed) {
+                    setHasAutoPlayed(true);
+                    toggleSpeech();
+                }
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [message.content, autoPlay, hasAutoPlayed, isSpeaking, isLoadingAudio, isUser]);
 
     const toggleSpeech = async () => {
         if (isSpeaking || isLoadingAudio) {
@@ -266,6 +279,68 @@ export default function ChatSpread({ onClearCanvas }) {
     const [isSending, setIsSending] = useState(false);
     const scrollRef = useRef(null);
 
+    const [isVoiceMuted, setIsVoiceMuted] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            audioChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) {
+                    audioChunksRef.current.push(e.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                stream.getTracks().forEach(track => track.stop());
+                
+                try {
+                    setIsSending(true);
+                    const file = new File([audioBlob], 'voice_message.webm', { type: 'audio/webm' });
+                    const uploadRes = await base44.integrations.Core.UploadFile({ file });
+                    
+                    const text = await base44.integrations.Core.InvokeLLM({
+                        prompt: "Transcribe the following audio accurately. Return only the transcription text without any other comments.",
+                        file_urls: [uploadRes.file_url],
+                        model: "gemini_3_flash"
+                    });
+                    
+                    if (text && text.trim()) {
+                        await base44.agents.addMessage(conversation, {
+                            role: "user",
+                            content: text.trim()
+                        });
+                    }
+                } catch (err) {
+                    console.error("Voice transcription failed", err);
+                    toast.error("Failed to transcribe voice message");
+                } finally {
+                    setIsSending(false);
+                }
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+        } catch (err) {
+            console.error("Failed to access microphone", err);
+            toast.error("Microphone access denied");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
     useEffect(() => {
         const initChat = async () => {
             try {
@@ -351,6 +426,17 @@ export default function ChatSpread({ onClearCanvas }) {
                     <h1 className="text-3xl font-serif font-bold text-[#1e293b]">AI Assistant</h1>
                 </div>
                 <div className="flex gap-3 items-center">
+                    <button
+                        onClick={() => setIsVoiceMuted(!isVoiceMuted)}
+                        className={cn(
+                            "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors shadow-sm text-sm border",
+                            isVoiceMuted ? "bg-white text-slate-500 border-slate-200 hover:bg-slate-50" : "bg-[#F97316] text-white border-transparent hover:bg-[#ea580c]"
+                        )}
+                        title={isVoiceMuted ? "Unmute AI Voice" : "Mute AI Voice"}
+                    >
+                        {isVoiceMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                        <span className="hidden sm:inline">{isVoiceMuted ? "Muted" : "Voice On"}</span>
+                    </button>
                     <button 
                         onClick={startNewConversation}
                         className="flex items-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm text-sm"
@@ -379,7 +465,13 @@ export default function ChatSpread({ onClearCanvas }) {
                             </div>
                         </div>
                     ) : (
-                        messages.map((msg, i) => <MessageBubble key={i} message={msg} />)
+                        messages.map((msg, i) => (
+                            <MessageBubble 
+                                key={i} 
+                                message={msg} 
+                                autoPlay={!isVoiceMuted && !isSending && i === messages.length - 1} 
+                            />
+                        ))
                     )}
                 </div>
 
@@ -388,13 +480,35 @@ export default function ChatSpread({ onClearCanvas }) {
                         <Input
                             value={input}
                             onChange={e => setInput(e.target.value)}
-                            placeholder="Ask about your schedule, goals, or meeting notes..."
+                            placeholder={isRecording ? "Recording..." : "Ask about your schedule, goals, or meeting notes..."}
                             className="flex-1 bg-white border-slate-200 focus-visible:ring-[#F97316] text-base py-6 rounded-xl shadow-sm"
-                            disabled={isLoading || isSending}
+                            disabled={isLoading || isSending || isRecording}
                         />
+                        <div className="hidden md:flex">
+                            {isRecording ? (
+                                <Button
+                                    type="button"
+                                    onClick={stopRecording}
+                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl shadow-sm h-full aspect-square animate-pulse"
+                                    title="Stop Recording"
+                                >
+                                    <Square className="w-5 h-5 fill-current" />
+                                </Button>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    onClick={startRecording}
+                                    disabled={isLoading || isSending}
+                                    className="bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 p-3 rounded-xl shadow-sm h-full aspect-square"
+                                    title="Voice Message"
+                                >
+                                    <Mic className="w-5 h-5" />
+                                </Button>
+                            )}
+                        </div>
                         <Button 
                             type="submit" 
-                            disabled={!input.trim() || isLoading || isSending}
+                            disabled={!input.trim() || isLoading || isSending || isRecording}
                             className="bg-[#F97316] hover:bg-[#ea580c] text-white px-6 rounded-xl shadow-sm h-auto"
                         >
                             {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
