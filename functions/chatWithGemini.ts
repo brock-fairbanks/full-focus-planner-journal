@@ -144,7 +144,7 @@ ${modePrompt}`;
                         }]
                     });
                     
-                    const secondResult = await generateContent(contents, systemInstruction, model);
+                    const secondResult = await generateContent(contents, systemInstruction, resolvedModel);
                     const secondCandidate = secondResult.candidates?.[0];
                     for (const part of secondCandidate.content.parts) {
                         if (part.text) {
