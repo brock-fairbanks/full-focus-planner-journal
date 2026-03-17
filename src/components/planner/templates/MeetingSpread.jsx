@@ -474,9 +474,29 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-30 pointer-events-auto">
         {/* Transcription Area */}
         <div className="flex flex-col h-full pointer-events-auto">
-          <div className="flex items-center gap-2 mb-4">
-            <FileText size={20} className="text-[#1e293b]" />
-            <h3 className="text-xl font-serif font-bold text-[#1e293b]">Transcription</h3>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <FileText size={20} className="text-[#1e293b]" />
+              <h3 className="text-xl font-serif font-bold text-[#1e293b]">Transcription</h3>
+            </div>
+            {transcription && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => printContent('Transcription', transcription)}
+                  className="p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
+                  title="Print Transcription"
+                >
+                  <Printer size={18} />
+                </button>
+                <button
+                  onClick={() => downloadPdf('Transcription', transcription)}
+                  className="p-2 text-[#64748b] hover:text-[#F97316] hover:bg-orange-50 rounded-md transition-colors"
+                  title="Download PDF"
+                >
+                  <Download size={18} />
+                </button>
+              </div>
+            )}
           </div>
           <div className="bg-white border-2 border-[#cbd5e1] rounded-xl p-6 flex-1 h-[400px] max-h-[50vh] whitespace-pre-wrap overflow-y-auto">
             {transcription ? (
