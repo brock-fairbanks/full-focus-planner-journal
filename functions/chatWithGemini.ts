@@ -2,25 +2,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 const apiKey = Deno.env.get("GEMINI_API_KEY");
 
-const fetchWeather = async (lat, lon) => {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const codeMap = {
-        0: 'Clear sky',
-        1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-        45: 'Fog', 48: 'Depositing rime fog',
-        51: 'Light drizzle', 53: 'Moderate drizzle', 55: 'Dense drizzle',
-        61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
-        71: 'Slight snow', 73: 'Moderate snow', 75: 'Heavy snow',
-        95: 'Thunderstorm'
-    };
-    if (data.current && data.current.weather_code !== undefined) {
-        data.current.weather_description = codeMap[data.current.weather_code] || 'Unknown';
-    }
-    return data;
-};
-
 async function generateContent(contents, systemInstruction, model) {
     const tools = [
         { googleSearch: {} }
