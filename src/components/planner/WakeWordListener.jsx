@@ -265,7 +265,11 @@ export default function WakeWordListener() {
         };
 
         recognition.onerror = (e) => {
-            if (e.error === 'not-allowed') recognitionRef.current = null;
+            console.error("Speech recognition error:", e.error);
+            if (e.error === 'not-allowed') {
+                recognitionRef.current = null;
+                toast.error("Microphone access denied. Wake word disabled.");
+            }
         };
 
         try { recognition.start(); } catch (e) {}
