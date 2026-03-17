@@ -509,20 +509,32 @@ export default function ChatSpread({ onClearCanvas }) {
 
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!input.trim()) return;
+        if (!input.trim() && selectedFiles.length === 0) return;
         
         const userText = input.trim();
         setInput("");
         setIsSending(true);
 
         try {
+            const uploadedFiles = [];
+            for (const file of selectedFiles) {
+                const res = await base44.integrations.Core.UploadFile({ file });
+                uploadedFiles.push({ url: res.file_url, mimeType: file.type, name: file.name });
+            }
+
+            const messageContent = selectedFiles.length > 0 
+                ? (userText ? `${userText}\n\n[Attached ${selectedFiles.length} file(s)]` : `[Attached ${selectedFiles.length} file(s)]`)
+                : userText;
+
             // Optimistic update
-            setMessages(prev => [...prev, { role: 'user', content: userText, isOptimistic: true }]);
+            setMessages(prev => [...prev, { role: 'user', content: messageContent, isOptimistic: true }]);
+            setSelectedFiles([]);
             
             await base44.functions.invoke('chatWithGemini', {
                 userText,
                 locationContext,
-                model: selectedModelRef.current
+                model: selectedModelRef.current,
+                files: uploadedFiles
             });
         } catch (err) {
             console.error("Send failed", err);
