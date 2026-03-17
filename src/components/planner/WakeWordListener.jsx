@@ -243,14 +243,14 @@ export default function WakeWordListener() {
                 for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
                 const average = sum / bufferLength;
 
-                if (average > 10) {
+                if (average > 3) {
                     hasSpoken = true;
                     silenceStart = Date.now();
                 } else {
-                    if (hasSpoken && Date.now() - silenceStart > 600) {
+                    if (hasSpoken && Date.now() - silenceStart > 400) {
                         mediaRecorder.stop();
                         return;
-                    } else if (!hasSpoken && Date.now() - silenceStart > 5000) {
+                    } else if (!hasSpoken && Date.now() - silenceStart > 4000) {
                         mediaRecorder.stop();
                         return;
                     }
