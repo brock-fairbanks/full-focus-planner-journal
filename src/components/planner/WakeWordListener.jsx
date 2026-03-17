@@ -164,9 +164,10 @@ export default function WakeWordListener() {
                             
                             if (text && text.trim()) {
                                 // Add user message and wait for AI to finish responding
+                                const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}]\n`;
                                 const updatedConv = await base44.agents.addMessage(conversation, {
                                     role: "user",
-                                    content: text.trim()
+                                    content: timeContext + text.trim()
                                 });
                                 
                                 const finalMessages = updatedConv.messages || [];
