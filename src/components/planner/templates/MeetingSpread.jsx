@@ -582,16 +582,6 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b] bg-transparent border-b-2 border-transparent hover:border-[#cbd5e1] focus:border-[#F97316] outline-none placeholder:text-[#94a3b8] w-full sm:max-w-[40%] md:max-w-[50%] transition-colors pb-1 text-center sm:text-left"
         />
         <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0 items-center justify-center w-full sm:w-auto">
-          <div className="relative w-full sm:w-auto order-last sm:order-none mt-2 sm:mt-0">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white shadow-sm w-full sm:w-48 transition-all focus:w-full sm:focus:w-64"
-            />
-          </div>
           {(transcription || summary) && (
             <button 
               onClick={startNew}
