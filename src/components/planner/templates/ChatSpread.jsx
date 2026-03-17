@@ -324,9 +324,10 @@ export default function ChatSpread({ onClearCanvas }) {
                             const text = res.data.text;
                             
                             if (text && text.trim()) {
+                                const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}]\n`;
                                 await base44.agents.addMessage(conversation, {
                                     role: "user",
-                                    content: text.trim()
+                                    content: timeContext + text.trim()
                                 });
                             }
                         } catch (err) {
