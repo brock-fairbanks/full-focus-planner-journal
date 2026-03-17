@@ -306,6 +306,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       streamRef.current = stream;
       partNumberRef.current = 1;
       isRecordingRef.current = true;
+      manualPauseRef.current = false;
+      setIsPaused(false);
       sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
       setAudioUrl(null);
       setIsRecording(true);
@@ -338,6 +340,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       streamRef.current = audioStream;
       partNumberRef.current = 1;
       isRecordingRef.current = true;
+      manualPauseRef.current = false;
+      setIsPaused(false);
       sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
       setAudioUrl(null);
       setIsRecording(true);
@@ -345,6 +349,55 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       await requestWakeLock();
       
       startRecorderInstance(audioStream);
+
+      // Auto-pause setup
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaStreamSource(audioStream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      let silenceStart = null;
+      let autoPaused = false;
+
+      const checkAudioLevel = () => {
+        if (!isRecordingRef.current) {
+          audioCtx.close().catch(console.error);
+          return;
+        }
+        
+        analyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          sum += dataArray[i];
+        }
+        const average = sum / dataArray.length;
+
+        if (average < 2) {
+          if (!silenceStart) silenceStart = Date.now();
+          else if (Date.now() - silenceStart > 10000 && !autoPaused && !manualPauseRef.current) { 
+            if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+              mediaRecorderRef.current.pause();
+              autoPaused = true;
+              setIsPaused(true);
+            }
+          }
+        } else {
+          silenceStart = null;
+          if (autoPaused && !manualPauseRef.current) {
+            if (mediaRecorderRef.current && mediaRecorderRef.current.state === "paused") {
+              mediaRecorderRef.current.resume();
+              autoPaused = false;
+              setIsPaused(false);
+            }
+          }
+        }
+        
+        requestAnimationFrame(checkAudioLevel);
+      };
+      checkAudioLevel();
+
     } catch (err) {
       console.error("Failed to start system audio recording", err);
     }
@@ -355,6 +408,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       isRecordingRef.current = false;
       setIsProcessing(true);
       setIsRecording(false);
+      setIsPaused(false);
+      manualPauseRef.current = false;
       mediaRecorderRef.current.stop();
       releaseWakeLock();
     }
@@ -535,13 +590,22 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 </button>
               </>
             ) : (
-              <button 
-                onClick={stopRecording}
-                className="flex items-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-6 py-3 rounded-full font-medium transition-all animate-pulse shadow-sm"
-              >
-                <Square size={20} className="fill-current" />
-                Stop Recording
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={togglePause}
+                  className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-full font-medium transition-all shadow-sm"
+                >
+                  {isPaused ? <Play size={20} className="fill-current" /> : <Pause size={20} className="fill-current" />}
+                  {isPaused ? "Resume" : "Pause"}
+                </button>
+                <button 
+                  onClick={stopRecording}
+                  className={`flex items-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-6 py-3 rounded-full font-medium transition-all shadow-sm ${!isPaused ? 'animate-pulse' : ''}`}
+                >
+                  <Square size={20} className="fill-current" />
+                  Stop Recording
+                </button>
+              </div>
             )}
             {!isRecording && !transcription && (
               <>
