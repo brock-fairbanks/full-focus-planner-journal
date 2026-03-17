@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
 
         contents.push({ role: 'user', parts: [{ text: userText }] });
 
-        const systemInstruction = "You are a helpful planner assistant. Current Date/Time: " + new Date().toLocaleString() + ". " + (locationContext || "");
+        const systemInstruction = "You are a helpful planner assistant. Current Date/Time: " + new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }) + " (UTC-5). " + (locationContext || "");
 
         let result = await generateContent(contents, systemInstruction);
         
