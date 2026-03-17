@@ -223,7 +223,7 @@ export default function WakeWordListener() {
                     hasSpoken = true;
                     silenceStart = Date.now();
                 } else {
-                    if (hasSpoken && Date.now() - silenceStart > 1500) {
+                    if (hasSpoken && Date.now() - silenceStart > 800) {
                         mediaRecorder.stop();
                         return;
                     } else if (!hasSpoken && Date.now() - silenceStart > 7000) {
