@@ -482,9 +482,10 @@ export default function ChatSpread({ onClearCanvas }) {
         setIsSending(true);
 
         try {
+            const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}]\n`;
             await base44.agents.addMessage(conversation, {
                 role: "user",
-                content: userText
+                content: timeContext + userText
             });
         } catch (err) {
             console.error("Send failed", err);
