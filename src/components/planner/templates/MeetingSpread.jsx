@@ -82,7 +82,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       
       const response = await base44.functions.invoke('generateSpeech', { text, voice: 'onyx' });
       
-      const audioUrl = `data:audio/mp3;base64,${response.data.audioContent}`;
+      const audioUrl = `data:audio/aac;base64,${response.data.audioContent}`;
       const audio = new Audio(audioUrl);
       audioRef.current = audio;
       
