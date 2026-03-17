@@ -10,9 +10,9 @@ Deno.serve(async (req) => {
         }
 
         const body = await req.json();
-        const { file_url, file_name, mime_type } = body;
+        const { file_url, text_content, file_name, mime_type } = body;
 
-        if (!file_url || !file_name || !mime_type) {
+        if ((!file_url && !text_content) || !file_name || !mime_type) {
              return Response.json({ error: 'Missing required parameters' }, { status: 400 });
         }
 
@@ -47,9 +47,13 @@ Deno.serve(async (req) => {
             folderId = folderData.id;
         }
 
-        // Fetch the file from the URL
-        const fileResponse = await fetch(file_url);
-        const fileBlob = await fileResponse.blob();
+        let fileBlob;
+        if (file_url) {
+            const fileResponse = await fetch(file_url);
+            fileBlob = await fileResponse.blob();
+        } else {
+            fileBlob = new Blob([text_content], { type: mime_type });
+        }
 
         // Upload to Google Drive using multipart upload
         const metadata = {
