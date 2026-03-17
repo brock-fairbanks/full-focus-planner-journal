@@ -178,7 +178,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         </div>
       </div>
 
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-30 pointer-events-auto">
         {/* Transcription Area */}
         <div className="flex flex-col h-full pointer-events-auto">
           <div className="flex items-center gap-2 mb-4">
