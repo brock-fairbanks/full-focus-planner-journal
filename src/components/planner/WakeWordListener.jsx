@@ -16,6 +16,11 @@ export default function WakeWordListener() {
     const [conversation, setConversation] = useState(null);
     const [latestResponse, setLatestResponse] = useState('');
     
+    const pathnameRef = useRef(location.pathname);
+    useEffect(() => {
+        pathnameRef.current = location.pathname;
+    }, [location.pathname]);
+    
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
     const audioContextRef = useRef(null);
