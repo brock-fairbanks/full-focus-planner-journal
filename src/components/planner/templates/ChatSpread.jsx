@@ -444,6 +444,15 @@ export default function ChatSpread({ onClearCanvas }) {
             if (event.type === 'create') {
                 setMessages(prev => {
                     if (prev.find(m => m.id === event.data.id)) return prev;
+                    
+                    if (event.data.role === 'user') {
+                        const optIndex = prev.findIndex(m => m.isOptimistic && m.content === event.data.content);
+                        if (optIndex !== -1) {
+                            const next = [...prev];
+                            next[optIndex] = event.data;
+                            return next;
+                        }
+                    }
                     return [...prev, event.data];
                 });
             }
