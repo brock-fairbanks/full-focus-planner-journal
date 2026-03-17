@@ -487,7 +487,8 @@ export default function ChatSpread({ onClearCanvas }) {
                                 key={i} 
                                 message={msg} 
                                 isVoiceMuted={isVoiceMuted}
-                                isLatest={i === messages.length - 1} 
+                                isLatest={i === messages.length - 1}
+                                isSending={isSending}
                             />
                         ))
                     )}
