@@ -25,7 +25,7 @@ export default function WakeWordListener() {
             
             const transcript = event.results[current][0].transcript.toLowerCase();
             
-            if (transcript.includes('hey planner') || transcript.includes('okay planner') || transcript.includes('hey assistant')) {
+            if (transcript.includes('hey alex') || transcript.includes('okay alex')) {
                 const now = Date.now();
                 if (now - lastTriggerRef.current < 3000) return; // Debounce triggers
                 lastTriggerRef.current = now;
