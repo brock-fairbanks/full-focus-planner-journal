@@ -1,0 +1,167 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { MapPin, Plus, Trash2, ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
+import { toast } from 'sonner';
+
+export default function Settings() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  
+  const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [locations, setLocations] = useState([]);
+  const [newLocation, setNewLocation] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setFullName(user.full_name || '');
+      setPhoneNumber(user.phone_number || '');
+      fetchLocations();
+    }
+  }, [user]);
+
+  const fetchLocations = async () => {
+    if (!user) return;
+    try {
+      const locs = await base44.entities.Location.filter({ created_by: user.email });
+      setLocations(locs);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const addLocation = async () => {
+    if (!newLocation.trim()) return;
+    try {
+      const loc = await base44.entities.Location.create({ name: newLocation.trim() });
+      setLocations([...locations, loc]);
+      setNewLocation('');
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to add location");
+    }
+  };
+
+  const removeLocation = async (id) => {
+    try {
+      await base44.entities.Location.delete(id);
+      setLocations(locations.filter(l => l.id !== id));
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to remove location");
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    setLoading(true);
+    try {
+      await base44.auth.updateMe({
+        full_name: fullName,
+        phone_number: phoneNumber
+      });
+      toast.success("Profile updated");
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!user) return null;
+
+  return (
+    <div className="min-h-screen bg-[#F4EFE4] p-4 md:p-8 font-sans">
+      <div className="max-w-3xl mx-auto">
+        <button 
+          onClick={() => navigate('/today')}
+          className="flex items-center text-[#64748b] hover:text-[#1e293b] mb-6 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" /> Back to Planner
+        </button>
+        
+        <h1 className="text-3xl font-serif font-bold text-[#1e293b] mb-8">Settings</h1>
+
+        <div className="space-y-8">
+          {/* Profile Section */}
+          <div className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-6">
+            <h2 className="text-xl font-bold text-[#1e293b] mb-4">Profile</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="space-y-2">
+                <Label>Full Name</Label>
+                <Input value={fullName} onChange={e => setFullName(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input value={user.email} disabled className="bg-slate-50" />
+              </div>
+              <div className="space-y-2">
+                <Label>Phone Number</Label>
+                <Input value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
+              </div>
+            </div>
+            <Button onClick={handleSaveProfile} disabled={loading} className="bg-[#1e293b] hover:bg-[#0f172a] text-white">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+              Save Profile
+            </Button>
+          </div>
+
+          {/* Locations Section */}
+          <div className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-6">
+            <h2 className="text-xl font-bold text-[#1e293b] mb-4">Locations</h2>
+            <div className="space-y-2 mb-4 max-w-md">
+              {locations.map((loc) => (
+                <div key={loc.id} className="flex items-center justify-between bg-slate-50 px-3 py-2 rounded-lg border border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-[#F97316]" />
+                    <span className="text-[#334155]">{loc.name}</span>
+                  </div>
+                  <button onClick={() => removeLocation(loc.id)} className="text-slate-400 hover:text-red-500">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              {locations.length === 0 && <p className="text-sm text-[#64748b]">No locations saved yet.</p>}
+            </div>
+            <div className="flex gap-2 max-w-md">
+              <Input 
+                value={newLocation} 
+                onChange={e => setNewLocation(e.target.value)} 
+                placeholder="New location name..." 
+                onKeyDown={e => e.key === 'Enter' && addLocation()}
+              />
+              <Button onClick={addLocation} variant="outline" className="shrink-0">
+                <Plus className="h-4 w-4" /> Add
+              </Button>
+            </div>
+          </div>
+
+          {/* Integrations Section */}
+          <div className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-6">
+            <h2 className="text-xl font-bold text-[#1e293b] mb-4">Integrations</h2>
+            <div className="p-4 border border-[#E2E8F0] rounded-xl flex items-center justify-between max-w-md">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[#1e293b]">Google Drive</h3>
+                  <p className="text-xs text-[#64748b]">Not connected</p>
+                </div>
+              </div>
+              <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => alert('We will set this up next!')}>
+                Connect
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

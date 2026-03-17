@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Target, Moon, TrendingUp, BookOpen, Sun, Coffee, CalendarDays, LogOut, Mic } from "lucide-react";
+import { Calendar, Target, Moon, TrendingUp, BookOpen, Sun, Coffee, CalendarDays, LogOut, Mic, Settings } from "lucide-react";
 import { Reorder } from "framer-motion";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
@@ -125,6 +125,14 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
           </Reorder.Group>
         </div>
         <div className="w-full flex flex-col items-center justify-center pt-2 mt-auto border-t border-[#3e2d1d]/50 shrink-0">
+          <a
+            href="/settings"
+            className="flex flex-col items-center justify-center w-full h-12 transition-all duration-200 gap-1 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
+            title="Settings"
+          >
+            <Settings size={16} />
+            <span className="text-[9px] font-medium tracking-wide uppercase">Settings</span>
+          </a>
           <button
             onDoubleClick={() => base44.auth.logout()}
             className="flex flex-col items-center justify-center w-full h-12 transition-all duration-200 gap-1 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
