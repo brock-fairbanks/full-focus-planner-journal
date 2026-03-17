@@ -73,8 +73,8 @@ export default function Onboarding() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#F4EFE4] flex items-center justify-center p-4 font-sans">
-      <div className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-8 max-w-md w-full">
+    <div className="h-screen overflow-y-auto bg-[#F4EFE4] flex items-center justify-center p-4 font-sans">
+      <div className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-8 max-w-md w-full my-auto">
         <h1 className="text-3xl font-serif font-bold text-[#1e293b] mb-2">Welcome to Planner</h1>
         <p className="text-[#64748b] mb-8">Let's get your workspace set up.</p>
 
