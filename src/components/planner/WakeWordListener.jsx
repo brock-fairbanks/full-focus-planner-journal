@@ -241,13 +241,18 @@ export default function WakeWordListener() {
             if (!event.results[current]) return;
             
             const transcript = event.results[current][0].transcript.toLowerCase();
+            console.log("Wake word listener heard:", transcript);
             
-            if (transcript.includes('hey alex') || transcript.includes('okay alex')) {
+            if (transcript.includes('alex')) {
                 const now = Date.now();
                 if (now - lastTriggerRef.current < 3000) return; // Debounce triggers
                 lastTriggerRef.current = now;
 
-                triggerAssistant();
+                if (pathnameRef.current === '/chat') {
+                    window.dispatchEvent(new CustomEvent('wakeword-detected'));
+                } else {
+                    triggerAssistant();
+                }
             }
         };
 
