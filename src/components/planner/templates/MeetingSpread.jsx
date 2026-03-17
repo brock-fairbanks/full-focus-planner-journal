@@ -12,35 +12,115 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [audioUrl, setAudioUrl] = useState(null);
   
   const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+  const partNumberRef = useRef(1);
+  const streamRef = useRef(null);
+  const isRecordingRef = useRef(false);
+
+  const processChunk = async (audioBlob, partNum, mimeType, extension, isFinal) => {
+    if (isFinal) setIsProcessing(true);
+    try {
+      const fileName = partNum > 1 ? `meeting_audio_part${partNum}.${extension}` : `meeting_audio.${extension}`;
+      const file = new File([audioBlob], fileName, { type: mimeType });
+      const uploadRes = await base44.integrations.Core.UploadFile({ file });
+      
+      if (user?.drive_connected) {
+        const driveFileName = partNum > 1 
+          ? `Meeting_Recording_${new Date().toISOString().slice(0,10)}_Part${partNum}.${extension}`
+          : `Meeting_Recording_${new Date().toISOString().slice(0,10)}.${extension}`;
+          
+        base44.functions.invoke('uploadToGoogleDrive', {
+          file_url: uploadRes.file_url,
+          file_name: driveFileName,
+          mime_type: mimeType
+        }).catch(e => console.error("Drive upload failed", e));
+      }
+      
+      const text = await base44.integrations.Core.InvokeLLM({
+        prompt: "Please transcribe the following audio file. Return only the transcription text. If this is a continuation, just transcribe what you hear without comments.",
+        file_urls: [uploadRes.file_url],
+        model: "gemini_3_flash"
+      });
+      
+      setTranscription(prev => prev ? prev + "\n\n" + text : text);
+    } catch (err) {
+      console.error("Transcription error", err);
+      if (isFinal) alert("Failed to transcribe audio.");
+    } finally {
+      if (isFinal) setIsProcessing(false);
+    }
+  };
+
+  const startRecorderInstance = (stream) => {
+    let mimeType = 'audio/webm';
+    if (MediaRecorder.isTypeSupported('audio/mp4')) {
+      mimeType = 'audio/mp4';
+    } else if (MediaRecorder.isTypeSupported('audio/mp3')) {
+      mimeType = 'audio/mp3';
+    }
+    
+    const options = { mimeType };
+    const mediaRecorder = new MediaRecorder(stream, options);
+    
+    // Store in ref so we can stop the *current* one on user click
+    mediaRecorderRef.current = mediaRecorder;
+    
+    // Create new array/size for this specific recorder instance
+    const localChunks = [];
+    let localChunkSize = 0;
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        localChunks.push(event.data);
+        localChunkSize += event.data.size;
+        
+        // If size exceeds ~40MB, trigger chunking to stay under 50MB limit
+        if (localChunkSize > 40 * 1024 * 1024 && isRecordingRef.current) {
+          // Immediately start next recorder to prevent gaps
+          startRecorderInstance(stream);
+          // Stop this one to finalize its file
+          mediaRecorder.stop();
+        }
+      }
+    };
+
+    mediaRecorder.onstop = () => {
+      const actualMimeType = mediaRecorder.mimeType || mimeType;
+      const extension = actualMimeType.split('/')[1].split(';')[0];
+      const audioBlob = new Blob(localChunks, { type: actualMimeType });
+      
+      if (!isRecordingRef.current) {
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl({ url, extension });
+      }
+      
+      // Save current part number for this closure
+      const currentPart = partNumberRef.current;
+      
+      if (isRecordingRef.current) {
+        partNumberRef.current += 1;
+      } else {
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+        }
+      }
+      
+      processChunk(audioBlob, currentPart, actualMimeType, extension, !isRecordingRef.current);
+    };
+
+    // Trigger ondataavailable every 5 seconds to accurately track chunk size
+    mediaRecorder.start(5000);
+  };
 
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Check for mp4 support first, then fallback to webm
-      let mimeType = 'audio/webm';
-      if (MediaRecorder.isTypeSupported('audio/mp4')) {
-        mimeType = 'audio/mp4';
-      } else if (MediaRecorder.isTypeSupported('audio/mp3')) {
-        mimeType = 'audio/mp3';
-      }
-      
-      const options = { mimeType };
-      const mediaRecorder = new MediaRecorder(stream, options);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
+      streamRef.current = stream;
+      partNumberRef.current = 1;
+      isRecordingRef.current = true;
       setAudioUrl(null);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.start();
       setIsRecording(true);
+      
+      startRecorderInstance(stream);
     } catch (err) {
       console.error("Failed to start recording", err);
       alert("Microphone access denied or error occurred.");
@@ -48,50 +128,10 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.onstop = async () => {
-        setIsProcessing(true);
-        setIsRecording(false);
-        
-        const actualMimeType = mediaRecorderRef.current.mimeType || 'audio/webm';
-        const extension = actualMimeType.split('/')[1].split(';')[0]; // Extract mp4, webm, mp3 etc
-        
-        const audioBlob = new Blob(audioChunksRef.current, { type: actualMimeType });
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrl({ url, extension });
-        
-        try {
-          const file = new File([audioBlob], `meeting_audio.${extension}`, { type: actualMimeType });
-          const uploadRes = await base44.integrations.Core.UploadFile({ file });
-          
-          // Trigger Google Drive upload in the background if connected
-          if (user?.drive_connected) {
-            base44.functions.invoke('uploadToGoogleDrive', {
-              file_url: uploadRes.file_url,
-              file_name: `Meeting_Recording_${new Date().toISOString().slice(0,10)}.${extension}`,
-              mime_type: actualMimeType
-            }).catch(e => console.error("Drive upload failed", e));
-          }
-          
-          const text = await base44.integrations.Core.InvokeLLM({
-            prompt: "Please transcribe the following audio file. Return only the transcription text.",
-            file_urls: [uploadRes.file_url],
-            model: "gemini_3_flash"
-          });
-          
-          setTranscription(text);
-        } catch (err) {
-          console.error("Transcription error", err);
-          alert("Failed to transcribe audio.");
-        } finally {
-          setIsProcessing(false);
-          // Stop all tracks
-          if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
-            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-          }
-        }
-      };
-      
+    if (mediaRecorderRef.current && isRecordingRef.current) {
+      isRecordingRef.current = false;
+      setIsProcessing(true);
+      setIsRecording(false);
       mediaRecorderRef.current.stop();
     }
   };
