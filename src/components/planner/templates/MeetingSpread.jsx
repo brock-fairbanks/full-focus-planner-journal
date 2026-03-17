@@ -118,6 +118,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       streamRef.current = stream;
       partNumberRef.current = 1;
       isRecordingRef.current = true;
+      sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
       setAudioUrl(null);
       setIsRecording(true);
       
