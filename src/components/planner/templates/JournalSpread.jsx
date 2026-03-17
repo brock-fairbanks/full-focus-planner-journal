@@ -8,6 +8,8 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
   
   const [currentLocationName, setCurrentLocationName] = useState("");
   const [isLocating, setIsLocating] = useState(false);
+  const [weatherInfo, setWeatherInfo] = useState("");
+  const [isWeatherLoading, setIsWeatherLoading] = useState(false);
 
   useEffect(() => {
     const detectLocation = async () => {
@@ -19,6 +21,21 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
           navigator.geolocation.getCurrentPosition(async (position) => {
             const { latitude, longitude } = position.coords;
             
+            setIsWeatherLoading(true);
+            base44.functions.invoke('getWeather', { lat: latitude, lon: longitude })
+              .then(res => {
+                 if (res.data && res.data.weather && res.data.weather.current) {
+                    const temp = res.data.weather.current.temperature_2m;
+                    const desc = res.data.weather.current.weather_description;
+                    setWeatherInfo(`${Math.round(temp)}°F • ${desc}`);
+                 }
+              })
+              .catch(err => {
+                 console.error("Weather fetch error:", err);
+                 setWeatherInfo("Unavailable");
+              })
+              .finally(() => setIsWeatherLoading(false));
+
             let matchedName = "";
             let minDistance = Infinity;
 
@@ -216,7 +233,9 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
         </div>
         <div className="flex flex-col">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1 flex items-center gap-1"><CloudSun size={12}/> Weather</span>
-          <div className="border-b-2 border-[#cbd5e1] h-7 w-32"></div>
+          <div className="border-b-2 border-[#cbd5e1] h-7 min-w-32 flex items-end pb-1 text-[#334155] font-serif italic text-lg leading-none whitespace-nowrap pr-4">
+            {isWeatherLoading ? <span className="text-sm text-[#94a3b8] animate-pulse not-italic font-sans">Loading...</span> : weatherInfo}
+          </div>
         </div>
       </div>
 
