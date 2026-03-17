@@ -97,37 +97,37 @@ const FunctionDisplay = ({ toolCall }) => {
     );
 };
 
-const MessageBubble = ({ message, isVoiceMuted, isLatest }) => {
+const MessageBubble = ({ message, isVoiceMuted, isLatest, isSending }) => {
     const isUser = message.role === 'user';
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isLoadingAudio, setIsLoadingAudio] = useState(false);
     const audioRef = useRef(null);
     const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
+    const [wasGeneratedInSession] = useState(isSending);
+    const audioRequestInProgress = useRef(false);
 
     useEffect(() => {
-        // Only autoplay if it's the latest AI message, voice is not muted, has content, and hasn't played yet
-        if (isUser || !isLatest || isVoiceMuted || hasAutoPlayed || !message.content) {
+        // Only autoplay if it's the latest AI message, voice is not muted, it was generated just now,
+        // it has finished streaming (!isSending), has content, and hasn't played yet
+        if (isUser || !isLatest || isVoiceMuted || hasAutoPlayed || !wasGeneratedInSession || isSending || !message.content) {
             return;
         }
 
-        // Debounce: wait for content to stop changing for 1.5s
-        const timer = setTimeout(() => {
-            setHasAutoPlayed(true);
-            toggleSpeech();
-        }, 1500);
-
-        return () => clearTimeout(timer);
+        setHasAutoPlayed(true);
+        toggleSpeech();
+        
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [message.content, isUser, isLatest, isVoiceMuted, hasAutoPlayed]);
+    }, [isSending, isLatest, isVoiceMuted, hasAutoPlayed, wasGeneratedInSession, isUser, message.content]);
 
     const toggleSpeech = async () => {
-        if (isSpeaking || isLoadingAudio) {
+        if (isSpeaking || isLoadingAudio || audioRequestInProgress.current) {
             if (audioRef.current) {
                 audioRef.current.pause();
                 audioRef.current.currentTime = 0;
             }
             setIsSpeaking(false);
             setIsLoadingAudio(false);
+            audioRequestInProgress.current = false;
             return;
         }
         
@@ -135,6 +135,7 @@ const MessageBubble = ({ message, isVoiceMuted, isLatest }) => {
         
         try {
             setIsLoadingAudio(true);
+            audioRequestInProgress.current = true;
             const response = await base44.functions.invoke('generateSpeech', { text: message.content, voice: 'onyx' });
             
             const audioUrl = `data:audio/mp3;base64,${response.data.audioContent}`;
@@ -143,10 +144,12 @@ const MessageBubble = ({ message, isVoiceMuted, isLatest }) => {
             
             audio.onended = () => {
                 setIsSpeaking(false);
+                audioRequestInProgress.current = false;
             };
             audio.onerror = () => {
                 setIsSpeaking(false);
                 setIsLoadingAudio(false);
+                audioRequestInProgress.current = false;
                 toast.error("Failed to play audio");
             };
             
@@ -157,6 +160,7 @@ const MessageBubble = ({ message, isVoiceMuted, isLatest }) => {
             console.error("Audio generation failed:", error);
             toast.error("Failed to generate speech");
             setIsLoadingAudio(false);
+            audioRequestInProgress.current = false;
         }
     };
 
