@@ -38,10 +38,17 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [isPaused, setIsPaused] = useState(false);
   const manualPauseRef = useRef(false);
   const isPausedRef = useRef(false);
+  const autoPausedRef = useRef(false);
 
   useEffect(() => {
     isPausedRef.current = isPaused;
-  }, [isPaused]);
+    if (isRecording) {
+      document.title = isPaused ? "⏸ Paused - Planner" : "🔴 Recording - Planner";
+    } else {
+      document.title = "Fairbanks Builders";
+    }
+    return () => { document.title = "Fairbanks Builders"; };
+  }, [isPaused, isRecording]);
   const [savedNotes, setSavedNotes] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [currentNoteId, setCurrentNoteId] = useState(null);
