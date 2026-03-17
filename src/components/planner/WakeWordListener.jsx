@@ -31,6 +31,18 @@ export default function WakeWordListener() {
     const audioContextRef = useRef(null);
     const audioPlayerRef = useRef(null);
     const isAssistantActiveRef = useRef(false);
+    
+    const [locationContext, setLocationContext] = useState('');
+    useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLocationContext(`User GPS: {"lat": ${position.coords.latitude}, "lon": ${position.coords.longitude}}`);
+                },
+                (error) => console.error("GPS error:", error)
+            );
+        }
+    }, []);
 
     // Initialize conversation for the assistant
     useEffect(() => {
@@ -186,7 +198,7 @@ export default function WakeWordListener() {
                             
                             if (text && text.trim()) {
                                 // Add user message and wait for AI to finish responding
-                                const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}]\n`;
+                                const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}. ${locationContext}]\n`;
                                 setUserTranscript(text.trim());
                                 setLatestResponse('');
                                 const updatedConv = await base44.agents.addMessage(currentConv, {
@@ -247,10 +259,10 @@ export default function WakeWordListener() {
                     hasSpoken = true;
                     silenceStart = Date.now();
                 } else {
-                    if (hasSpoken && Date.now() - silenceStart > 400) {
+                    if (hasSpoken && Date.now() - silenceStart > 1500) {
                         mediaRecorder.stop();
                         return;
-                    } else if (!hasSpoken && Date.now() - silenceStart > 4000) {
+                    } else if (!hasSpoken && Date.now() - silenceStart > 6000) {
                         mediaRecorder.stop();
                         return;
                     }

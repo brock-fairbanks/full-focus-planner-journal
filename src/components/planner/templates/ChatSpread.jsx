@@ -288,6 +288,18 @@ export default function ChatSpread({ onClearCanvas }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
     const scrollRef = useRef(null);
+    
+    const [locationContext, setLocationContext] = useState('');
+    useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLocationContext(`User GPS: {"lat": ${position.coords.latitude}, "lon": ${position.coords.longitude}}`);
+                },
+                (error) => console.error("GPS error:", error)
+            );
+        }
+    }, []);
 
     const [isVoiceMuted, setIsVoiceMuted] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -324,7 +336,7 @@ export default function ChatSpread({ onClearCanvas }) {
                             const text = res.data.text;
                             
                             if (text && text.trim()) {
-                                const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}]\n`;
+                                const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}. ${locationContext}]\n`;
                                 await base44.agents.addMessage(conversation, {
                                     role: "user",
                                     content: timeContext + text.trim()
@@ -378,11 +390,11 @@ export default function ChatSpread({ onClearCanvas }) {
                     hasSpoken = true;
                     silenceStart = Date.now();
                 } else {
-                    if (hasSpoken && Date.now() - silenceStart > 500) {
+                    if (hasSpoken && Date.now() - silenceStart > 1500) {
                         mediaRecorder.stop();
                         setIsRecording(false);
                         return;
-                    } else if (!hasSpoken && Date.now() - silenceStart > 5000) {
+                    } else if (!hasSpoken && Date.now() - silenceStart > 7000) {
                         mediaRecorder.stop();
                         setIsRecording(false);
                         return;
@@ -482,7 +494,7 @@ export default function ChatSpread({ onClearCanvas }) {
         setIsSending(true);
 
         try {
-            const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}]\n`;
+            const timeContext = `[System Context: Current Date/Time is ${new Date().toLocaleString()}. ${locationContext}]\n`;
             await base44.agents.addMessage(conversation, {
                 role: "user",
                 content: timeContext + userText
