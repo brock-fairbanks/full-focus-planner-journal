@@ -39,6 +39,7 @@ async function generateContent(contents, systemInstruction, model) {
                 },
             ],
         },
+        { googleSearch: {} }
     ];
 
     const body = {
