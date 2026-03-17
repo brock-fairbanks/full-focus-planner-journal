@@ -279,8 +279,11 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const draw = (e) => {
     if (!isDrawing.current || !ctxRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const dpr = window.devicePixelRatio || 1;
+    const scaleX = (canvasRef.current.width / dpr) / rect.width;
+    const scaleY = (canvasRef.current.height / dpr) / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
     
     pointsRef.current.push({x, y});
     
