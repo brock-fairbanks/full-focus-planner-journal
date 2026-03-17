@@ -308,8 +308,15 @@ export default function ChatSpread({ onClearCanvas }) {
 
     const startRecording = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: { 
+                    sampleRate: 16000, 
+                    channelCount: 1,
+                    echoCancellation: true,
+                    noiseSuppression: true
+                } 
+            });
+            const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
             mediaRecorderRef.current = mediaRecorder;
             audioChunksRef.current = [];
 
@@ -390,11 +397,11 @@ export default function ChatSpread({ onClearCanvas }) {
                     hasSpoken = true;
                     silenceStart = Date.now();
                 } else {
-                    if (hasSpoken && Date.now() - silenceStart > 1500) {
+                    if (hasSpoken && Date.now() - silenceStart > 2000) {
                         mediaRecorder.stop();
                         setIsRecording(false);
                         return;
-                    } else if (!hasSpoken && Date.now() - silenceStart > 7000) {
+                    } else if (!hasSpoken && Date.now() - silenceStart > 10000) {
                         mediaRecorder.stop();
                         setIsRecording(false);
                         return;
