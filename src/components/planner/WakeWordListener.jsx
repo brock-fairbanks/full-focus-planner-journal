@@ -14,6 +14,7 @@ export default function WakeWordListener() {
     
     const [assistantState, setAssistantState] = useState('idle'); // idle, listening, processing, speaking
     const [conversation, setConversation] = useState(null);
+    const [latestResponse, setLatestResponse] = useState('');
     
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
