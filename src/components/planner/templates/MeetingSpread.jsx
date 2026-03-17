@@ -165,6 +165,57 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
+  const fileInputRef = useRef(null);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsProcessing(true);
+    setAudioUrl(null);
+    setTranscription("");
+    setSummary("");
+    
+    try {
+      sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const rType = recordingTypeRef.current;
+      const uploadRes = await base44.integrations.Core.UploadFile({ file });
+      
+      const dateStr = new Date().toISOString().slice(0,10);
+      const sessionId = sessionIdRef.current;
+      const extension = file.name.split('.').pop() || 'webm';
+      const mimeType = file.type || 'audio/webm';
+      
+      setAudioUrl({ url: uploadRes.file_url, extension });
+
+      if (user?.drive_connected) {
+        const drivePrefix = rType === 'lecture' ? 'Lecture' : 'Meeting';
+        const driveFileName = `${drivePrefix}_${dateStr}_ID-${sessionId}_Uploaded.${extension}`;
+          
+        base44.functions.invoke('uploadToGoogleDrive', {
+          file_url: uploadRes.file_url,
+          file_name: driveFileName,
+          mime_type: mimeType
+        }).catch(err => console.error("Drive upload failed", err));
+      }
+
+      const text = await base44.integrations.Core.InvokeLLM({
+        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text.`,
+        file_urls: [uploadRes.file_url],
+        model: "gemini_3_flash"
+      });
+      
+      setTranscription(text);
+      saveNote(text, null, uploadRes.file_url);
+    } catch (err) {
+      console.error("Upload error", err);
+      alert("Failed to process uploaded file.");
+    } finally {
+      setIsProcessing(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const startRecorderInstance = (stream) => {
     let mimeType = 'audio/webm';
     if (MediaRecorder.isTypeSupported('audio/mp4')) {
@@ -429,16 +480,23 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               </button>
             )}
             {!isRecording && !transcription && (
-              <button
-                onClick={() => {
-                  setTranscription("Good morning everyone. Let's get started with today's team sync. First on the agenda is the website redesign project. Sarah, could you give us an update? Yes, we've completed the initial wireframes and the client has approved the new color scheme. We're on track to start development next week. That's great news. John, how are we looking on the backend API integration? The API is mostly complete, but we're still waiting on some documentation from the third-party payment gateway. I'll follow up with them today. Okay, please keep us posted on that. Finally, let's talk about the upcoming marketing campaign for the launch. We need to finalize the budget by Friday. Who is owning that? I am, I'll have the final numbers ready for review by tomorrow afternoon. Perfect. Let's aim to have everything wrapped up by end of week. Any other questions? No? Alright, let's get back to work.");
-                }}
-                disabled={isProcessing}
-                className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm border border-slate-200"
-              >
-                <FileText size={20} />
-                Load Sample
-              </button>
+              <>
+                <input 
+                  type="file" 
+                  accept="audio/*" 
+                  className="hidden" 
+                  ref={fileInputRef} 
+                  onChange={handleFileUpload} 
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isProcessing}
+                  className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm border border-slate-200"
+                >
+                  <Upload size={20} />
+                  Upload Audio
+                </button>
+              </>
             )}
           </div>
           
