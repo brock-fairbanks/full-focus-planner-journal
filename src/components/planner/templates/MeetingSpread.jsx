@@ -12,6 +12,13 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [summary, setSummary] = useState("");
   const [audioUrl, setAudioUrl] = useState(null);
   const [recordingType, setRecordingType] = useState("meeting");
+  const [isPaused, setIsPaused] = useState(false);
+  const manualPauseRef = useRef(false);
+  const isPausedRef = useRef(false);
+
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
   const [savedNotes, setSavedNotes] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [currentNoteId, setCurrentNoteId] = useState(null);
