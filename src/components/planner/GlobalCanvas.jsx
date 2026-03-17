@@ -311,6 +311,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     ctxRef.current.strokeStyle = '#1e293b';
     ctxRef.current.lineWidth = 2.2;
     ctxRef.current.lineCap = 'round';
+    ctxRef.current.lineJoin = 'round';
     ctxRef.current.beginPath();
     ctxRef.current.moveTo(x, y);
   };
@@ -321,13 +322,24 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     const dpr = window.devicePixelRatio || 1;
     const scaleX = (canvasRef.current.width / dpr) / rect.width;
     const scaleY = (canvasRef.current.height / dpr) / rect.height;
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
     
-    pointsRef.current.push({x, y});
+    const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
     
-    ctxRef.current.lineTo(x, y);
-    ctxRef.current.stroke();
+    for (const ev of events) {
+      const x = (ev.clientX - rect.left) * scaleX;
+      const y = (ev.clientY - rect.top) * scaleY;
+      pointsRef.current.push({x, y});
+      
+      ctxRef.current.lineTo(x, y);
+      
+      if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
+         ctxRef.current.lineWidth = ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2;
+      }
+      
+      ctxRef.current.stroke();
+      ctxRef.current.beginPath();
+      ctxRef.current.moveTo(x, y);
+    }
   };
 
   const endDrawing = () => {
