@@ -296,6 +296,37 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
+  const startSystemAudioRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({ 
+        video: true,
+        audio: true 
+      });
+      
+      if (stream.getAudioTracks().length === 0) {
+        stream.getTracks().forEach(t => t.stop());
+        alert("No audio selected. Please check 'Share tab audio' in the selection dialog.");
+        return;
+      }
+      
+      stream.getVideoTracks().forEach(t => t.stop());
+      const audioStream = new MediaStream([stream.getAudioTracks()[0]]);
+      
+      streamRef.current = audioStream;
+      partNumberRef.current = 1;
+      isRecordingRef.current = true;
+      sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
+      setAudioUrl(null);
+      setIsRecording(true);
+      
+      await requestWakeLock();
+      
+      startRecorderInstance(audioStream);
+    } catch (err) {
+      console.error("Failed to start system audio recording", err);
+    }
+  };
+
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecordingRef.current) {
       isRecordingRef.current = false;
@@ -460,16 +491,26 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             </div>
           )}
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap justify-center items-center gap-4">
             {!isRecording ? (
-              <button 
-                onClick={startRecording}
-                disabled={isProcessing}
-                className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm"
-              >
-                <Mic size={20} />
-                Start Recording
-              </button>
+              <>
+                <button 
+                  onClick={startRecording}
+                  disabled={isProcessing}
+                  className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm"
+                >
+                  <Mic size={20} />
+                  Record Mic
+                </button>
+                <button 
+                  onClick={startSystemAudioRecording}
+                  disabled={isProcessing}
+                  className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm"
+                >
+                  <Monitor size={20} />
+                  Record System Audio
+                </button>
+              </>
             ) : (
               <button 
                 onClick={stopRecording}
