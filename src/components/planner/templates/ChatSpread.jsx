@@ -453,7 +453,7 @@ export default function ChatSpread({ onClearCanvas }) {
                             return next;
                         }
                     }
-                    return [...prev, event.data];
+                    return [...prev, { ...event.data, isNew: true }];
                 });
             }
         });
