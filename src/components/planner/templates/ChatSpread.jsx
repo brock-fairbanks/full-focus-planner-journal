@@ -374,15 +374,15 @@ export default function ChatSpread({ onClearCanvas }) {
                 }
                 const average = sum / bufferLength;
 
-                if (average > 10) {
+                if (average > 3) {
                     hasSpoken = true;
                     silenceStart = Date.now();
                 } else {
-                    if (hasSpoken && Date.now() - silenceStart > 800) {
+                    if (hasSpoken && Date.now() - silenceStart > 500) {
                         mediaRecorder.stop();
                         setIsRecording(false);
                         return;
-                    } else if (!hasSpoken && Date.now() - silenceStart > 7000) {
+                    } else if (!hasSpoken && Date.now() - silenceStart > 5000) {
                         mediaRecorder.stop();
                         setIsRecording(false);
                         return;
