@@ -289,6 +289,19 @@ export default function ChatSpread({ onClearCanvas }) {
     const [isSending, setIsSending] = useState(false);
     const scrollRef = useRef(null);
     
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const fileInputRef = useRef(null);
+
+    const handleFileSelect = (e) => {
+        const files = Array.from(e.target.files);
+        setSelectedFiles(prev => [...prev, ...files]);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const removeFile = (index) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    };
+    
     const [locationContext, setLocationContext] = useState('');
     useEffect(() => {
         if ("geolocation" in navigator) {
