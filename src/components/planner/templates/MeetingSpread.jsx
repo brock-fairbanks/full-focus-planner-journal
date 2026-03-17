@@ -10,8 +10,15 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [transcription, setTranscription] = useState("");
   const [summary, setSummary] = useState("");
   const [audioUrl, setAudioUrl] = useState(null);
+  const [recordingType, setRecordingType] = useState("meeting");
   
+  const recordingTypeRef = useRef("meeting");
   const mediaRecorderRef = useRef(null);
+
+  const handleTypeChange = (type) => {
+    setRecordingType(type);
+    recordingTypeRef.current = type;
+  };
   const partNumberRef = useRef(1);
   const streamRef = useRef(null);
   const isRecordingRef = useRef(false);
@@ -22,12 +29,15 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     try {
       const dateStr = new Date().toISOString().slice(0,10);
       const sessionId = sessionIdRef.current || 'unknown';
-      const fileName = `meeting_${dateStr}_${sessionId}_part${partNum}.${extension}`;
+      const rType = recordingTypeRef.current;
+      const prefix = rType === 'lecture' ? 'lecture' : 'meeting';
+      const fileName = `${prefix}_${dateStr}_${sessionId}_part${partNum}.${extension}`;
       const file = new File([audioBlob], fileName, { type: mimeType });
       const uploadRes = await base44.integrations.Core.UploadFile({ file });
       
       if (user?.drive_connected) {
-        const driveFileName = `Meeting_${dateStr}_ID-${sessionId}_Part${partNum}.${extension}`;
+        const drivePrefix = rType === 'lecture' ? 'Lecture' : 'Meeting';
+        const driveFileName = `${drivePrefix}_${dateStr}_ID-${sessionId}_Part${partNum}.${extension}`;
           
         base44.functions.invoke('uploadToGoogleDrive', {
           file_url: uploadRes.file_url,
@@ -37,7 +47,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       }
       
       const text = await base44.integrations.Core.InvokeLLM({
-        prompt: "Please transcribe the following audio file. Return only the transcription text. If this is a continuation, just transcribe what you hear without comments.",
+        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. If this is a continuation, just transcribe what you hear without comments.`,
         file_urls: [uploadRes.file_url],
         model: "gemini_3_flash"
       });
@@ -142,8 +152,12 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     if (!transcription) return;
     setIsProcessing(true);
     try {
+      const prompt = recordingType === 'lecture' 
+        ? `Please provide a highly detailed, in-depth summary of the following lecture transcription. Include key concepts, comprehensive explanations, important examples or case studies, and a structured outline of the topics covered:\n\n${transcription}`
+        : `Please summarize the following meeting transcription concisely, highlighting the main points, decisions, and action items:\n\n${transcription}`;
+
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Please summarize the following meeting transcription concisely, highlighting the main points, decisions, and action items:\n\n${transcription}`,
+        prompt,
         model: "gemini_3_flash"
       });
       setSummary(result);
@@ -166,14 +180,33 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         <span className="hidden md:inline">Clear Page</span>
       </button>
 
-      <h1 className="text-3xl font-serif font-bold mb-8 text-[#1e293b] self-start w-full max-w-5xl">Meeting Notes</h1>
+      <h1 className="text-3xl font-serif font-bold mb-8 text-[#1e293b] self-start w-full max-w-5xl">
+        {recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes'}
+      </h1>
 
       <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-8 mb-8 shadow-sm relative z-30 pointer-events-auto">
         <div className="flex flex-col items-center justify-center gap-6">
           <div className="text-center">
-            <h2 className="text-xl font-bold text-[#1e293b] mb-2">Record Meeting</h2>
-            <p className="text-[#64748b] text-sm">Record your meeting audio, and AI will transcribe it for you.</p>
+            <h2 className="text-xl font-bold text-[#1e293b] mb-2">Record Audio</h2>
+            <p className="text-[#64748b] text-sm">Record your audio, and AI will transcribe it for you.</p>
           </div>
+
+          {!isRecording && !transcription && (
+            <div className="flex bg-slate-100 p-1 rounded-lg">
+              <button
+                onClick={() => handleTypeChange('meeting')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'meeting' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
+              >
+                Meeting
+              </button>
+              <button
+                onClick={() => handleTypeChange('lecture')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'lecture' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
+              >
+                Lecture
+              </button>
+            </div>
+          )}
 
           <div className="flex items-center gap-4">
             {!isRecording ? (
