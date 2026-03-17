@@ -496,6 +496,18 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecordingRef.current) {
+      if (!titleRef.current) {
+        const defaultName = recordingTypeRef.current === 'lecture' ? 'Lecture Notes' : 'Meeting Notes';
+        const userInput = window.prompt("Please name this recording before saving:", defaultName);
+        if (userInput !== null && userInput.trim() !== "") {
+          setTitle(userInput.trim());
+          if (currentNoteId) {
+            base44.entities.MeetingNote.update(currentNoteId, { title: userInput.trim() }).catch(console.error);
+            setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, title: userInput.trim() } : n));
+          }
+        }
+      }
+
       isRecordingRef.current = false;
       setIsProcessing(true);
       setIsRecording(false);
