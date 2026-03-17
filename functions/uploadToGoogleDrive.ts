@@ -47,6 +47,8 @@ Deno.serve(async (req) => {
             folderId = folderData.id;
         }
 
+        const { file_id } = body;
+
         let fileBlob;
         if (file_url) {
             const fileResponse = await fetch(file_url);
@@ -55,24 +57,43 @@ Deno.serve(async (req) => {
             fileBlob = new Blob([text_content], { type: mime_type });
         }
 
-        // Upload to Google Drive using multipart upload
-        const metadata = {
-            name: file_name,
-            mimeType: mime_type,
-            parents: [folderId],
-        };
-
         const form = new FormData();
-        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-        form.append('file', fileBlob);
+        let driveRes;
 
-        const driveRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-            body: form,
-        });
+        if (file_id) {
+            // Update existing file
+            const metadata = {
+                name: file_name,
+                mimeType: mime_type
+            };
+            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+            form.append('file', fileBlob);
+
+            driveRes = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${file_id}?uploadType=multipart`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: form,
+            });
+        } else {
+            // Create new file
+            const metadata = {
+                name: file_name,
+                mimeType: mime_type,
+                parents: [folderId],
+            };
+            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+            form.append('file', fileBlob);
+
+            driveRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: form,
+            });
+        }
 
         if (!driveRes.ok) {
             const errorText = await driveRes.text();
