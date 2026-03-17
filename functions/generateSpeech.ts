@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
         const mp3 = await openai.audio.speech.create({
             model: "tts-1",
             voice: voice,
-            input: text,
+            input: text.substring(0, 4096), // Truncate to avoid exceeding max limit
         });
 
         const arrayBuffer = await mp3.arrayBuffer();

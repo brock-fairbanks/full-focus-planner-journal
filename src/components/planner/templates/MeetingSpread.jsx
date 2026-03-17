@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download, History, ChevronLeft, Save, Printer, Upload, Monitor, Pause, Play, Search } from "lucide-react";
+import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download, History, ChevronLeft, Save, Printer, Upload, Monitor, Pause, Play, Search, Volume2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { jsPDF } from "jspdf";
 import { useAuth } from '@/lib/AuthContext';
@@ -54,6 +54,64 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [currentNoteId, setCurrentNoteId] = useState(null);
   const [driveTextFileId, setDriveTextFileId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [playingSection, setPlayingSection] = useState(null);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const audioRef = useRef(null);
+
+  const toggleSpeech = async (text, section) => {
+    if (playingSection === section || isLoadingAudio) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setPlayingSection(null);
+      setIsLoadingAudio(false);
+      return;
+    }
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    if (!text) return;
+
+    try {
+      setIsLoadingAudio(true);
+      setPlayingSection(section);
+      
+      const response = await base44.functions.invoke('generateSpeech', { text, voice: 'onyx' });
+      
+      const audioUrl = `data:audio/mp3;base64,${response.data.audioContent}`;
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        setPlayingSection(null);
+      };
+      audio.onerror = () => {
+        setPlayingSection(null);
+        setIsLoadingAudio(false);
+      };
+      
+      await audio.play();
+      setIsLoadingAudio(false);
+    } catch (error) {
+      console.error("Audio generation failed:", error);
+      setPlayingSection(null);
+      setIsLoadingAudio(false);
+      alert("Failed to generate speech. The text might be too long.");
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
+    };
+  }, []);
 
   const filteredNotes = savedNotes.filter(note => {
     if (!searchQuery.trim()) return true;
@@ -840,6 +898,19 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             {transcription && (
               <div className="flex items-center gap-1 sm:gap-2">
                 <button
+                  onClick={() => toggleSpeech(transcription, 'transcription')}
+                  className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
+                  title={playingSection === 'transcription' ? "Stop Reading" : "Read Aloud"}
+                >
+                  {isLoadingAudio && playingSection === 'transcription' ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : playingSection === 'transcription' ? (
+                    <Square size={18} className="fill-current text-[#F97316]" />
+                  ) : (
+                    <Volume2 size={18} />
+                  )}
+                </button>
+                <button
                   onClick={() => printContent('Transcription', transcription)}
                   className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
                   title="Print Transcription"
@@ -877,6 +948,19 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             <div className="flex flex-wrap justify-end items-center gap-1 sm:gap-2">
               {summary && (
                 <>
+                  <button
+                    onClick={() => toggleSpeech(summary, 'summary')}
+                    className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
+                    title={playingSection === 'summary' ? "Stop Reading" : "Read Aloud"}
+                  >
+                    {isLoadingAudio && playingSection === 'summary' ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : playingSection === 'summary' ? (
+                      <Square size={18} className="fill-current text-[#F97316]" />
+                    ) : (
+                      <Volume2 size={18} />
+                    )}
+                  </button>
                   <button
                     onClick={() => printContent('AI Summary', summary)}
                     className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
