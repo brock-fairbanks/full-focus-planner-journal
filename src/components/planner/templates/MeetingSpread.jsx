@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download, History, ChevronLeft, Save } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from '@/lib/AuthContext';
 
@@ -11,6 +11,22 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [summary, setSummary] = useState("");
   const [audioUrl, setAudioUrl] = useState(null);
   const [recordingType, setRecordingType] = useState("meeting");
+  const [savedNotes, setSavedNotes] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [currentNoteId, setCurrentNoteId] = useState(null);
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const fetchNotes = async () => {
+    try {
+      const notes = await base44.entities.MeetingNote.list("-created_date", 50);
+      setSavedNotes(notes);
+    } catch (e) {
+      console.error("Failed to load history", e);
+    }
+  };
   
   const recordingTypeRef = useRef("meeting");
   const mediaRecorderRef = useRef(null);
