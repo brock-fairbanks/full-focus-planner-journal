@@ -22,6 +22,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [savedNotes, setSavedNotes] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [currentNoteId, setCurrentNoteId] = useState(null);
+  const [driveTextFileId, setDriveTextFileId] = useState(null);
 
   useEffect(() => {
     fetchNotes();
@@ -41,8 +42,10 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     try {
       const type = recordingTypeRef.current;
       const updateData = {};
-      if (newTranscription !== null) updateData.transcription = newTranscription || transcription;
-      if (newSummary !== null) updateData.summary = newSummary || summary;
+      const currentTrans = newTranscription !== null ? newTranscription : transcription;
+      const currentSumm = newSummary !== null ? newSummary : summary;
+      if (newTranscription !== null) updateData.transcription = currentTrans;
+      if (newSummary !== null) updateData.summary = currentSumm;
       if (newAudioUrl !== null) updateData.audio_url = newAudioUrl;
       
       if (currentNoteId) {
@@ -59,6 +62,36 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         });
         setCurrentNoteId(newNote.id);
         setSavedNotes(prev => [newNote, ...prev]);
+      }
+
+      if (user?.drive_connected && (newTranscription !== null || newSummary !== null)) {
+        let content = `${type === 'lecture' ? 'Lecture' : 'Meeting'} Notes\nDate: ${new Date().toLocaleDateString()}\n\n`;
+        if (currentSumm) content += `--- AI SUMMARY ---\n${currentSumm}\n\n`;
+        if (currentTrans) content += `--- TRANSCRIPTION ---\n${currentTrans}\n`;
+        
+        const rType = type === 'lecture' ? 'Lecture' : 'Meeting';
+        const dateStr = new Date().toISOString().slice(0,10);
+        const sId = sessionIdRef.current || 'manual';
+        const fileName = `${rType}_Notes_${dateStr}_ID-${sId}.txt`;
+        
+        const payload = {
+            text_content: content,
+            file_name: fileName,
+            mime_type: 'text/plain'
+        };
+        
+        // Pass file_id if we already created it in this session to update it
+        setDriveTextFileId(prev => {
+            if (prev) payload.file_id = prev;
+            base44.functions.invoke('uploadToGoogleDrive', payload)
+                .then(res => {
+                    if (res.data && res.data.fileId && !prev) {
+                        setDriveTextFileId(res.data.fileId);
+                    }
+                })
+                .catch(e => console.error("Drive upload failed", e));
+            return prev;
+        });
       }
     } catch (e) {
       console.error("Failed to save note", e);
