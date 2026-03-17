@@ -45,6 +45,17 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [showHistory, setShowHistory] = useState(false);
   const [currentNoteId, setCurrentNoteId] = useState(null);
   const [driveTextFileId, setDriveTextFileId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredNotes = savedNotes.filter(note => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (note.title && note.title.toLowerCase().includes(q)) ||
+      (note.transcription && note.transcription.toLowerCase().includes(q)) ||
+      (note.summary && note.summary.toLowerCase().includes(q))
+    );
+  });
 
   useEffect(() => {
     fetchNotes();
