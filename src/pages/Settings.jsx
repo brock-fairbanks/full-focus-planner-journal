@@ -176,12 +176,34 @@ export default function Settings() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-[#1e293b]">Google Drive</h3>
-                  <p className="text-xs text-[#64748b]">Not connected</p>
+                  <p className="text-xs text-[#64748b]">
+                    {user.drive_connected ? 'Connected and saving meeting recordings automatically' : 'Not connected'}
+                  </p>
                 </div>
               </div>
-              <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => alert('We will set this up next!')}>
-                Connect
-              </Button>
+              {user.drive_connected ? (
+                <Button 
+                  variant="ghost" 
+                  className="text-slate-400 hover:text-red-600 hover:bg-red-50" 
+                  onClick={async () => {
+                    await base44.auth.updateMe({ drive_connected: false });
+                    window.location.reload();
+                  }}
+                >
+                  Disconnect
+                </Button>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  className="text-blue-600 border-blue-200 hover:bg-blue-50" 
+                  onClick={async () => {
+                    await base44.auth.updateMe({ drive_connected: true });
+                    window.location.reload();
+                  }}
+                >
+                  Connect
+                </Button>
+              )}
             </div>
           </div>
 
