@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MapPin, Plus, Trash2, ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { MapPin, Plus, Trash2, ArrowLeft, Save, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { toast } from 'sonner';
 
