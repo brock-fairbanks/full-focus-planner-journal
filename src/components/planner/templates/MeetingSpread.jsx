@@ -196,7 +196,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             <FileText size={20} className="text-[#1e293b]" />
             <h3 className="text-xl font-serif font-bold text-[#1e293b]">Transcription</h3>
           </div>
-          <div className="bg-white border-2 border-[#cbd5e1] rounded-xl p-6 flex-1 min-h-[400px] whitespace-pre-wrap overflow-y-auto">
+          <div className="bg-white border-2 border-[#cbd5e1] rounded-xl p-6 flex-1 h-[400px] max-h-[50vh] whitespace-pre-wrap overflow-y-auto">
             {transcription ? (
               <span className="text-[#334155] leading-relaxed font-sans">{transcription}</span>
             ) : (
@@ -222,7 +222,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               </button>
             )}
           </div>
-          <div className="bg-white border-2 border-[#cbd5e1] rounded-xl p-6 flex-1 min-h-[400px] whitespace-pre-wrap overflow-y-auto">
+          <div className="bg-white border-2 border-[#cbd5e1] rounded-xl p-6 flex-1 h-[400px] max-h-[50vh] whitespace-pre-wrap overflow-y-auto">
             {summary ? (
               <span className="text-[#334155] leading-relaxed font-sans">{summary}</span>
             ) : (
