@@ -53,7 +53,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     const saved = localStorage.getItem("planner_tabs_order");
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(saved).filter(t => t.id !== "MEETING" && t.id !== "CHAT");
         // Make sure newly added tabs appear even if user has saved an old layout
         const parsedIds = parsed.map(t => t.id);
         const missingTabs = DEFAULT_TABS.filter(t => !parsedIds.includes(t.id));
