@@ -711,6 +711,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isProcessing}
+                  title="Upload an existing audio file (MP3, MP4, WAV, M4A, WEBM) for transcription"
                   className="flex justify-center items-center gap-2 bg-slate-100 hover:bg-slate-200 text-[#1e293b] px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm border border-slate-200 w-full sm:w-auto"
                 >
                   <Upload size={20} />
