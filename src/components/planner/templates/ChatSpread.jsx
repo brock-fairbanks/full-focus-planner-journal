@@ -278,25 +278,32 @@ export default function ChatSpread({ onClearCanvas }) {
                 
                 try {
                     setIsSending(true);
-                    const file = new File([audioBlob], 'voice_message.webm', { type: 'audio/webm' });
-                    const uploadRes = await base44.integrations.Core.UploadFile({ file });
                     
-                    const text = await base44.integrations.Core.InvokeLLM({
-                        prompt: "Transcribe the following audio accurately. Return only the transcription text without any other comments.",
-                        file_urls: [uploadRes.file_url],
-                        model: "gemini_3_flash"
-                    });
-                    
-                    if (text && text.trim()) {
-                        await base44.agents.addMessage(conversation, {
-                            role: "user",
-                            content: text.trim()
-                        });
-                    }
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = async () => {
+                        try {
+                            const base64Audio = reader.result.split(',')[1];
+                            const res = await base44.functions.invoke('transcribeAudio', { audioBase64: base64Audio });
+                            
+                            const text = res.data.text;
+                            
+                            if (text && text.trim()) {
+                                await base44.agents.addMessage(conversation, {
+                                    role: "user",
+                                    content: text.trim()
+                                });
+                            }
+                        } catch (err) {
+                            console.error("Voice transcription failed", err);
+                            toast.error("Failed to transcribe voice message");
+                        } finally {
+                            setIsSending(false);
+                        }
+                    };
                 } catch (err) {
-                    console.error("Voice transcription failed", err);
-                    toast.error("Failed to transcribe voice message");
-                } finally {
+                    console.error("Voice processing failed", err);
+                    toast.error("Failed to process voice message");
                     setIsSending(false);
                 }
             };
