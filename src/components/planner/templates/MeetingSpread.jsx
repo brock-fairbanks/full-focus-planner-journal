@@ -115,7 +115,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
       <h1 className="text-3xl font-serif font-bold mb-8 text-[#1e293b] self-start w-full max-w-5xl">Meeting Notes</h1>
 
-      <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-8 mb-8 shadow-sm">
+      <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-8 mb-8 shadow-sm relative z-30 pointer-events-auto">
         <div className="flex flex-col items-center justify-center gap-6">
           <div className="text-center">
             <h2 className="text-xl font-bold text-[#1e293b] mb-2">Record Meeting</h2>
