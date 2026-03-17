@@ -345,6 +345,53 @@ export default function ChatSpread({ onClearCanvas }) {
 
             mediaRecorder.start();
             setIsRecording(true);
+
+            // Silence detection for auto-stop (Alexa-like)
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioCtx.createMediaStreamSource(stream);
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 512;
+            analyser.minDecibels = -50;
+            source.connect(analyser);
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            let silenceStart = Date.now();
+            let hasSpoken = false;
+            
+            const checkSilence = () => {
+                if (mediaRecorder.state !== 'recording') {
+                    audioCtx.close().catch(e => console.error(e));
+                    return;
+                }
+                
+                analyser.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    sum += dataArray[i];
+                }
+                const average = sum / bufferLength;
+
+                if (average > 10) {
+                    hasSpoken = true;
+                    silenceStart = Date.now();
+                } else {
+                    if (hasSpoken && Date.now() - silenceStart > 1500) {
+                        mediaRecorder.stop();
+                        setIsRecording(false);
+                        return;
+                    } else if (!hasSpoken && Date.now() - silenceStart > 7000) {
+                        mediaRecorder.stop();
+                        setIsRecording(false);
+                        return;
+                    }
+                }
+                
+                requestAnimationFrame(checkSilence);
+            };
+            
+            checkSilence();
         } catch (err) {
             console.error("Failed to access microphone", err);
             toast.error("Microphone access denied");
