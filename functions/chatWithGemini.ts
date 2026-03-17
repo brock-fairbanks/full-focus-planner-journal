@@ -23,22 +23,6 @@ const fetchWeather = async (lat, lon) => {
 
 async function generateContent(contents, systemInstruction, model) {
     const tools = [
-        {
-            functionDeclarations: [
-                {
-                    name: "getWeather",
-                    description: "Get the current weather for a location",
-                    parameters: {
-                        type: "OBJECT",
-                        properties: {
-                            lat: { type: "NUMBER", description: "Latitude" },
-                            lon: { type: "NUMBER", description: "Longitude" },
-                        },
-                        required: ["lat", "lon"],
-                    },
-                },
-            ],
-        },
         { googleSearch: {} }
     ];
 
