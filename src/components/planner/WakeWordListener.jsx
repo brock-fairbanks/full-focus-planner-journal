@@ -247,6 +247,26 @@ export default function WakeWordListener() {
     useEffect(() => {
         if (!hasSupport) return;
 
+        const checkDevices = async () => {
+            try {
+                // Get permission to read device labels
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const audioInputs = devices.filter(d => d.kind === 'audioinput');
+                const defaultMic = audioInputs.find(d => d.deviceId === 'default') || audioInputs[0];
+                
+                if (defaultMic && defaultMic.label) {
+                    toast.info(`Listening via: ${defaultMic.label}`, { duration: 4000 });
+                    console.log("Available microphones:", audioInputs.map(m => m.label));
+                }
+                
+                stream.getTracks().forEach(t => t.stop());
+            } catch (err) {
+                console.error("Could not check microphones:", err);
+            }
+        };
+        checkDevices();
+
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         recognitionRef.current = recognition;
