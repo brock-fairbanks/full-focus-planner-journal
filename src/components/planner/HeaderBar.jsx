@@ -45,7 +45,7 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
             {format(selectedDate, "EEEE")}
           </div>
           <div className="text-base md:text-lg" style={{fontFamily: "'Playfair Display', serif", fontWeight: "400", color: "#c5a87e", letterSpacing: "0.3px"}}>
-            {format(selectedDate, "MMMM d, yyyy")}
+            {format(selectedDate, "MM/dd/yyyy")}
           </div>
         </div>
 
