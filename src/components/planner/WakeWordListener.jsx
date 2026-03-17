@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import { Mic, Loader2, Volume2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ReactMarkdown from 'react-markdown';
 
 export default function WakeWordListener() {
     const location = useLocation();
