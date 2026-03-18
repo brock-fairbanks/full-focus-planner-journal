@@ -5,6 +5,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
+  const isErasingRef = useRef(false);
   const saveTimeout = useRef(null);
 
   // Expose clear function to parent
