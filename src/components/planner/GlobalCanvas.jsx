@@ -563,9 +563,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         onPointerDown={startDrawing}
         onPointerMove={draw}
         onPointerUp={endDrawing}
-        onPointerOut={endDrawing}
+        onPointerCancel={endDrawing}
         onDoubleClick={(e) => handleDoubleClickAction(e.clientX, e.clientY, 'mouse')}
-        className="w-full h-full touch-pan-y touch-pan-x"
+        className="w-full h-full touch-none"
         style={{ background: "transparent", display: "block" }}
       />
       {texts.map(textObj => (
