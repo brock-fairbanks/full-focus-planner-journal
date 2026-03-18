@@ -266,6 +266,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const lastTapPosRef = useRef({ x: 0, y: 0 });
 
   const startDrawing = (e) => {
+    if (e.pointerType !== 'touch') {
+        e.target.setPointerCapture(e.pointerId);
+    }
     const isPen = e.pointerType === 'pen';
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 500; 
