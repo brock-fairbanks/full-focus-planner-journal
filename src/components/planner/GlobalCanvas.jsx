@@ -331,7 +331,8 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     if (!isDrawing.current || !ctxRef.current || !canvasScaleRef.current) return;
     const { left, top, scaleX, scaleY } = canvasScaleRef.current;
     
-    const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+    const nativeEvent = e.nativeEvent || e;
+    const events = nativeEvent.getCoalescedEvents ? nativeEvent.getCoalescedEvents() : [nativeEvent];
     
     for (const ev of events) {
       const x = (ev.clientX - left) * scaleX;
