@@ -8,6 +8,42 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const isErasingRef = useRef(false);
   const saveTimeout = useRef(null);
   const canvasScaleRef = useRef(null);
+  const syncIdRef = useRef(null);
+  const lastLocalUpdateTime = useRef(Date.now());
+  const textsRef = useRef([]);
+
+  const syncToBackend = async (dataUrl, currentTexts) => {
+    lastLocalUpdateTime.current = Date.now();
+    try {
+      if (syncIdRef.current) {
+        await base44.entities.PlannerSync.update(syncIdRef.current, {
+          drawing_data: dataUrl,
+          texts_data: JSON.stringify(currentTexts),
+          updated_at: lastLocalUpdateTime.current
+        });
+      } else {
+        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey });
+        if (records.length > 0) {
+          syncIdRef.current = records[0].id;
+          await base44.entities.PlannerSync.update(syncIdRef.current, {
+            drawing_data: dataUrl,
+            texts_data: JSON.stringify(currentTexts),
+            updated_at: lastLocalUpdateTime.current
+          });
+        } else {
+          const res = await base44.entities.PlannerSync.create({
+            page_key: pageKey,
+            drawing_data: dataUrl,
+            texts_data: JSON.stringify(currentTexts),
+            updated_at: lastLocalUpdateTime.current
+          });
+          syncIdRef.current = res.id;
+        }
+      }
+    } catch(e) {
+      console.error('Failed to sync', e);
+    }
+  };
 
   // Expose clear function to parent
   useImperativeHandle(ref, () => ({
