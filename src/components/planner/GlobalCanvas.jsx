@@ -354,7 +354,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         ctxRef.current.quadraticCurveTo(lastTwo.x, lastTwo.y, midX2, midY2);
         
         if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
-           ctxRef.current.lineWidth = ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2;
+           ctxRef.current.lineWidth = isErasingRef.current 
+               ? 10 + ev.pressure * 30 
+               : (ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2);
         }
         
         ctxRef.current.stroke();
@@ -364,7 +366,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         ctxRef.current.lineTo(pts[1].x, pts[1].y);
         
         if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
-           ctxRef.current.lineWidth = ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2;
+           ctxRef.current.lineWidth = isErasingRef.current 
+               ? 10 + ev.pressure * 30 
+               : (ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2);
         }
         
         ctxRef.current.stroke();
