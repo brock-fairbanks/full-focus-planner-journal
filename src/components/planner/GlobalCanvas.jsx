@@ -583,7 +583,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         onPointerUp={endDrawing}
         onPointerCancel={endDrawing}
         onDoubleClick={(e) => handleDoubleClickAction(e.clientX, e.clientY, 'mouse')}
-        className="w-full h-full touch-none"
+        className="w-full h-full"
         style={{ background: "transparent", display: "block" }}
       />
       {texts.map(textObj => (
