@@ -150,18 +150,88 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const [texts, setTexts] = useState([]);
 
   useEffect(() => {
+    textsRef.current = texts;
+  }, [texts]);
+
+  useEffect(() => {
+    let isSubscribed = true;
+    syncIdRef.current = null;
+    
+    // First load from local storage for fast feedback
     const saved = localStorage.getItem(`planner_texts_${pageKey}`);
     if (saved) {
       try { setTexts(JSON.parse(saved)); } catch (e) { setTexts([]); }
     } else {
       setTexts([]);
     }
+
+    // Then load from remote
+    const loadRemote = async () => {
+      try {
+        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey });
+        if (records.length > 0 && isSubscribed) {
+          syncIdRef.current = records[0].id;
+          if (records[0].updated_at && records[0].updated_at > lastLocalUpdateTime.current) {
+            lastLocalUpdateTime.current = records[0].updated_at;
+            if (records[0].drawing_data && canvasRef.current && ctxRef.current) {
+               const img = new Image();
+               img.crossOrigin = "anonymous";
+               img.onload = () => {
+                   ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
+                   ctxRef.current.drawImage(img, 0, 0, canvasRef.current.width, canvasRef.current.height);
+               };
+               img.src = records[0].drawing_data;
+            }
+            if (records[0].texts_data) {
+               setTexts(JSON.parse(records[0].texts_data));
+            }
+          }
+        }
+      } catch(e) {}
+    };
+    loadRemote();
+
+    const unsub = base44.entities.PlannerSync.subscribe((event) => {
+        if (!isSubscribed) return;
+        if (event.data.page_key === pageKey) {
+            syncIdRef.current = event.data.id;
+            if (event.data.updated_at && event.data.updated_at > lastLocalUpdateTime.current + 500) {
+                lastLocalUpdateTime.current = event.data.updated_at;
+                if (event.data.drawing_data && canvasRef.current && ctxRef.current) {
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+                    img.onload = () => {
+                        ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
+                        ctxRef.current.drawImage(img, 0, 0, canvasRef.current.width, canvasRef.current.height);
+                    };
+                    img.src = event.data.drawing_data;
+                }
+                if (event.data.texts_data) {
+                    setTexts(JSON.parse(event.data.texts_data));
+                }
+            }
+        }
+    });
+
+    return () => {
+      isSubscribed = false;
+      unsub();
+    };
   }, [pageKey]);
 
   const updateTextsState = (action) => {
     setTexts(prev => {
       const updated = typeof action === 'function' ? action(prev) : action;
       localStorage.setItem(`planner_texts_${pageKey}`, JSON.stringify(updated));
+      
+      if (saveTimeout.current) clearTimeout(saveTimeout.current);
+      saveTimeout.current = setTimeout(() => {
+        if (canvasRef.current) {
+          const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+          syncToBackend(dataUrl, updated);
+        }
+      }, 1000);
+      
       return updated;
     });
   };
