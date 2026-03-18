@@ -368,8 +368,11 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     }
   };
 
-  const endDrawing = () => {
+  const endDrawing = (e) => {
     if (!isDrawing.current) return;
+    if (e && e.pointerId) {
+        try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
+    }
     isDrawing.current = false;
     
     const pts = pointsRef.current;
