@@ -51,9 +51,10 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       if (canvasRef.current && ctxRef.current) {
         ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         updateTextsState([]);
-        const dataUrl = canvasRef.current.toDataURL("image/png");
+        const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
         localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
         if (onSave) onSave(dataUrl);
+        syncToBackend(dataUrl, []);
         onClear?.();
       }
     }
