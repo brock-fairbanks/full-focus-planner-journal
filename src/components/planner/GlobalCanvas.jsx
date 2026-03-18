@@ -328,17 +328,14 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   };
 
   const draw = (e) => {
-    if (!isDrawing.current || !ctxRef.current) return;
-    const rect = canvasRef.current.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    const scaleX = (canvasRef.current.width / dpr) / rect.width;
-    const scaleY = (canvasRef.current.height / dpr) / rect.height;
+    if (!isDrawing.current || !ctxRef.current || !canvasScaleRef.current) return;
+    const { left, top, scaleX, scaleY } = canvasScaleRef.current;
     
     const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
     
     for (const ev of events) {
-      const x = (ev.clientX - rect.left) * scaleX;
-      const y = (ev.clientY - rect.top) * scaleY;
+      const x = (ev.clientX - left) * scaleX;
+      const y = (ev.clientY - top) * scaleY;
       pointsRef.current.push({x, y});
       
       const pts = pointsRef.current;
