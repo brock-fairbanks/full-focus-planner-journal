@@ -310,6 +310,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     const dpr = window.devicePixelRatio || 1;
     const scaleX = (canvasRef.current.width / dpr) / rect.width;
     const scaleY = (canvasRef.current.height / dpr) / rect.height;
+    
+    canvasScaleRef.current = { left: rect.left, top: rect.top, scaleX, scaleY };
+    
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
     
