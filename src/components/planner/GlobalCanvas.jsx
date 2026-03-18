@@ -384,7 +384,13 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     isDrawing.current = false;
     
     const pts = pointsRef.current;
-    if (pts.length > 5 && ctxRef.current && canvasRef.current) {
+    
+    // Reset composite operation just in case
+    if (ctxRef.current) {
+        ctxRef.current.globalCompositeOperation = 'source-over';
+    }
+
+    if (!isErasingRef.current && pts.length > 5 && ctxRef.current && canvasRef.current) {
       let minX = pts[0].x, maxX = pts[0].x;
       let minY = pts[0].y, maxY = pts[0].y;
       let xReversals = 0;
