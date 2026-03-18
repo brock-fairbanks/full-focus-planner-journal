@@ -37,7 +37,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       
-      const ctx = canvas.getContext('2d', { alpha: true });
+      const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
       if (!ctx) return;
       
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
