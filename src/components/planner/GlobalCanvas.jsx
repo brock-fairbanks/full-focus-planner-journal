@@ -303,6 +303,8 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     preStrokeStateRef.current = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
     
     isDrawing.current = true;
+    isErasingRef.current = e.pointerType === 'pen' && ((e.buttons & 2) !== 0 || (e.buttons & 32) !== 0);
+
     const rect = canvasRef.current.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
     const scaleX = (canvasRef.current.width / dpr) / rect.width;
@@ -312,8 +314,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     
     pointsRef.current = [{x, y}];
     
-    ctxRef.current.strokeStyle = '#1e293b';
-    ctxRef.current.lineWidth = 2.2;
+    ctxRef.current.globalCompositeOperation = isErasingRef.current ? 'destination-out' : 'source-over';
+    ctxRef.current.strokeStyle = isErasingRef.current ? 'rgba(0,0,0,1)' : '#1e293b';
+    ctxRef.current.lineWidth = isErasingRef.current ? 30 : 2.2;
     ctxRef.current.lineCap = 'round';
     ctxRef.current.lineJoin = 'round';
     ctxRef.current.beginPath();
