@@ -7,6 +7,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const isDrawing = useRef(false);
   const isErasingRef = useRef(false);
   const saveTimeout = useRef(null);
+  const canvasScaleRef = useRef(null);
 
   // Expose clear function to parent
   useImperativeHandle(ref, () => ({
