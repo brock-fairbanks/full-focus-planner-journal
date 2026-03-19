@@ -374,11 +374,11 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check if file is too large (limit to 50MB) to prevent server timeouts and 500 errors
-    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    // Check if file is too large (limit to 100MB) to prevent server timeouts and 500 errors
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
     if (file.size > MAX_FILE_SIZE) {
       const sizeMB = Math.round(file.size / (1024 * 1024));
-      alert(`This file is too large (${sizeMB} MB). Please upload a file under 50 MB.\n\nIf this is a video or a very long recording, please compress it or convert it to a smaller audio format (like MP3 or M4A) first.`);
+      alert(`This file is too large (${sizeMB} MB). Please upload a file under 100 MB.\n\nIf this is a video or a very long recording, please compress it or convert it to a smaller audio format (like MP3 or M4A) first.`);
       if (e.target) e.target.value = '';
       return;
     }
@@ -454,7 +454,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         saveNote(null, null, uploadedFileUrl);
       }
       console.error("Upload error", err);
-      alert("Failed to process uploaded file. It might be too large for the current network connection or timeout limits.");
+      const errorMsg = err.response?.data?.error || err.message || "Unknown error";
+      alert(`Failed to process uploaded file. Error: ${errorMsg}\n\nIt might be too large for the current network connection or timeout limits.`);
     } finally {
       setIsProcessing(false);
       setProcessingStatus("");

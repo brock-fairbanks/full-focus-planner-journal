@@ -13,17 +13,23 @@ Deno.serve(async (req) => {
 
         if (action === "transcribe") {
             const { fileUrl, mimeType, prompt, model = "gemini-3-flash-preview" } = body;
+            console.log(`[Transcribe] Started for URL: ${fileUrl.substring(0, 70)}...`);
             
             const authHeader = req.headers.get('Authorization');
             const fetchOptions = authHeader ? { headers: { 'Authorization': authHeader } } : {};
+            
+            console.log(`[Transcribe] Fetching file from storage...`);
             const fileRes = await fetch(fileUrl, fetchOptions);
             
             if (!fileRes.ok) {
                 const text = await fileRes.text();
+                console.error(`[Transcribe] Failed to download file from storage: ${fileRes.status}`);
                 throw new Error(`Failed to download file (${fileRes.status}): ${text.substring(0, 100)}`);
             }
             
             const contentLength = fileRes.headers.get('content-length');
+            console.log(`[Transcribe] File fetched. Content-Length: ${contentLength}`);
+
             const uploadHeaders = {
                 'X-Goog-Upload-Protocol': 'raw',
                 'X-Goog-Upload-Header-Content-Type': mimeType || 'audio/webm',
@@ -31,6 +37,7 @@ Deno.serve(async (req) => {
             };
             if (contentLength) uploadHeaders['Content-Length'] = contentLength;
 
+            console.log(`[Transcribe] Uploading to Gemini Files API...`);
             const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
                 method: 'POST',
                 headers: uploadHeaders,
@@ -40,11 +47,13 @@ Deno.serve(async (req) => {
             
             if (!uploadRes.ok) {
                 const err = await uploadRes.text();
+                console.error(`[Transcribe] Gemini File Upload failed: ${uploadRes.status} ${err}`);
                 throw new Error(`Gemini File Upload error: ${err}`);
             }
 
             const uploadData = await uploadRes.json();
             const fileUri = uploadData.file.uri;
+            console.log(`[Transcribe] Uploaded to Gemini successfully. URI: ${fileUri}`);
 
             const payload = {
                 contents: [{
@@ -55,6 +64,7 @@ Deno.serve(async (req) => {
                 }]
             };
 
+            console.log(`[Transcribe] Calling Gemini Generate API with model: ${model}...`);
             const generateRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -63,9 +73,11 @@ Deno.serve(async (req) => {
 
             if (!generateRes.ok) {
                 const err = await generateRes.text();
+                console.error(`[Transcribe] Gemini Generate API failed: ${generateRes.status} ${err}`);
                 throw new Error(`Gemini Generate error: ${err}`);
             }
 
+            console.log(`[Transcribe] Gemini Generate API successful.`);
             const result = await generateRes.json();
             const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
