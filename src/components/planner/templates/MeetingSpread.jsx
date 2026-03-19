@@ -714,9 +714,16 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         setProcessingStatus("Uploading audio...");
         const response = await fetch(fileUrlToUse);
         const blob = await response.blob();
-        const file = new File([blob], `recording.${audioUrl.extension || 'webm'}`, { type: mimeType });
+        
+        // Clean extension to avoid invalid file types
+        const cleanExtension = (audioUrl.extension || 'webm').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        
+        const file = new File([blob], `recording.${cleanExtension}`, { type: mimeType });
         const uploadRes = await base44.integrations.Core.UploadFile({ file });
         fileUrlToUse = uploadRes.file_url;
+        
+        // Save the note with the new URL right after uploading just to be safe
+        saveNote(null, null, fileUrlToUse);
       }
       
       setProcessingStatus("Transcribing...");
