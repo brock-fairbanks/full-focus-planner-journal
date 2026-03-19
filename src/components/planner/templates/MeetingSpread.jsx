@@ -385,13 +385,12 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       mimeType = 'audio/mp3';
     }
     
-    const options = { mimeType };
+    // Use a lower bitrate (32kbps) to ensure long lectures don't exceed upload limits without needing to chunk
+    const options = { mimeType, audioBitsPerSecond: 32000 };
     const mediaRecorder = new MediaRecorder(stream, options);
     
-    // Store in ref so we can stop the *current* one on user click
     mediaRecorderRef.current = mediaRecorder;
     
-    // Create new array for this specific recorder instance
     const localChunks = [];
 
     mediaRecorder.ondataavailable = (event) => {
@@ -400,37 +399,19 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       }
     };
 
-    // Auto-chunk every 30 minutes to prevent files from exceeding upload limits
-    const chunkTimeoutId = setTimeout(() => {
-      if (isRecordingRef.current && mediaRecorder.state === "recording") {
-        startRecorderInstance(stream);
-        mediaRecorder.stop();
-      }
-    }, 30 * 60 * 1000);
-
     mediaRecorder.onstop = () => {
-      clearTimeout(chunkTimeoutId);
       const actualMimeType = mediaRecorder.mimeType || mimeType;
       const extension = actualMimeType.split('/')[1].split(';')[0];
       const audioBlob = new Blob(localChunks, { type: actualMimeType });
       
-      if (!isRecordingRef.current) {
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrl({ url, extension });
+      const url = URL.createObjectURL(audioBlob);
+      setAudioUrl({ url, extension });
+      
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
       
-      // Save current part number for this closure
-      const currentPart = partNumberRef.current;
-      
-      if (isRecordingRef.current) {
-        partNumberRef.current += 1;
-      } else {
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
-        }
-      }
-      
-      processChunk(audioBlob, currentPart, actualMimeType, extension, !isRecordingRef.current);
+      processChunk(audioBlob, 1, actualMimeType, extension, true);
     };
 
     // Start without timeslice to prevent missing/wrong duration metadata in MP4/WebM
