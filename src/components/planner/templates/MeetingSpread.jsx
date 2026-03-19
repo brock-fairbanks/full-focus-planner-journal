@@ -1014,35 +1014,50 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               <FileText size={20} className="text-[#1e293b] shrink-0" />
               <h3 className="text-lg md:text-xl font-serif font-bold text-[#1e293b]">Transcription</h3>
             </div>
-            {transcription && (
+            {(transcription || audioUrl) && !isRecording && (
               <div className="flex items-center gap-1 sm:gap-2">
-                <button
-                  onClick={() => toggleSpeech(transcription, 'transcription')}
-                  className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
-                  title={playingSection === 'transcription' ? "Stop Reading" : "Read Aloud"}
-                >
-                  {isLoadingAudio && playingSection === 'transcription' ? (
-                    <Loader2 size={18} className="animate-spin" />
-                  ) : playingSection === 'transcription' ? (
-                    <Square size={18} className="fill-current text-[#F97316]" />
-                  ) : (
-                    <Volume2 size={18} />
-                  )}
-                </button>
-                <button
-                  onClick={() => printContent('Transcription', transcription)}
-                  className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
-                  title="Print Transcription"
-                >
-                  <Printer size={18} />
-                </button>
-                <button
-                  onClick={() => downloadPdf('Transcription', transcription)}
-                  className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#F97316] hover:bg-orange-50 rounded-md transition-colors"
-                  title="Download PDF"
-                >
-                  <Download size={18} />
-                </button>
+                {audioUrl && (
+                  <button
+                    onClick={handleRetranscribe}
+                    disabled={isProcessing}
+                    className="text-xs sm:text-sm font-medium text-[#1e293b] bg-slate-100 hover:bg-slate-200 px-3 py-1.5 sm:px-3 sm:py-2 rounded-lg transition-colors disabled:opacity-50 shadow-sm whitespace-nowrap flex items-center gap-1.5"
+                    title="Transcribe Audio"
+                  >
+                    <Sparkles size={14} />
+                    {transcription ? "Retranscribe" : "Transcribe"}
+                  </button>
+                )}
+                {transcription && (
+                  <>
+                    <button
+                      onClick={() => toggleSpeech(transcription, 'transcription')}
+                      className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
+                      title={playingSection === 'transcription' ? "Stop Reading" : "Read Aloud"}
+                    >
+                      {isLoadingAudio && playingSection === 'transcription' ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : playingSection === 'transcription' ? (
+                        <Square size={18} className="fill-current text-[#F97316]" />
+                      ) : (
+                        <Volume2 size={18} />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => printContent('Transcription', transcription)}
+                      className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#1e293b] hover:bg-slate-100 rounded-md transition-colors"
+                      title="Print Transcription"
+                    >
+                      <Printer size={18} />
+                    </button>
+                    <button
+                      onClick={() => downloadPdf('Transcription', transcription)}
+                      className="p-1.5 sm:p-2 text-[#64748b] hover:text-[#F97316] hover:bg-orange-50 rounded-md transition-colors"
+                      title="Download PDF"
+                    >
+                      <Download size={18} />
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
