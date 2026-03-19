@@ -418,6 +418,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       setTranscription(text);
       saveNote(text, null, uploadRes.file_url);
     } catch (err) {
+      if (uploadRes && uploadRes.file_url) {
+        saveNote(null, null, uploadRes.file_url);
+      }
       console.error("Upload error", err);
       alert("Failed to process uploaded file. It might be too large for the current network connection or timeout limits.");
     } finally {
