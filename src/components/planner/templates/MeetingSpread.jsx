@@ -738,9 +738,17 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               <div 
                 key={note.id} 
                 onClick={() => loadNote(note)}
-                className="p-4 border border-slate-200 rounded-lg hover:border-[#F97316] hover:shadow-md cursor-pointer transition-all bg-slate-50 hover:bg-white"
+                className="relative p-4 border border-slate-200 rounded-lg hover:border-[#F97316] hover:shadow-md cursor-pointer transition-all bg-slate-50 hover:bg-white group"
               >
-                <div className="flex justify-between items-start mb-2">
+                <button
+                  onClick={(e) => deleteNote(note.id, e)}
+                  className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md opacity-0 md:group-hover:opacity-100 transition-all z-10"
+                  style={{ opacity: window.innerWidth < 768 ? 1 : undefined }}
+                  title="Delete Recording"
+                >
+                  <Trash2 size={16} />
+                </button>
+                <div className="flex justify-between items-start mb-2 pr-6">
                   <span className="text-xs font-medium text-slate-500">
                     {note.date ? `${note.date.split('-')[1]}/${note.date.split('-')[2]}/${note.date.split('-')[0]}` : ''}
                   </span>
