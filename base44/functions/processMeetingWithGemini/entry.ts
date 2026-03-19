@@ -53,7 +53,32 @@ Deno.serve(async (req) => {
 
             const uploadData = await uploadRes.json();
             const fileUri = uploadData.file.uri;
-            console.log(`[Transcribe] Uploaded to Gemini successfully. URI: ${fileUri}`);
+            const fileName = uploadData.file.name;
+            console.log(`[Transcribe] Uploaded to Gemini successfully. URI: ${fileUri}, Name: ${fileName}`);
+
+            // Poll until the file is active
+            let fileState = uploadData.file.state;
+            let attempts = 0;
+            while (fileState === 'PROCESSING' && attempts < 30) {
+                console.log(`[Transcribe] File is processing. Waiting... (attempt ${attempts + 1})`);
+                await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3 seconds
+                const statusRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/${fileName}?key=${apiKey}`);
+                if (statusRes.ok) {
+                    const statusData = await statusRes.json();
+                    fileState = statusData.state;
+                    console.log(`[Transcribe] File state is now: ${fileState}`);
+                    if (fileState === 'FAILED') {
+                        throw new Error(`Gemini failed to process the uploaded file.`);
+                    }
+                } else {
+                    console.warn(`[Transcribe] Failed to check file status: ${statusRes.status}`);
+                }
+                attempts++;
+            }
+
+            if (fileState === 'PROCESSING') {
+                 throw new Error(`File processing timed out after 90 seconds. Please try again later.`);
+            }
 
             const payload = {
                 contents: [{
