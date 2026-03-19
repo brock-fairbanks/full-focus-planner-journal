@@ -50,16 +50,19 @@ Deno.serve(async (req) => {
             try {
                 const fileRes = await fetch(file.url);
                 if (!fileRes.ok) continue;
-                const fileBuffer = await fileRes.arrayBuffer();
+                const contentLength = fileRes.headers.get('content-length');
+                const uploadHeaders = {
+                    'X-Goog-Upload-Protocol': 'raw',
+                    'X-Goog-Upload-Header-Content-Type': file.mimeType || 'application/octet-stream',
+                    'Content-Type': file.mimeType || 'application/octet-stream'
+                };
+                if (contentLength) uploadHeaders['Content-Length'] = contentLength;
 
                 const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
                     method: 'POST',
-                    headers: {
-                        'X-Goog-Upload-Protocol': 'raw',
-                        'X-Goog-Upload-Header-Content-Type': file.mimeType || 'application/octet-stream',
-                        'Content-Type': file.mimeType || 'application/octet-stream',
-                    },
-                    body: fileBuffer
+                    headers: uploadHeaders,
+                    body: fileRes.body,
+                    duplex: 'half'
                 });
                 
                 if (uploadRes.ok) {

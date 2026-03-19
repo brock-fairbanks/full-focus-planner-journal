@@ -23,17 +23,19 @@ Deno.serve(async (req) => {
                 throw new Error(`Failed to download file (${fileRes.status}): ${text.substring(0, 100)}`);
             }
             
-            const arrayBuffer = await fileRes.arrayBuffer();
+            const contentLength = fileRes.headers.get('content-length');
+            const uploadHeaders = {
+                'X-Goog-Upload-Protocol': 'raw',
+                'X-Goog-Upload-Header-Content-Type': mimeType || 'audio/webm',
+                'Content-Type': mimeType || 'audio/webm'
+            };
+            if (contentLength) uploadHeaders['Content-Length'] = contentLength;
 
             const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
                 method: 'POST',
-                headers: {
-                    'X-Goog-Upload-Protocol': 'raw',
-                    'X-Goog-Upload-Header-Content-Type': mimeType || 'audio/webm',
-                    'Content-Type': mimeType || 'audio/webm',
-                    'Content-Length': arrayBuffer.byteLength.toString()
-                },
-                body: arrayBuffer
+                headers: uploadHeaders,
+                body: fileRes.body,
+                duplex: 'half'
             });
             
             if (!uploadRes.ok) {
