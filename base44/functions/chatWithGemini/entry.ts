@@ -15,7 +15,7 @@ async function generateContent(contents, systemInstruction, model) {
         tools: tools
     };
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model || 'gemini-3.1-pro-preview'}:generateContent?key=${apiKey}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model || 'gemini-3-flash-preview'}:generateContent?key=${apiKey}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
         if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
         const body = await req.json();
-        const { userText, locationContext, model = 'gemini-3.1-pro-preview', files = [] } = body;
+        const { userText, locationContext, model = 'gemini-3-flash-preview', files = [] } = body;
         
         // Fetch recent history
         const rawHistory = await base44.entities.GeminiMessage.list('-created_date', 10);

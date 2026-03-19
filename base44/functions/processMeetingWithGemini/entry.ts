@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
                 }]
             };
 
-            const generateRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
+            const generateRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
 
             const text = await base44.asServiceRole.integrations.Core.InvokeLLM({
                 prompt: prompt,
-                model: "gemini_3_pro"
+                model: "gemini_3_flash"
             });
 
             return Response.json({ text });
