@@ -14,9 +14,28 @@ Deno.serve(async (req) => {
         if (action === "transcribe") {
             const { fileUrl, mimeType, prompt } = body;
             
-            // Try to download as blob to avoid stream issues if small enough
-            const fileRes = await fetch(fileUrl);
-            if (!fileRes.ok) throw new Error("Failed to download file: " + fileUrl);
+            let fileRes;
+            try {
+                fileRes = await fetch(fileUrl);
+                if (!fileRes.ok) throw new Error(`HTTP ${fileRes.status}`);
+            } catch (err) {
+                // If it fails, it might be because of a private file URL not having auth tokens in fetch.
+                // We'll use base44 integration to extract text instead
+                const res = await base44.asServiceRole.integrations.Core.ExtractDataFromUploadedFile({
+                    file_url: fileUrl,
+                    json_schema: {
+                        type: "object",
+                        properties: {
+                            transcription: { type: "string" }
+                        }
+                    }
+                });
+                
+                if (res && res.output && res.output.transcription) {
+                    return Response.json({ text: res.output.transcription });
+                }
+                throw new Error("Failed to download or extract file: " + fileUrl + " - " + err.message);
+            }
             
             const arrayBuffer = await fileRes.arrayBuffer();
 
