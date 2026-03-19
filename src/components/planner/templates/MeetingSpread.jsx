@@ -812,50 +812,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             </div>
           )}
 
-          {audioUrl && !isRecording && !isProcessing && (
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-4 w-full justify-center">
-              <audio controls src={audioUrl.url} className="h-10 w-full sm:w-auto max-w-[300px]" />
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button 
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    try {
-                      const response = await fetch(audioUrl.url);
-                      const blob = await response.blob();
-                      const blobUrl = window.URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.style.display = 'none';
-                      a.href = blobUrl;
-                      const safeTitle = title ? title.replace(/[^a-zA-Z0-9-_]/g, '_') : 'meeting_recording';
-                      a.download = `${safeTitle}.${audioUrl.extension}`;
-                      document.body.appendChild(a);
-                      a.click();
-                      window.URL.revokeObjectURL(blobUrl);
-                      document.body.removeChild(a);
-                    } catch (err) {
-                      console.error('Download failed:', err);
-                      window.open(audioUrl.url, '_blank');
-                    }
-                  }}
-                  className="flex flex-1 sm:flex-none justify-center items-center gap-2 text-sm font-medium text-[#1e293b] hover:text-[#F97316] bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg transition-colors"
-                >
-                  <Download size={16} />
-                  <span className="hidden sm:inline">Download</span> (.{audioUrl.extension})
-                </button>
-                <button
-                  onClick={() => {
-                    setAudioUrl(null);
-                    setTranscription("");
-                    setSummary("");
-                  }}
-                  className="flex flex-1 sm:flex-none justify-center items-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors"
-                >
-                  <Trash2 size={16} />
-                  Delete
-                </button>
-              </div>
-            </div>
-          )}
+
         </div>
       </div>
 
