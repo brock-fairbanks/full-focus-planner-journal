@@ -72,8 +72,8 @@ Deno.serve(async (req) => {
                     // Poll until active
                     let fileState = uploadData.file?.state;
                     let attempts = 0;
-                    while (fileState !== 'ACTIVE' && attempts < 30) {
-                        await new Promise(resolve => setTimeout(resolve, 3000));
+                    while (fileState !== 'ACTIVE' && attempts < 100) {
+                        await new Promise(resolve => setTimeout(resolve, 5000)); // wait 5 seconds
                         const statusRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/${fileName}?key=${apiKey}`);
                         if (statusRes.ok) {
                             const statusData = await statusRes.json();
