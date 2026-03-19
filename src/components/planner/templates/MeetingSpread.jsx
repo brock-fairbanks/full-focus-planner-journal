@@ -25,6 +25,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState("");
   const [transcription, setTranscription] = useState("");
   const [summary, setSummary] = useState("");
   const [audioUrl, setAudioUrl] = useState(null);
