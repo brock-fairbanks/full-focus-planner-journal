@@ -14,8 +14,14 @@ Deno.serve(async (req) => {
         if (action === "transcribe") {
             const { fileUrl, mimeType, prompt } = body;
             
-            const fileRes = await fetch(fileUrl);
-            if (!fileRes.ok) throw new Error("Failed to download file: " + fileUrl);
+            const authHeader = req.headers.get('Authorization');
+            const fetchOptions = authHeader ? { headers: { 'Authorization': authHeader } } : {};
+            const fileRes = await fetch(fileUrl, fetchOptions);
+            
+            if (!fileRes.ok) {
+                const text = await fileRes.text();
+                throw new Error(`Failed to download file (${fileRes.status}): ${text.substring(0, 100)}`);
+            }
             
             const arrayBuffer = await fileRes.arrayBuffer();
 
