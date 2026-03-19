@@ -365,11 +365,11 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check if file is too large (limit to 100MB)
-    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+    // Check if file is too large (limit to 50MB) to prevent server timeouts and 500 errors
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
     if (file.size > MAX_FILE_SIZE) {
       const sizeMB = Math.round(file.size / (1024 * 1024));
-      alert(`This file is too large (${sizeMB} MB). Please upload a file under 100 MB.\n\nIf this is a video, please convert it to an audio format (like MP3 or M4A) first to reduce the size.`);
+      alert(`This file is too large (${sizeMB} MB). Please upload a file under 50 MB.\n\nIf this is a video or a very long recording, please compress it or convert it to a smaller audio format (like MP3 or M4A) first.`);
       if (e.target) e.target.value = '';
       return;
     }
