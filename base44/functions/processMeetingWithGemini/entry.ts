@@ -14,9 +14,11 @@ Deno.serve(async (req) => {
         if (action === "transcribe") {
             const { fileUrl, mimeType, prompt } = body;
             
-            // InvokeLLM only supports image attachments currently. Audio needs to be downloaded.
+            // Need to download the file since the new InvokeLLM tool only supports images
             const fileRes = await fetch(fileUrl);
             if (!fileRes.ok) throw new Error("Failed to download file");
+
+            const arrayBuffer = await fileRes.arrayBuffer();
 
             const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
                 method: 'POST',
@@ -24,9 +26,9 @@ Deno.serve(async (req) => {
                     'X-Goog-Upload-Protocol': 'raw',
                     'X-Goog-Upload-Header-Content-Type': mimeType || 'audio/webm',
                     'Content-Type': mimeType || 'audio/webm',
+                    'Content-Length': arrayBuffer.byteLength.toString()
                 },
-                body: fileRes.body,
-                duplex: 'half'
+                body: arrayBuffer,
             });
             
             if (!uploadRes.ok) {
