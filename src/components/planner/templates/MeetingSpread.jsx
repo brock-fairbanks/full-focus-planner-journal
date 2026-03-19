@@ -473,12 +473,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
   const startSystemAudioRecording = async () => {
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-        alert("Recording system audio is not supported by your current browser.");
-        return;
-      }
+      const getDisplayMedia = navigator.mediaDevices?.getDisplayMedia || navigator.getDisplayMedia;
       
-      const stream = await navigator.mediaDevices.getDisplayMedia({ 
+      if (!getDisplayMedia) {
+         alert("Your browser does not support system audio recording (getDisplayMedia API is missing). Try using the 'Record Mic' option instead.");
+         return;
+      }
+
+      const stream = await getDisplayMedia.call(navigator.mediaDevices || navigator, { 
         video: true,
         audio: true 
       });
