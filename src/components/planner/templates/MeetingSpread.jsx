@@ -348,14 +348,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         mimeType: mimeType
       });
       
-      const { fileName, fileUri } = startRes.data;
+      const { fileName: geminiFileName, fileUri: geminiFileUri } = startRes.data;
       let text = "";
       while (true) {
         await new Promise(resolve => setTimeout(resolve, 5000));
         const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
           action: 'transcribe_poll',
-          fileName,
-          fileUri,
+          fileName: geminiFileName,
+          fileUri: geminiFileUri,
           prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. Identify different speakers (e.g., Speaker 1, Speaker 2) if there are multiple people speaking. If this is a continuation, just transcribe what you hear without comments.`,
           mimeType: mimeType,
           model: selectedModelRef.current
@@ -460,14 +460,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         mimeType: mimeType
       });
       
-      const { fileName, fileUri } = startRes.data;
+      const { fileName: geminiFileName, fileUri: geminiFileUri } = startRes.data;
       let text = "";
       while (true) {
         await new Promise(resolve => setTimeout(resolve, 5000));
         const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
           action: 'transcribe_poll',
-          fileName,
-          fileUri,
+          fileName: geminiFileName,
+          fileUri: geminiFileUri,
           prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. Identify different speakers (e.g., Speaker 1, Speaker 2) if there are multiple people speaking.`,
           mimeType: mimeType,
           model: selectedModelRef.current
@@ -795,14 +795,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         mimeType: mimeType
       });
       
-      const { fileName, fileUri } = startRes.data;
+      const { fileName: geminiFileName, fileUri: geminiFileUri } = startRes.data;
       let text = "";
       while (true) {
         await new Promise(resolve => setTimeout(resolve, 5000));
         const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
           action: 'transcribe_poll',
-          fileName,
-          fileUri,
+          fileName: geminiFileName,
+          fileUri: geminiFileUri,
           prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. Identify different speakers (e.g., Speaker 1, Speaker 2) if there are multiple people speaking.`,
           mimeType: mimeType,
           model: selectedModelRef.current
