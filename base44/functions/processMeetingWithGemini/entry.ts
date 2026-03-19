@@ -14,65 +14,54 @@ Deno.serve(async (req) => {
         if (action === "transcribe") {
             const { fileUrl, mimeType, prompt } = body;
             
-            try {
-                // Base44 file URLs require authentication. For large files we can use the backend SDK directly
-                const text = await base44.asServiceRole.integrations.Core.InvokeLLM({
-                    prompt: prompt,
-                    file_urls: [fileUrl],
-                    model: "gemini_3_pro" // We need 3 pro for large contexts
-                });
-                
-                return Response.json({ text });
-            } catch (err) {
-                 // Try fallback approach for specific files that gemini might reject directly
-                 const fileRes = await fetch(fileUrl);
-                 if (!fileRes.ok) throw new Error("Failed to download file from platform: " + err.message);
-                 
-                 const arrayBuffer = await fileRes.arrayBuffer();
+            const fileRes = await fetch(fileUrl);
+            if (!fileRes.ok) throw new Error("Failed to download file: " + fileUrl);
+            
+            const arrayBuffer = await fileRes.arrayBuffer();
 
-                 const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-Goog-Upload-Protocol': 'raw',
-                        'X-Goog-Upload-Header-Content-Type': mimeType || 'audio/webm',
-                        'Content-Type': mimeType || 'audio/webm',
-                        'Content-Length': arrayBuffer.byteLength.toString()
-                    },
-                    body: arrayBuffer
-                 });
-                 
-                 if (!uploadRes.ok) {
-                    const errorText = await uploadRes.text();
-                    throw new Error(`Gemini File Upload error: ${errorText}`);
-                 }
-
-                 const uploadData = await uploadRes.json();
-                 const fileUri = uploadData.file.uri;
-
-                 const payload = {
-                    contents: [{
-                        parts: [
-                            { text: prompt },
-                            { fileData: { mimeType: mimeType || 'audio/webm', fileUri: fileUri } }
-                        ]
-                    }]
-                 };
-
-                 const generateRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                 });
-
-                 if (!generateRes.ok) {
-                    throw new Error(`Gemini Generate error: ${await generateRes.text()}`);
-                 }
-
-                 const result = await generateRes.json();
-                 const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-                 return Response.json({ text });
+            const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'X-Goog-Upload-Protocol': 'raw',
+                    'X-Goog-Upload-Header-Content-Type': mimeType || 'audio/webm',
+                    'Content-Type': mimeType || 'audio/webm',
+                    'Content-Length': arrayBuffer.byteLength.toString()
+                },
+                body: arrayBuffer
+            });
+            
+            if (!uploadRes.ok) {
+                const err = await uploadRes.text();
+                throw new Error(`Gemini File Upload error: ${err}`);
             }
+
+            const uploadData = await uploadRes.json();
+            const fileUri = uploadData.file.uri;
+
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        { fileData: { mimeType: mimeType || 'audio/webm', fileUri: fileUri } }
+                    ]
+                }]
+            };
+
+            const generateRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!generateRes.ok) {
+                const err = await generateRes.text();
+                throw new Error(`Gemini Generate error: ${err}`);
+            }
+
+            const result = await generateRes.json();
+            const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+            return Response.json({ text });
         } else if (action === "summarize") {
             const { transcription, recordingType } = body;
 
