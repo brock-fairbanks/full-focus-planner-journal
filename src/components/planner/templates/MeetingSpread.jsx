@@ -783,7 +783,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                   onClick={startSystemAudioRecording}
                   disabled={isProcessing}
                   title="Record audio directly from your computer speakers or a specific browser tab"
-                  className="hidden sm:flex justify-center items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm w-full sm:w-auto"
+                  className="flex justify-center items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm w-full sm:w-auto"
                 >
                   <Monitor size={20} />
                   Record System Audio
