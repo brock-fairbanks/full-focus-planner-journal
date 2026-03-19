@@ -56,6 +56,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [driveTextFileId, setDriveTextFileId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [playingSection, setPlayingSection] = useState(null);
+  const [pendingFile, setPendingFile] = useState(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const audioRef = useRef(null);
 
