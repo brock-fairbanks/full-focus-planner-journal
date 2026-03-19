@@ -689,6 +689,44 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
+  const handleRetranscribe = async () => {
+    if (!audioUrl) return;
+    setIsProcessing(true);
+    setProcessingStatus("Transcribing audio with AI...");
+    try {
+      let fileUrlToUse = audioUrl.url;
+      const mimeType = audioUrl.extension ? (audioUrl.extension === 'mp3' ? 'audio/mp3' : audioUrl.extension === 'mp4' ? 'audio/mp4' : 'audio/webm') : 'audio/webm';
+      
+      if (fileUrlToUse.startsWith('blob:')) {
+        setProcessingStatus("Uploading audio...");
+        const response = await fetch(fileUrlToUse);
+        const blob = await response.blob();
+        const file = new File([blob], `recording.${audioUrl.extension || 'webm'}`, { type: mimeType });
+        const uploadRes = await base44.integrations.Core.UploadFile({ file });
+        fileUrlToUse = uploadRes.file_url;
+      }
+      
+      setProcessingStatus("Transcribing...");
+      const rType = recordingTypeRef.current;
+      const res = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe',
+        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text.`,
+        fileUrl: fileUrlToUse,
+        mimeType: mimeType
+      });
+      
+      const text = res.data.text;
+      setTranscription(text);
+      saveNote(text, null, fileUrlToUse);
+    } catch (err) {
+      console.error("Retranscription error", err);
+      alert("Failed to retranscribe audio.");
+    } finally {
+      setIsProcessing(false);
+      setProcessingStatus("");
+    }
+  };
+
   return (
     <div className="relative w-full min-h-full p-4 md:p-8 flex flex-col items-center bg-[#FAF9F6] pb-32">
       <div className="flex flex-col sm:flex-row justify-between items-center w-full max-w-5xl mb-2 relative z-30 pointer-events-auto gap-4">
