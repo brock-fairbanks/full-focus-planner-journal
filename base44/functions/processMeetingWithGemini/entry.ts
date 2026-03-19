@@ -57,14 +57,17 @@ Deno.serve(async (req) => {
             console.log(`[Transcribe] Uploaded to Gemini successfully. URI: ${fileUri}, Name: ${fileName}`);
 
             // Poll until the file is active
-            let fileState = uploadData.file.state;
+            let fileState = uploadData.file?.state;
             let attempts = 0;
-            while (fileState === 'PROCESSING' && attempts < 30) {
-                console.log(`[Transcribe] File is processing. Waiting... (attempt ${attempts + 1})`);
+            // The upload API might not always return a state initially, or it might be PROCESSING.
+            // We want to wait until it is explicitly 'ACTIVE'.
+            while (fileState !== 'ACTIVE' && attempts < 30) {
+                console.log(`[Transcribe] File state is ${fileState || 'unknown'}. Waiting... (attempt ${attempts + 1})`);
                 await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3 seconds
                 const statusRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/${fileName}?key=${apiKey}`);
                 if (statusRes.ok) {
                     const statusData = await statusRes.json();
+                    // GET /v1beta/files/id returns the File object directly
                     fileState = statusData.state;
                     console.log(`[Transcribe] File state is now: ${fileState}`);
                     if (fileState === 'FAILED') {
@@ -76,8 +79,8 @@ Deno.serve(async (req) => {
                 attempts++;
             }
 
-            if (fileState === 'PROCESSING') {
-                 throw new Error(`File processing timed out after 90 seconds. Please try again later.`);
+            if (fileState !== 'ACTIVE') {
+                 throw new Error(`File processing timed out after 90 seconds. Last state: ${fileState}. Please try again later.`);
             }
 
             const payload = {
