@@ -16,7 +16,6 @@ Deno.serve(async (req) => {
             
             const fileRes = await fetch(fileUrl);
             if (!fileRes.ok) throw new Error("Failed to download file");
-            const fileBuffer = await fileRes.arrayBuffer();
 
             const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
                 method: 'POST',
@@ -25,7 +24,8 @@ Deno.serve(async (req) => {
                     'X-Goog-Upload-Header-Content-Type': mimeType || 'audio/webm',
                     'Content-Type': mimeType || 'audio/webm',
                 },
-                body: fileBuffer
+                body: fileRes.body,
+                duplex: 'half'
             });
             
             if (!uploadRes.ok) {
