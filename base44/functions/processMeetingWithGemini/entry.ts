@@ -11,24 +11,18 @@ Deno.serve(async (req) => {
         const body = await req.json();
         const { action } = body;
 
-        if (action === "transcribe") {
-            const { fileUrl, mimeType, prompt, model = "gemini-3-flash-preview" } = body;
-            console.log(`[Transcribe] Started for URL: ${fileUrl.substring(0, 70)}...`);
+        if (action === "transcribe_start") {
+            const { fileUrl, mimeType } = body;
             
             const authHeader = req.headers.get('Authorization');
             const fetchOptions = authHeader ? { headers: { 'Authorization': authHeader } } : {};
             
-            console.log(`[Transcribe] Fetching file from storage...`);
             const fileRes = await fetch(fileUrl, fetchOptions);
-            
             if (!fileRes.ok) {
                 const text = await fileRes.text();
-                console.error(`[Transcribe] Failed to download file from storage: ${fileRes.status}`);
                 throw new Error(`Failed to download file (${fileRes.status}): ${text.substring(0, 100)}`);
             }
-            
             const contentLength = fileRes.headers.get('content-length');
-            console.log(`[Transcribe] File fetched. Content-Length: ${contentLength}`);
 
             const uploadHeaders = {
                 'X-Goog-Upload-Protocol': 'raw',
@@ -37,7 +31,6 @@ Deno.serve(async (req) => {
             };
             if (contentLength) uploadHeaders['Content-Length'] = contentLength;
 
-            console.log(`[Transcribe] Uploading to Gemini Files API...`);
             const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
                 method: 'POST',
                 headers: uploadHeaders,
@@ -47,40 +40,26 @@ Deno.serve(async (req) => {
             
             if (!uploadRes.ok) {
                 const err = await uploadRes.text();
-                console.error(`[Transcribe] Gemini File Upload failed: ${uploadRes.status} ${err}`);
                 throw new Error(`Gemini File Upload error: ${err}`);
             }
 
             const uploadData = await uploadRes.json();
-            const fileUri = uploadData.file.uri;
-            const fileName = uploadData.file.name;
-            console.log(`[Transcribe] Uploaded to Gemini successfully. URI: ${fileUri}, Name: ${fileName}`);
-
-            // Poll until the file is active
-            let fileState = uploadData.file?.state;
-            let attempts = 0;
-            // The upload API might not always return a state initially, or it might be PROCESSING.
-            // We want to wait until it is explicitly 'ACTIVE'.
-            while (fileState !== 'ACTIVE' && attempts < 100) {
-                console.log(`[Transcribe] File state is ${fileState || 'unknown'}. Waiting... (attempt ${attempts + 1})`);
-                await new Promise(resolve => setTimeout(resolve, 5000)); // wait 5 seconds
-                const statusRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/${fileName}?key=${apiKey}`);
-                if (statusRes.ok) {
-                    const statusData = await statusRes.json();
-                    // GET /v1beta/files/id returns the File object directly
-                    fileState = statusData.state;
-                    console.log(`[Transcribe] File state is now: ${fileState}`);
-                    if (fileState === 'FAILED') {
-                        throw new Error(`Gemini failed to process the uploaded file.`);
-                    }
-                } else {
-                    console.warn(`[Transcribe] Failed to check file status: ${statusRes.status}`);
-                }
-                attempts++;
+            return Response.json({ fileName: uploadData.file.name, fileUri: uploadData.file.uri });
+        } else if (action === "transcribe_poll") {
+            const { fileName, fileUri, prompt, mimeType, model = "gemini-3-flash-preview" } = body;
+            
+            const statusRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/${fileName}?key=${apiKey}`);
+            if (!statusRes.ok) {
+                return Response.json({ status: 'processing' });
             }
-
-            if (fileState !== 'ACTIVE') {
-                 throw new Error(`File processing timed out after 500 seconds. Last state: ${fileState}. Please try again later.`);
+            
+            const statusData = await statusRes.json();
+            const fileState = statusData.state;
+            
+            if (fileState === 'PROCESSING') {
+                return Response.json({ status: 'processing' });
+            } else if (fileState === 'FAILED') {
+                return Response.json({ status: 'failed', error: 'Gemini failed to process the file' });
             }
 
             const payload = {
@@ -92,7 +71,6 @@ Deno.serve(async (req) => {
                 }]
             };
 
-            console.log(`[Transcribe] Calling Gemini Generate API with model: ${model}...`);
             const generateRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -101,15 +79,13 @@ Deno.serve(async (req) => {
 
             if (!generateRes.ok) {
                 const err = await generateRes.text();
-                console.error(`[Transcribe] Gemini Generate API failed: ${generateRes.status} ${err}`);
                 throw new Error(`Gemini Generate error: ${err}`);
             }
 
-            console.log(`[Transcribe] Gemini Generate API successful.`);
             const result = await generateRes.json();
             const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-            return Response.json({ text });
+            return Response.json({ status: 'completed', text });
         } else if (action === "summarize") {
             const { transcription, recordingType, model = "gemini-3-flash-preview" } = body;
 
