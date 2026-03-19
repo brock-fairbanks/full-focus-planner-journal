@@ -645,6 +645,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const generateSummary = async () => {
     if (!transcription) return;
     setIsProcessing(true);
+    setProcessingStatus("Generating AI Summary...");
     try {
       const prompt = recordingType === 'lecture' 
         ? `Please provide a highly detailed, in-depth summary of the following lecture transcription. Include key concepts, comprehensive explanations, important examples or case studies, and a structured outline of the topics covered:\n\n${transcription}`
@@ -660,9 +661,10 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       saveNote(null, result);
     } catch (err) {
       console.error("Summary error", err);
-      alert("Failed to generate summary.");
+      alert("Failed to generate summary. The text might be too long.");
     } finally {
       setIsProcessing(false);
+      setProcessingStatus("");
     }
   };
 
