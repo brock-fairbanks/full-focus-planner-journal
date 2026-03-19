@@ -166,7 +166,7 @@ export default function Planner() {
           />
 
           {/* Tools Sub Header */}
-          <div className={`fixed top-16 right-0 h-10 bg-[#FAF9F6] border-b border-[#E2E8F0] flex items-center justify-end px-4 gap-4 z-40 ${activeTemplate === "JOURNAL" ? "left-40" : "left-20"} transition-all duration-300 ease-in-out shadow-sm`}>
+          <div className={`fixed top-16 right-0 h-10 bg-[#FAF9F6] border-b border-[#E2E8F0] flex items-center justify-end px-4 gap-4 z-40 ${activeTemplate === "JOURNAL" ? "left-40 md:left-44" : "left-20"} transition-all duration-300 ease-in-out shadow-sm`}>
             <button 
                 onClick={() => handleTabChange("MEETING")}
                 className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-md transition-colors ${activeTemplate === 'MEETING' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
@@ -188,7 +188,7 @@ export default function Planner() {
         className={`fixed ${
           isFullscreen 
             ? "left-0 top-0" 
-            : (activeTemplate === "JOURNAL" ? "left-40 top-[104px]" : "left-20 top-[104px]")
+            : (activeTemplate === "JOURNAL" ? "left-40 md:left-44 top-[104px]" : "left-20 top-[104px]")
         } right-0 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto transition-all duration-300 ease-in-out`}
       >
         <div className="relative min-h-full w-full flex flex-col">
