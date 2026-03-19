@@ -338,6 +338,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         return newText;
       });
     } catch (err) {
+      if (isFinal && uploadRes && uploadRes.file_url) {
+        saveNote(null, null, uploadRes.file_url);
+      }
       console.error("Transcription error", err);
       if (isFinal) alert("Failed to transcribe audio. Ensure your connection is stable.");
     } finally {
