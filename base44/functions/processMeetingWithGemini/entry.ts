@@ -65,11 +65,11 @@ Deno.serve(async (req) => {
 
             let prompt = "";
             if (recordingType === 'lecture') {
-                prompt = `Please provide a highly detailed, in-depth summary of the following lecture transcription. Include key concepts, comprehensive explanations, important examples or case studies, and a structured outline of the topics covered:\n\n${transcription}`;
+                prompt = `Please provide a highly detailed, in-depth summary of the following lecture transcription. Include key concepts, comprehensive explanations, important examples or case studies, and a structured outline of the topics covered. CRITICAL: Explicitly exclude and ignore any advertisements, sponsor segments, or overtly promotional content:\n\n${transcription}`;
             } else if (recordingType === 'dialog') {
-                prompt = `Please summarize the following dialog transcription. Highlight the main topics discussed, the flow of the conversation, and any key takeaways or conclusions reached by the speakers:\n\n${transcription}`;
+                prompt = `Please summarize the following dialog transcription. Highlight the main topics discussed, the flow of the conversation, and any key takeaways or conclusions reached by the speakers. CRITICAL: If this is a product review or podcast, explicitly exclude and ignore any advertisements, sponsor segments, promotional reads, or calls to action:\n\n${transcription}`;
             } else {
-                prompt = `Please summarize the following meeting transcription concisely, highlighting the main points, decisions, and action items:\n\n${transcription}`;
+                prompt = `Please summarize the following meeting transcription concisely, highlighting the main points, decisions, and action items. Exclude any advertisements or sponsored content:\n\n${transcription}`;
             }
 
             const payload = {
