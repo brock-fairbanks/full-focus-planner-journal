@@ -445,9 +445,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     // Use a lower bitrate (32kbps) to ensure long lectures don't exceed upload limits without needing to chunk
     const options = { mimeType, audioBitsPerSecond: 32000 };
     const mediaRecorder = new MediaRecorder(stream, options);
-    
+
     mediaRecorderRef.current = mediaRecorder;
-    
+
     const localChunks = [];
 
     mediaRecorder.ondataavailable = (event) => {
@@ -458,16 +458,19 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
     mediaRecorder.onstop = () => {
       const actualMimeType = mediaRecorder.mimeType || mimeType;
-      const extension = actualMimeType.split('/')[1].split(';')[0];
+      // Make sure we have a clean extension without extra parameters
+      const extensionMatch = actualMimeType.match(/\/(.*?)(;|$)/);
+      const extension = extensionMatch ? extensionMatch[1] : 'webm';
+
       const audioBlob = new Blob(localChunks, { type: actualMimeType });
-      
+
       const url = URL.createObjectURL(audioBlob);
       setAudioUrl({ url, extension });
-      
+
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
-      
+
       processChunk(audioBlob, 1, actualMimeType, extension, true);
     };
 
