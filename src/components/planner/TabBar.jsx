@@ -122,63 +122,63 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
             })}
           </Reorder.Group>
         </div>
-        <div className="w-full flex flex-col items-center justify-center pt-2 mt-auto border-t border-[#3e2d1d]/50 shrink-0">
+        <div className="w-full flex flex-col items-center justify-center pt-2 pb-2 mt-auto border-t border-[#3e2d1d]/50 shrink-0">
           <a
             href="/settings"
-            className="flex flex-col items-center justify-center w-full h-12 transition-all duration-200 gap-1 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
+            className="flex flex-col items-center justify-center w-full h-14 transition-all duration-200 gap-1.5 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
             title="Settings"
           >
-            <Settings size={16} />
-            <span className="text-[9px] font-medium tracking-wide uppercase">Settings</span>
+            <Settings size={20} className="md:w-5 md:h-5" />
+            <span className="text-[10px] md:text-xs font-semibold tracking-wide uppercase">Settings</span>
           </a>
           <button
             onDoubleClick={() => base44.auth.logout()}
-            className="flex flex-col items-center justify-center w-full h-12 transition-all duration-200 gap-1 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
+            className="flex flex-col items-center justify-center w-full h-14 transition-all duration-200 gap-1.5 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
             title="Logout"
           >
-            <LogOut size={16} />
-            <span className="text-[9px] font-medium tracking-wide uppercase">Logout</span>
+            <LogOut size={20} className="md:w-5 md:h-5" />
+            <span className="text-[10px] md:text-xs font-semibold tracking-wide uppercase">Logout</span>
           </button>
         </div>
       </div>
 
       {/* Secondary Navigation for Journal Modes */}
       {activeTemplate === "JOURNAL" && (
-        <div className="fixed left-20 top-16 bottom-0 w-20 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-white border-r border-[#E2E8F0] shadow-sm gap-4">
+        <div className="fixed left-20 top-16 bottom-0 w-20 md:w-24 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-white border-r border-[#E2E8F0] shadow-sm gap-4">
           <button
             onDoubleClick={() => onJournalModeChange("DAILY")}
-            className={`flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-200 gap-1.5 select-none ${
+            className={`flex flex-col items-center justify-center w-16 md:w-20 h-20 rounded-xl transition-all duration-200 gap-2 select-none ${
               journalMode === "DAILY" 
                 ? "bg-[#1e293b] text-white shadow-md" 
                 : "bg-white text-[#94a3b8] hover:bg-slate-50 border border-[#E2E8F0]"
             }`}
           >
-            <Sun size={18} />
-            <span className="text-[9px] font-bold tracking-wide">DAILY</span>
+            <Sun size={22} className="md:w-6 md:h-6" />
+            <span className="text-[10px] md:text-xs font-bold tracking-wide">DAILY</span>
           </button>
           
           <button
             onDoubleClick={() => onJournalModeChange("WEEKEND")}
-            className={`flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-200 gap-1.5 select-none ${
+            className={`flex flex-col items-center justify-center w-16 md:w-20 h-20 rounded-xl transition-all duration-200 gap-2 select-none ${
               journalMode === "WEEKEND" 
                 ? "bg-[#1e293b] text-white shadow-md" 
                 : "bg-white text-[#94a3b8] hover:bg-slate-50 border border-[#E2E8F0]"
             }`}
           >
-            <Coffee size={18} />
-            <span className="text-[9px] font-bold tracking-wide">WKND</span>
+            <Coffee size={22} className="md:w-6 md:h-6" />
+            <span className="text-[10px] md:text-xs font-bold tracking-wide">WKND</span>
           </button>
 
           <button
             onDoubleClick={() => onJournalModeChange("ANNUAL")}
-            className={`flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-200 gap-1.5 select-none ${
+            className={`flex flex-col items-center justify-center w-16 md:w-20 h-20 rounded-xl transition-all duration-200 gap-2 select-none ${
               journalMode === "ANNUAL" 
                 ? "bg-[#1e293b] text-white shadow-md" 
                 : "bg-white text-[#94a3b8] hover:bg-slate-50 border border-[#E2E8F0]"
             }`}
           >
-            <CalendarDays size={18} />
-            <span className="text-[9px] font-bold tracking-wide">ANNUAL</span>
+            <CalendarDays size={22} className="md:w-6 md:h-6" />
+            <span className="text-[10px] md:text-xs font-bold tracking-wide">ANNUAL</span>
           </button>
         </div>
       )}

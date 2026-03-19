@@ -10,15 +10,15 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
     <div className="fixed top-0 left-0 right-0 h-16 grid grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8 pointer-events-auto z-50 border-b" style={{background: "#2C1F14", borderColor: "#1A120B"}}>
       {/* Left: Logo and Title */}
       <div className="flex items-center gap-3 justify-start min-w-0">
-        <div className="flex items-center justify-center w-8 h-8 rounded bg-[#1A120B] border border-[#3e2d1d] shrink-0">
-          <Compass size={18} style={{ color: "#B8956A" }} />
+        <div className="flex items-center justify-center w-10 h-10 rounded bg-[#1A120B] border border-[#3e2d1d] shrink-0">
+          <Compass size={22} style={{ color: "#B8956A" }} />
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="text-[#f5deb3] font-serif font-bold text-lg leading-tight tracking-wide truncate">
+          <span className="text-[#f5deb3] font-serif font-bold text-xl md:text-2xl leading-tight tracking-wide truncate">
             My Planner
           </span>
           <span 
-            className="text-[10px] uppercase tracking-widest font-bold leading-none truncate"
+            className="text-xs uppercase tracking-widest font-bold leading-none truncate mt-0.5"
             style={{
               color: "#F97316",
               textShadow: "0 0 8px rgba(249, 115, 22, 0.6)"
