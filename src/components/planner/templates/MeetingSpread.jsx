@@ -30,6 +30,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [summary, setSummary] = useState("");
   const [audioUrl, setAudioUrl] = useState(null);
   const [recordingType, setRecordingType] = useState("meeting");
+  const [selectedModel, setSelectedModel] = useState(() => {
+    return localStorage.getItem("planner_meeting_model") || "gemini-3-flash-preview";
+  });
+  const selectedModelRef = useRef(selectedModel);
+  useEffect(() => {
+    selectedModelRef.current = selectedModel;
+    localStorage.setItem("planner_meeting_model", selectedModel);
+  }, [selectedModel]);
   const [title, setTitleState] = useState("");
   const titleRef = useRef("");
   const setTitle = (t) => {
@@ -338,7 +346,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         action: 'transcribe',
         prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. If this is a continuation, just transcribe what you hear without comments.`,
         fileUrl: uploadedFileUrl,
-        mimeType: mimeType
+        mimeType: mimeType,
+        model: selectedModelRef.current
       });
       const text = res.data.text;
 
@@ -432,7 +441,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         action: 'transcribe',
         prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text.`,
         fileUrl: uploadedFileUrl,
-        mimeType: mimeType
+        mimeType: mimeType,
+        model: selectedModelRef.current
       });
       const text = res.data.text;
       
@@ -703,7 +713,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       const res = await base44.functions.invoke('processMeetingWithGemini', {
         action: 'summarize',
         transcription,
-        recordingType
+        recordingType,
+        model: selectedModel
       });
       const result = res.data.text;
       setSummary(result);
@@ -747,7 +758,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         action: 'transcribe',
         prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text.`,
         fileUrl: fileUrlToUse,
-        mimeType: mimeType
+        mimeType: mimeType,
+        model: selectedModelRef.current
       });
       
       const text = res.data.text;
@@ -774,6 +786,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b] bg-transparent border-b-2 border-transparent hover:border-[#cbd5e1] focus:border-[#F97316] outline-none placeholder:text-[#94a3b8] w-full sm:max-w-[40%] md:max-w-[50%] transition-colors pb-1 text-center sm:text-left"
         />
         <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0 items-center justify-center w-full sm:w-auto">
+          <select
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F97316] font-medium"
+          >
+            <option value="gemini-3-flash-preview">Gemini 3 Flash</option>
+            <option value="gemini-3.1-pro-preview">Gemini 3 Pro</option>
+          </select>
           <button 
             onClick={() => setShowHistory(!showHistory)}
             className="flex items-center justify-center gap-2 bg-[#1e293b] hover:bg-[#0f172a] text-white px-3 py-2 rounded-lg font-medium transition-colors shadow-sm text-sm flex-1 sm:flex-none"

@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
         const { action } = body;
 
         if (action === "transcribe") {
-            const { fileUrl, mimeType, prompt } = body;
+            const { fileUrl, mimeType, prompt, model = "gemini-3-flash-preview" } = body;
             
             const authHeader = req.headers.get('Authorization');
             const fetchOptions = authHeader ? { headers: { 'Authorization': authHeader } } : {};
@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
                 }]
             };
 
-            const generateRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`, {
+            const generateRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
 
             return Response.json({ text });
         } else if (action === "summarize") {
-            const { transcription, recordingType } = body;
+            const { transcription, recordingType, model = "gemini-3-flash-preview" } = body;
 
             let prompt = "";
             if (recordingType === 'lecture') {
@@ -80,9 +80,10 @@ Deno.serve(async (req) => {
                 prompt = `Please summarize the following meeting transcription concisely, highlighting the main points, decisions, and action items. Exclude any advertisements or sponsored content:\n\n${transcription}`;
             }
 
+            const invokeModel = model === 'gemini-3.1-pro-preview' ? 'gemini_3_pro' : 'gemini_3_flash';
             const text = await base44.asServiceRole.integrations.Core.InvokeLLM({
                 prompt: prompt,
-                model: "gemini_3_flash"
+                model: invokeModel
             });
 
             return Response.json({ text });
