@@ -679,6 +679,48 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         </button>
       </div>
 
+      {!showHistory && audioUrl && !isRecording && !isProcessing && (
+        <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-4 mb-6 shadow-sm relative z-30 pointer-events-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="bg-[#1e293b] p-2 rounded-lg text-white shrink-0">
+              <Mic size={20} />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-bold text-[#1e293b] truncate">Recording Audio</span>
+            </div>
+          </div>
+          <audio controls src={audioUrl.url} className="h-10 w-full md:flex-1 max-w-xl" />
+          <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button 
+              onClick={async (e) => {
+                e.preventDefault();
+                try {
+                  const response = await fetch(audioUrl.url);
+                  const blob = await response.blob();
+                  const blobUrl = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.style.display = 'none';
+                  a.href = blobUrl;
+                  const safeTitle = title ? title.replace(/[^a-zA-Z0-9-_]/g, '_') : 'meeting_recording';
+                  a.download = `${safeTitle}.${audioUrl.extension}`;
+                  document.body.appendChild(a);
+                  a.click();
+                  window.URL.revokeObjectURL(blobUrl);
+                  document.body.removeChild(a);
+                } catch (err) {
+                  console.error('Download failed:', err);
+                  window.open(audioUrl.url, '_blank');
+                }
+              }}
+              className="flex justify-center items-center gap-2 text-sm font-medium text-[#1e293b] hover:text-[#F97316] bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg transition-colors"
+            >
+              <Download size={16} />
+              <span className="hidden sm:inline">Download</span> (.{audioUrl.extension})
+            </button>
+          </div>
+        </div>
+      )}
+
       {showHistory ? (
         <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-8 mb-8 shadow-sm relative z-30 pointer-events-auto">
           <div className="flex items-center gap-2 mb-6">
