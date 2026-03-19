@@ -75,9 +75,9 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
         className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-4 pb-2 pointer-events-auto z-40 overflow-hidden border-r border-black/20" 
         style={{background: "#1A120B"}}
       >
-        <div className="w-full flex flex-col items-center justify-center pb-4 mb-2 border-b border-[#3e2d1d]/50 shrink-0">
+        <div className="w-full flex flex-col items-center justify-center pb-4 mb-2 border-b border-[#3e2d1d]/50 shrink-0 mt-2">
           <span 
-            className="text-[10px] font-bold tracking-widest uppercase text-center px-2 w-full overflow-hidden text-ellipsis whitespace-nowrap"
+            className="text-xs md:text-sm font-bold tracking-widest uppercase text-center px-1 w-full overflow-hidden text-ellipsis whitespace-nowrap"
             style={{
               color: "#F97316",
               textShadow: "0 0 8px rgba(249, 115, 22, 0.6)"
