@@ -33,23 +33,10 @@ Deno.serve(async (req) => {
                 prompt = `Please summarize the following meeting transcription concisely, highlighting the main points, decisions, and action items. Exclude any advertisements or sponsored content:\n\n${transcription}`;
             }
 
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }]
-            };
-
-            const generateRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
+            const text = await base44.asServiceRole.integrations.Core.InvokeLLM({
+                prompt: prompt,
+                model: "gemini_3_pro"
             });
-
-            if (!generateRes.ok) {
-                const err = await generateRes.text();
-                throw new Error(`Gemini Generate error: ${err}`);
-            }
-
-            const result = await generateRes.json();
-            const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
             return Response.json({ text });
         }
