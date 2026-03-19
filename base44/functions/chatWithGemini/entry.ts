@@ -67,7 +67,26 @@ Deno.serve(async (req) => {
                 
                 if (uploadRes.ok) {
                     const uploadData = await uploadRes.json();
-                    fileParts.push({ fileData: { mimeType: file.mimeType || 'application/octet-stream', fileUri: uploadData.file.uri } });
+                    const fileName = uploadData.file.name;
+                    
+                    // Poll until active
+                    let fileState = uploadData.file.state;
+                    let attempts = 0;
+                    while (fileState === 'PROCESSING' && attempts < 30) {
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        const statusRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/${fileName}?key=${apiKey}`);
+                        if (statusRes.ok) {
+                            const statusData = await statusRes.json();
+                            fileState = statusData.state;
+                        }
+                        attempts++;
+                    }
+
+                    if (fileState === 'ACTIVE') {
+                        fileParts.push({ fileData: { mimeType: file.mimeType || 'application/octet-stream', fileUri: uploadData.file.uri } });
+                    } else {
+                        console.error(`File processing failed or timed out for ${fileName}`);
+                    }
                 }
             } catch (e) {
                 console.error("File upload failed", e);
