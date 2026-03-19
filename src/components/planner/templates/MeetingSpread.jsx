@@ -342,14 +342,31 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         setProcessingStatus("Transcribing audio with AI...");
       }
 
-      const res = await base44.functions.invoke('processMeetingWithGemini', {
-        action: 'transcribe',
-        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. Identify different speakers (e.g., Speaker 1, Speaker 2) if there are multiple people speaking. If this is a continuation, just transcribe what you hear without comments.`,
+      const startRes = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe_start',
         fileUrl: uploadedFileUrl,
-        mimeType: mimeType,
-        model: selectedModelRef.current
+        mimeType: mimeType
       });
-      const text = res.data.text;
+      
+      const { fileName, fileUri } = startRes.data;
+      let text = "";
+      while (true) {
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
+          action: 'transcribe_poll',
+          fileName,
+          fileUri,
+          prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. Identify different speakers (e.g., Speaker 1, Speaker 2) if there are multiple people speaking. If this is a continuation, just transcribe what you hear without comments.`,
+          mimeType: mimeType,
+          model: selectedModelRef.current
+        });
+        if (pollRes.data.status === 'completed') {
+           text = pollRes.data.text;
+           break;
+        } else if (pollRes.data.status === 'failed') {
+           throw new Error(pollRes.data.error || "Gemini processing failed");
+        }
+      }
 
       if (isFinal) setProcessingStatus("Saving...");
       setTranscription(prev => {
