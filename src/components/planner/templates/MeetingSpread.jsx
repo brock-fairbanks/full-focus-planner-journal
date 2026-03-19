@@ -862,9 +862,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           </div>
           
           {isProcessing && (
-            <div className="flex items-center gap-2 text-[#F97316] font-medium">
-              <Loader2 size={18} className="animate-spin" />
-              Processing Audio...
+            <div className="flex items-center gap-2 text-[#F97316] font-medium text-center">
+              <Loader2 size={18} className="animate-spin shrink-0" />
+              <span>{processingStatus || "Processing Audio..."}</span>
             </div>
           )}
 
