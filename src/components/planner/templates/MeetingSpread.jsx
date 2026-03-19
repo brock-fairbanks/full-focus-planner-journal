@@ -296,7 +296,10 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   };
 
   const processChunk = async (audioBlob, partNum, mimeType, extension, isFinal) => {
-    if (isFinal) setIsProcessing(true);
+    if (isFinal) {
+      setIsProcessing(true);
+      setProcessingStatus("Uploading recording to server...");
+    }
     try {
       const dateStr = new Date().toISOString().slice(0,10);
       const sessionId = sessionIdRef.current || 'unknown';
@@ -310,6 +313,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : 'Meeting');
         const driveFileName = `${drivePrefix}_${dateStr}_ID-${sessionId}_Part${partNum}.${extension}`;
           
+        if (isFinal) setProcessingStatus("Backing up to Google Drive...");
         base44.functions.invoke('uploadToGoogleDrive', {
           file_url: uploadRes.file_url,
           file_name: driveFileName,
@@ -317,6 +321,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         }).catch(e => console.error("Drive upload failed", e));
       }
       
+      if (isFinal) setProcessingStatus("Transcribing audio with AI...");
       const res = await base44.functions.invoke('processMeetingWithGemini', {
         action: 'transcribe',
         prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. If this is a continuation, just transcribe what you hear without comments.`,
@@ -325,6 +330,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       });
       const text = res.data.text;
       
+      if (isFinal) setProcessingStatus("Saving...");
       setTranscription(prev => {
         const newText = prev ? prev + "\n\n" + text : text;
         saveNote(newText, null, uploadRes.file_url);
@@ -332,9 +338,12 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       });
     } catch (err) {
       console.error("Transcription error", err);
-      if (isFinal) alert("Failed to transcribe audio.");
+      if (isFinal) alert("Failed to transcribe audio. Ensure your connection is stable.");
     } finally {
-      if (isFinal) setIsProcessing(false);
+      if (isFinal) {
+        setIsProcessing(false);
+        setProcessingStatus("");
+      }
     }
   };
 
