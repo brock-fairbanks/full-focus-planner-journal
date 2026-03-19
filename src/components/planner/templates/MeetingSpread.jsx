@@ -458,6 +458,11 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
   const startSystemAudioRecording = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+        alert("Recording system audio is not supported on this device or browser. This feature is typically only available on desktop browsers.");
+        return;
+      }
+      
       const stream = await navigator.mediaDevices.getDisplayMedia({ 
         video: true,
         audio: true 
