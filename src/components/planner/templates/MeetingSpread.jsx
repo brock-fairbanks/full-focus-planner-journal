@@ -345,6 +345,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     if (!file) return;
 
     setIsProcessing(true);
+    setProcessingStatus(`Uploading ${file.name} to server...`);
     setAudioUrl(null);
     setTranscription("");
     setSummary("");
@@ -365,6 +366,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         const drivePrefix = rType === 'lecture' ? 'Lecture' : 'Meeting';
         const driveFileName = `${drivePrefix}_${dateStr}_ID-${sessionId}_Uploaded.${extension}`;
           
+        setProcessingStatus("Backing up file to Google Drive...");
         base44.functions.invoke('uploadToGoogleDrive', {
           file_url: uploadRes.file_url,
           file_name: driveFileName,
@@ -372,6 +374,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         }).catch(err => console.error("Drive upload failed", err));
       }
 
+      setProcessingStatus("Extracting audio and transcribing with AI (this may take 1-3 minutes)...");
       const res = await base44.functions.invoke('processMeetingWithGemini', {
         action: 'transcribe',
         prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text.`,
@@ -380,13 +383,15 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       });
       const text = res.data.text;
       
+      setProcessingStatus("Saving...");
       setTranscription(text);
       saveNote(text, null, uploadRes.file_url);
     } catch (err) {
       console.error("Upload error", err);
-      alert("Failed to process uploaded file.");
+      alert("Failed to process uploaded file. It might be too large for the current network connection or timeout limits.");
     } finally {
       setIsProcessing(false);
+      setProcessingStatus("");
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
