@@ -14,23 +14,39 @@ Deno.serve(async (req) => {
         if (action === "transcribe") {
             const { fileUrl, mimeType, prompt } = body;
             
-            // First, try to download as blob to avoid stream issues if small enough
+            // Use Resumable Upload for large files with Gemini
             const fileRes = await fetch(fileUrl);
             if (!fileRes.ok) throw new Error("Failed to download file: " + fileUrl);
             
-            // For large files we might need streaming, but let's try blob first
-            // to avoid Deno fetch duplex/body streaming quirks
-            const blob = await fileRes.blob();
-
-            const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
+            const fileSize = fileRes.headers.get("content-length") || "";
+            
+            // 1. Initial resumable upload request
+            const initRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
                 method: 'POST',
                 headers: {
-                    'X-Goog-Upload-Protocol': 'raw',
+                    'X-Goog-Upload-Protocol': 'resumable',
+                    'X-Goog-Upload-Command': 'start',
+                    'X-Goog-Upload-Header-Content-Length': fileSize,
                     'X-Goog-Upload-Header-Content-Type': mimeType || 'audio/webm',
-                    'Content-Type': mimeType || 'audio/webm',
-                    'Content-Length': blob.size.toString()
+                    'Content-Type': 'application/json',
                 },
-                body: blob
+                body: JSON.stringify({ file: { displayName: "audio_upload" } })
+            });
+            
+            if (!initRes.ok) throw new Error(`Gemini Init Upload error: ${await initRes.text()}`);
+            
+            const uploadUrl = initRes.headers.get("x-goog-upload-url");
+            if (!uploadUrl) throw new Error("Failed to get upload URL");
+            
+            // 2. Stream the file content
+            const uploadRes = await fetch(uploadUrl, {
+                method: 'POST',
+                headers: {
+                    'X-Goog-Upload-Command': 'upload, finalize',
+                    'X-Goog-Upload-Offset': '0',
+                },
+                body: fileRes.body,
+                duplex: 'half'
             });
             
             if (!uploadRes.ok) {
