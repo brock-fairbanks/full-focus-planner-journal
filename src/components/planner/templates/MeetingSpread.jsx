@@ -890,7 +890,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                   accept="*/*" 
                   className="hidden" 
                   ref={fileInputRef} 
-                  onChange={handleFileUpload} 
+                  onChange={handleFileSelect} 
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
