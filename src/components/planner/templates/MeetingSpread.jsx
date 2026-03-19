@@ -555,7 +555,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
     } catch (err) {
       console.error("Failed to start system audio recording", err);
-      alert("Could not start system audio recording. This feature is typically only supported on desktop browsers, or permission was denied.");
+      alert("Could not start system audio recording. Permission was denied or the feature is not supported by your browser.");
     }
   };
 
