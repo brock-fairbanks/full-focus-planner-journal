@@ -61,9 +61,9 @@ Deno.serve(async (req) => {
             let attempts = 0;
             // The upload API might not always return a state initially, or it might be PROCESSING.
             // We want to wait until it is explicitly 'ACTIVE'.
-            while (fileState !== 'ACTIVE' && attempts < 30) {
+            while (fileState !== 'ACTIVE' && attempts < 100) {
                 console.log(`[Transcribe] File state is ${fileState || 'unknown'}. Waiting... (attempt ${attempts + 1})`);
-                await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3 seconds
+                await new Promise(resolve => setTimeout(resolve, 5000)); // wait 5 seconds
                 const statusRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/${fileName}?key=${apiKey}`);
                 if (statusRes.ok) {
                     const statusData = await statusRes.json();
@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
             }
 
             if (fileState !== 'ACTIVE') {
-                 throw new Error(`File processing timed out after 90 seconds. Last state: ${fileState}. Please try again later.`);
+                 throw new Error(`File processing timed out after 500 seconds. Last state: ${fileState}. Please try again later.`);
             }
 
             const payload = {
