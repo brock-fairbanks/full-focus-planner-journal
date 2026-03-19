@@ -818,7 +818,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           </div>
 
           {!isRecording && !transcription && (
-            <div className="flex bg-slate-100 p-1 rounded-lg">
+            <div className="flex flex-wrap justify-center bg-slate-100 p-1 rounded-lg gap-1">
               <button
                 onClick={() => handleTypeChange('meeting')}
                 title="Shorter, action-focused summary tailored for meetings and decisions"
@@ -832,6 +832,13 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'lecture' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
               >
                 Lecture
+              </button>
+              <button
+                onClick={() => handleTypeChange('dialog')}
+                title="Summary focusing on topics, conversation flow, and key takeaways"
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${recordingType === 'dialog' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-[#64748b] hover:text-[#1e293b]'}`}
+              >
+                Dialog
               </button>
             </div>
           )}
