@@ -377,7 +377,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
   const startRecorderInstance = (stream) => {
     let mimeType = 'audio/webm';
-    if (MediaRecorder.isTypeSupported('audio/mp4')) {
+    if (MediaRecorder.isTypeSupported('audio/webm')) {
+      mimeType = 'audio/webm';
+    } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
       mimeType = 'audio/mp4';
     } else if (MediaRecorder.isTypeSupported('audio/mp3')) {
       mimeType = 'audio/mp3';
@@ -389,26 +391,25 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     // Store in ref so we can stop the *current* one on user click
     mediaRecorderRef.current = mediaRecorder;
     
-    // Create new array/size for this specific recorder instance
+    // Create new array for this specific recorder instance
     const localChunks = [];
-    let localChunkSize = 0;
 
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         localChunks.push(event.data);
-        localChunkSize += event.data.size;
-        
-        // If size exceeds ~40MB, trigger chunking to stay under 50MB limit
-        if (localChunkSize > 40 * 1024 * 1024 && isRecordingRef.current) {
-          // Immediately start next recorder to prevent gaps
-          startRecorderInstance(stream);
-          // Stop this one to finalize its file
-          mediaRecorder.stop();
-        }
       }
     };
 
+    // Auto-chunk every 30 minutes to prevent files from exceeding upload limits
+    const chunkTimeoutId = setTimeout(() => {
+      if (isRecordingRef.current && mediaRecorder.state === "recording") {
+        startRecorderInstance(stream);
+        mediaRecorder.stop();
+      }
+    }, 30 * 60 * 1000);
+
     mediaRecorder.onstop = () => {
+      clearTimeout(chunkTimeoutId);
       const actualMimeType = mediaRecorder.mimeType || mimeType;
       const extension = actualMimeType.split('/')[1].split(';')[0];
       const audioBlob = new Blob(localChunks, { type: actualMimeType });
@@ -432,8 +433,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       processChunk(audioBlob, currentPart, actualMimeType, extension, !isRecordingRef.current);
     };
 
-    // Trigger ondataavailable every 5 seconds to accurately track chunk size
-    mediaRecorder.start(5000);
+    // Start without timeslice to prevent missing/wrong duration metadata in MP4/WebM
+    mediaRecorder.start();
     if (isPausedRef.current) {
       mediaRecorder.pause();
     }
