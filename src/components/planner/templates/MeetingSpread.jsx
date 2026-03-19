@@ -306,7 +306,11 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       const sessionId = sessionIdRef.current || 'unknown';
       const rType = recordingTypeRef.current;
       const safeTitle = titleRef.current ? titleRef.current.replace(/[^a-zA-Z0-9-_]/g, '_') : (rType === 'lecture' ? 'lecture' : 'meeting');
-      const fileName = `${safeTitle}_${dateStr}_${sessionId}_part${partNum}.${extension}`;
+
+      // Clean extension to avoid invalid file types
+      const cleanExtension = extension.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'webm';
+      const fileName = `${safeTitle}_${dateStr}_${sessionId}_part${partNum}.${cleanExtension}`;
+
       const file = new File([audioBlob], fileName, { type: mimeType });
       const uploadRes = await base44.integrations.Core.UploadFile({ file });
       
