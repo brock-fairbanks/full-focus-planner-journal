@@ -751,33 +751,14 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         await saveNote(null, null, fileUrlToUse);
       }
       
-      setProcessingStatus("Transcribing...");
-      const rType = recordingTypeRef.current;
-      const startRes = await base44.functions.invoke('processMeetingWithGemini', {
-        action: 'transcribe_start',
+      setProcessingStatus("Transcribing with OpenAI Whisper...");
+      const res = await base44.functions.invoke('transcribeAudio', {
         fileUrl: fileUrlToUse,
         mimeType: mimeType
       });
       
-      const { fileName: geminiFileName, fileUri: geminiFileUri } = startRes.data;
-      let text = "";
-      while (true) {
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
-          action: 'transcribe_poll',
-          fileName: geminiFileName,
-          fileUri: geminiFileUri,
-          prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. Identify different speakers (e.g., Speaker 1, Speaker 2) if there are multiple people speaking.`,
-          mimeType: mimeType,
-          model: selectedModelRef.current
-        });
-        if (pollRes.data.status === 'completed') {
-           text = pollRes.data.text;
-           break;
-        } else if (pollRes.data.status === 'failed') {
-           throw new Error(pollRes.data.error || "Gemini processing failed");
-        }
-      }
+      if (res.data.error) throw new Error(res.data.error);
+      const text = res.data.text;
       setTranscription(text);
       saveNote(text, null, fileUrlToUse);
     } catch (err) {
