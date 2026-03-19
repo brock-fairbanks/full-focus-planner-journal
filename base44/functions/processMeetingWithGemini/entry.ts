@@ -14,9 +14,13 @@ Deno.serve(async (req) => {
         if (action === "transcribe") {
             const { fileUrl, mimeType, prompt } = body;
             
-            // Reverting to streaming upload as arrayBuffer causes timeout on large files
+            // First, try to download as blob to avoid stream issues if small enough
             const fileRes = await fetch(fileUrl);
-            if (!fileRes.ok) throw new Error("Failed to download file");
+            if (!fileRes.ok) throw new Error("Failed to download file: " + fileUrl);
+            
+            // For large files we might need streaming, but let's try blob first
+            // to avoid Deno fetch duplex/body streaming quirks
+            const blob = await fileRes.blob();
 
             const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
                 method: 'POST',
@@ -24,9 +28,9 @@ Deno.serve(async (req) => {
                     'X-Goog-Upload-Protocol': 'raw',
                     'X-Goog-Upload-Header-Content-Type': mimeType || 'audio/webm',
                     'Content-Type': mimeType || 'audio/webm',
+                    'Content-Length': blob.size.toString()
                 },
-                body: fileRes.body,
-                duplex: 'half'
+                body: blob
             });
             
             if (!uploadRes.ok) {
