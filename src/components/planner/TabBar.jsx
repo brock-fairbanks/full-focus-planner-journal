@@ -100,7 +100,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                 >
                   <button
                     onDoubleClick={() => onTemplateChange(tab.id)}
-                    className="relative flex flex-col items-center justify-center w-full flex-1 min-h-0 transition-all duration-200 gap-1 select-none py-1"
+                    className="relative flex flex-col items-center justify-center w-full flex-1 min-h-0 transition-all duration-200 gap-1.5 select-none py-2"
                     title={tab.label}
                     style={{
                       color: isActive ? "#F97316" : "#8B7355",
@@ -108,8 +108,8 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                       textShadow: isActive ? "0 0 8px rgba(249, 115, 22, 0.6)" : "none",
                     }}
                   >
-                    <Icon size={18} style={{ filter: isActive ? "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" : "none" }} />
-                    <span className="text-[9px] font-medium tracking-wide uppercase">{tab.label}</span>
+                    <Icon size={22} style={{ filter: isActive ? "drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))" : "none" }} className="md:w-6 md:h-6" />
+                    <span className="text-[10px] md:text-xs font-semibold tracking-wide uppercase text-center leading-tight px-1">{tab.label}</span>
                     {isActive && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1" style={{
                         background: "#F97316",
