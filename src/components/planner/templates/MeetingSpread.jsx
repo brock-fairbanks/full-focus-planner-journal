@@ -227,6 +227,21 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     setShowHistory(false);
   };
 
+  const deleteNote = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this recording?")) return;
+    try {
+      await base44.entities.MeetingNote.delete(id);
+      setSavedNotes(prev => prev.filter(n => n.id !== id));
+      if (currentNoteId === id) {
+        startNew();
+      }
+    } catch (err) {
+      console.error("Failed to delete note", err);
+      alert("Failed to delete note.");
+    }
+  };
+
   const startNew = () => {
     setTranscription("");
     setSummary("");
