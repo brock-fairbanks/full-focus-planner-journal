@@ -353,6 +353,15 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Check if file is too large (limit to 100MB)
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+    if (file.size > MAX_FILE_SIZE) {
+      const sizeMB = Math.round(file.size / (1024 * 1024));
+      alert(`This file is too large (${sizeMB} MB). Please upload a file under 100 MB.\n\nIf this is a video, please convert it to an audio format (like MP3 or M4A) first to reduce the size.`);
+      if (e.target) e.target.value = '';
+      return;
+    }
+
     setIsProcessing(true);
     setProcessingStatus(`Uploading ${file.name} to server...`);
     setAudioUrl(null);
