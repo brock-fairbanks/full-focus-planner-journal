@@ -413,7 +413,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       
       setAudioUrl({ url: uploadedFileUrl, extension });
       // Save just the URL first so we don't lose it if transcription fails
-      saveNote(null, null, uploadedFileUrl);
+      await saveNote(null, null, uploadedFileUrl);
 
       if (user?.drive_connected) {
         const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : rType === 'dialog' ? 'Dialog' : 'Meeting');
