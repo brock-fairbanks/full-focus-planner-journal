@@ -350,7 +350,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
   const fileInputRef = useRef(null);
 
-  const handleFileUpload = async (e) => {
+  const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -363,6 +363,18 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       return;
     }
 
+    if (!title) {
+      setTitle(file.name.split('.')[0] || "Uploaded Audio");
+    }
+    setPendingFile(file);
+    if (e.target) e.target.value = '';
+  };
+
+  const confirmFileUpload = async () => {
+    const file = pendingFile;
+    if (!file) return;
+    
+    setPendingFile(null);
     setIsProcessing(true);
     setProcessingStatus(`Uploading ${file.name} to server...`);
     setAudioUrl(null);
@@ -382,7 +394,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       setAudioUrl({ url: uploadRes.file_url, extension });
 
       if (user?.drive_connected) {
-        const drivePrefix = rType === 'lecture' ? 'Lecture' : 'Meeting';
+        const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : rType === 'dialog' ? 'Dialog' : 'Meeting');
         const driveFileName = `${drivePrefix}_${dateStr}_ID-${sessionId}_Uploaded.${extension}`;
           
         setProcessingStatus("Backing up file to Google Drive...");
@@ -411,7 +423,6 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     } finally {
       setIsProcessing(false);
       setProcessingStatus("");
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
