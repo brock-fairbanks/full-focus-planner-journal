@@ -344,7 +344,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
       const res = await base44.functions.invoke('processMeetingWithGemini', {
         action: 'transcribe',
-        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. If this is a continuation, just transcribe what you hear without comments.`,
+        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. Identify different speakers (e.g., Speaker 1, Speaker 2) if there are multiple people speaking. If this is a continuation, just transcribe what you hear without comments.`,
         fileUrl: uploadedFileUrl,
         mimeType: mimeType,
         model: selectedModelRef.current
@@ -439,7 +439,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       setProcessingStatus("Extracting audio and transcribing with AI (this may take 1-3 minutes)...");
       const res = await base44.functions.invoke('processMeetingWithGemini', {
         action: 'transcribe',
-        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text.`,
+        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. Identify different speakers (e.g., Speaker 1, Speaker 2) if there are multiple people speaking.`,
         fileUrl: uploadedFileUrl,
         mimeType: mimeType,
         model: selectedModelRef.current
@@ -756,7 +756,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       const rType = recordingTypeRef.current;
       const res = await base44.functions.invoke('processMeetingWithGemini', {
         action: 'transcribe',
-        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text.`,
+        prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. Identify different speakers (e.g., Speaker 1, Speaker 2) if there are multiple people speaking.`,
         fileUrl: fileUrlToUse,
         mimeType: mimeType,
         model: selectedModelRef.current
