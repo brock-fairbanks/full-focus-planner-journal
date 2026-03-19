@@ -388,17 +388,28 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     setTranscription("");
     setSummary("");
     
+    let uploadedFileUrl = null;
     try {
       sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
       const rType = recordingTypeRef.current;
-      const uploadRes = await base44.integrations.Core.UploadFile({ file });
+      
+      // Clean extension to avoid invalid file types
+      const fileExt = file.name.split('.').pop() || 'webm';
+      const cleanExtension = fileExt.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      
+      // Recreate file with clean name if needed to avoid upload errors
+      const safeFile = new File([file], `upload.${cleanExtension}`, { type: file.type || 'audio/webm' });
+      const uploadRes = await base44.integrations.Core.UploadFile({ file: safeFile });
+      uploadedFileUrl = uploadRes.file_url;
       
       const dateStr = new Date().toISOString().slice(0,10);
       const sessionId = sessionIdRef.current;
-      const extension = file.name.split('.').pop() || 'webm';
+      const extension = cleanExtension;
       const mimeType = file.type || 'audio/webm';
       
-      setAudioUrl({ url: uploadRes.file_url, extension });
+      setAudioUrl({ url: uploadedFileUrl, extension });
+      // Save just the URL first so we don't lose it if transcription fails
+      saveNote(null, null, uploadedFileUrl);
 
       if (user?.drive_connected) {
         const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : rType === 'dialog' ? 'Dialog' : 'Meeting');
@@ -406,7 +417,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           
         setProcessingStatus("Backing up file to Google Drive...");
         base44.functions.invoke('uploadToGoogleDrive', {
-          file_url: uploadRes.file_url,
+          file_url: uploadedFileUrl,
           file_name: driveFileName,
           mime_type: mimeType
         }).catch(err => console.error("Drive upload failed", err));
@@ -416,17 +427,17 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       const res = await base44.functions.invoke('processMeetingWithGemini', {
         action: 'transcribe',
         prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text.`,
-        fileUrl: uploadRes.file_url,
+        fileUrl: uploadedFileUrl,
         mimeType: mimeType
       });
       const text = res.data.text;
       
       setProcessingStatus("Saving...");
       setTranscription(text);
-      saveNote(text, null, uploadRes.file_url);
+      saveNote(text, null, uploadedFileUrl);
     } catch (err) {
-      if (uploadRes && uploadRes.file_url) {
-        saveNote(null, null, uploadRes.file_url);
+      if (uploadedFileUrl) {
+        saveNote(null, null, uploadedFileUrl);
       }
       console.error("Upload error", err);
       alert("Failed to process uploaded file. It might be too large for the current network connection or timeout limits.");
