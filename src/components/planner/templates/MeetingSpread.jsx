@@ -330,7 +330,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
       // Save the note immediately to preserve the audio file if the transcribe call fails
       if (isFinal) {
-        saveNote(null, null, uploadedFileUrl);
+        await saveNote(null, null, uploadedFileUrl);
         setProcessingStatus("Transcribing audio with AI...");
       }
 
