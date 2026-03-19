@@ -301,6 +301,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       setIsProcessing(true);
       setProcessingStatus("Uploading recording to server...");
     }
+    let uploadedFileUrl = null;
     try {
       const dateStr = new Date().toISOString().slice(0,10);
       const sessionId = sessionIdRef.current || 'unknown';
@@ -313,40 +314,43 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
       const file = new File([audioBlob], fileName, { type: mimeType });
       const uploadRes = await base44.integrations.Core.UploadFile({ file });
-      
+      uploadedFileUrl = uploadRes.file_url;
+
       if (user?.drive_connected) {
         const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : 'Meeting');
         const driveFileName = `${drivePrefix}_${dateStr}_ID-${sessionId}_Part${partNum}.${extension}`;
-          
+
         if (isFinal) setProcessingStatus("Backing up to Google Drive...");
         base44.functions.invoke('uploadToGoogleDrive', {
-          file_url: uploadRes.file_url,
+          file_url: uploadedFileUrl,
           file_name: driveFileName,
           mime_type: mimeType
         }).catch(e => console.error("Drive upload failed", e));
       }
-      
-      if (isFinal) setProcessingStatus("Transcribing audio with AI...");
+
+      // Save the note immediately to preserve the audio file if the transcribe call fails
+      if (isFinal) {
+        saveNote(null, null, uploadedFileUrl);
+        setProcessingStatus("Transcribing audio with AI...");
+      }
+
       const res = await base44.functions.invoke('processMeetingWithGemini', {
         action: 'transcribe',
         prompt: `Please transcribe the following ${rType} audio file. Return only the transcription text. If this is a continuation, just transcribe what you hear without comments.`,
-        fileUrl: uploadRes.file_url,
+        fileUrl: uploadedFileUrl,
         mimeType: mimeType
       });
       const text = res.data.text;
-      
+
       if (isFinal) setProcessingStatus("Saving...");
       setTranscription(prev => {
         const newText = prev ? prev + "\n\n" + text : text;
-        saveNote(newText, null, uploadRes.file_url);
+        saveNote(newText, null, uploadedFileUrl);
         return newText;
       });
     } catch (err) {
-      if (isFinal && uploadRes && uploadRes.file_url) {
-        saveNote(null, null, uploadRes.file_url);
-      }
       console.error("Transcription error", err);
-      if (isFinal) alert("Failed to transcribe audio. Ensure your connection is stable.");
+      if (isFinal) alert("Failed to transcribe audio. The audio file has been saved, so you can try transcribing it again later.");
     } finally {
       if (isFinal) {
         setIsProcessing(false);
