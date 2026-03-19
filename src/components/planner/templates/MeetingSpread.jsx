@@ -868,7 +868,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               <>
                 <input 
                   type="file" 
-                  accept="audio/*" 
+                  accept="audio/*,video/mp4,video/quicktime" 
                   className="hidden" 
                   ref={fileInputRef} 
                   onChange={handleFileUpload} 
