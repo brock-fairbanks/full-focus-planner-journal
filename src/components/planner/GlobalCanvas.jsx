@@ -1140,9 +1140,32 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
       deleteText(textObj.id);
     } else {
       setIsEditing(false);
-      updateText(textObj.id, { ...textObj, text: val, isEditing: false });
+      const currentBaseline = textObj.baselineY || (textObj.y + (textObj.lineHeight || 32));
+      updateText(textObj.id, { 
+        ...textObj, 
+        text: val, 
+        isEditing: false,
+        baselineY: currentBaseline
+      });
     }
   };
+
+  useLayoutEffect(() => {
+    if (!isEditing && textareaRef.current && activeTemplate !== 'IDEAL_WEEK' && textObj.customFontSize) {
+      const currentBaseline = textObj.baselineY || (textObj.y + (textObj.lineHeight || 32));
+      const prevMinHeight = textareaRef.current.style.minHeight;
+      textareaRef.current.style.minHeight = '0px';
+      textareaRef.current.style.height = '1px';
+      const actualHeight = textareaRef.current.scrollHeight;
+      textareaRef.current.style.minHeight = prevMinHeight;
+      textareaRef.current.style.height = `${actualHeight + 2}px`;
+      
+      const newY = currentBaseline - actualHeight;
+      if (Math.abs(newY - textObj.y) > 1) {
+        updateText(textObj.id, { ...textObj, y: newY, baselineY: currentBaseline });
+      }
+    }
+  }, [textObj.customFontSize, isEditing, val]);
 
   const lh = textObj.lineHeight || 32;
 
