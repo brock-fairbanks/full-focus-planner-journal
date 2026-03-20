@@ -930,12 +930,15 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               className="bg-slate-100 hover:bg-slate-200 border border-transparent text-[#1e293b] text-sm rounded-lg px-2 py-2 focus:outline-none transition-colors font-medium cursor-pointer flex-shrink-0"
               title="Playback Speed"
             >
+              <option value="0.25">0.25x</option>
               <option value="0.5">0.5x</option>
               <option value="0.75">0.75x</option>
               <option value="1">1x</option>
               <option value="1.25">1.25x</option>
               <option value="1.5">1.5x</option>
               <option value="2">2x</option>
+              <option value="3">3x</option>
+              <option value="4">4x</option>
             </select>
             <button 
               onClick={async (e) => {
