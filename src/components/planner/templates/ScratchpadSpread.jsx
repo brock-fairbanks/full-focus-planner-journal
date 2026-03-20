@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Plus, Trash2, Save, Check, History, X, Eraser } from "lucide-react";
+import { Plus, Trash2, Save, Check, History, X, Eraser, Search, Pencil } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanvas }) {
