@@ -140,6 +140,16 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                         History
                     </button>
 
+                    <button 
+                        onClick={createNewNote}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        className="flex items-center gap-2 px-3 py-2 bg-orange-50 text-[#F97316] hover:bg-orange-100 rounded-lg transition-colors text-sm font-bold"
+                        title="Create New Page"
+                    >
+                        <Plus size={16} />
+                        New Page
+                    </button>
+
                     <div className="w-px h-8 bg-slate-200" />
 
                     {/* Title Input (Pointer events stopped to prevent global canvas eating focus) */}
