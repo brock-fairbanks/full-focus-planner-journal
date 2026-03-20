@@ -914,9 +914,7 @@ const GlobalCanvas = forwardRef(({
         if (canvasRef.current && ctxRef.current) {
           ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
           const dpr = window.devicePixelRatio || 1;
-          const logicalWidth = canvasRef.current.width / dpr;
-          const offsetX = (logicalWidth - img.width) / 2;
-          ctxRef.current.drawImage(img, offsetX, 0, img.width, img.height);
+          ctxRef.current.drawImage(img, 0, 0, img.width, img.height);
           localStorage.setItem(`planner_drawing_${pageKey}`, pendingRemoteDrawingRef.current);
           pendingRemoteDrawingRef.current = null;
         }
