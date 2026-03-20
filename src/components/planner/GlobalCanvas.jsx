@@ -265,8 +265,8 @@ const GlobalCanvas = forwardRef(({
     let lineHeight = 32;
     let width = `200px`;
 
-    // Find layout bounds using elementsFromPoint as fallback
     const elementsAtPoint = document.elementsFromPoint(clientX, clientY);
+    
     const container = elementsAtPoint.find(el => 
       el.tagName === 'DIV' && 
       el !== canvasRef.current && 
@@ -282,103 +282,27 @@ const GlobalCanvas = forwardRef(({
        width = `${rect.right - clientX - 40}px`;
     }
 
-    // Smart Line Snapping: Find the nearest line-like element
-    const lineElements = Array.from(document.querySelectorAll(
-      '[class*="border-b"], [style*="gradient"], hr'
-    )).filter(el => {
-       if (el.children.length > 0 && !el.style.backgroundImage) return false;
-       if (el.tagName.toLowerCase() === 'button' || el.closest('button')) return false;
-       return true;
-    });
+    const lineElement = elementsAtPoint.find(el => 
+       (el.className && typeof el.className === 'string' && el.className.includes('border-b')) ||
+       (el.style && el.style.backgroundImage)
+    );
 
-    let minDistance = Infinity;
-    let bestLine = null;
-
-    for (const el of lineElements) {
-      const elRect = el.getBoundingClientRect();
-      if (elRect.width === 0 || elRect.height === 0) continue;
-
-      let targetY;
-      if (el.style.backgroundSize) {
-         const match = el.style.backgroundSize.match(/(\d+)px/g);
-         if (match && match.length > 0) {
-             const lh = parseInt(match[match.length - 1]);
-             const relativeY = clientY - elRect.top;
-             const gridY = Math.ceil(Math.max(0, relativeY - 10) / lh) * lh;
-             targetY = elRect.top + Math.max(lh, gridY);
-         } else {
-             targetY = elRect.bottom;
-         }
-      } else {
-         targetY = elRect.bottom;
-      }
-
-      // We want lines that are BELOW the click, or very close above (if they clicked slightly below the line)
-      let verticalPenalty = 0;
-      if (targetY < clientY - 15) {
-         verticalPenalty = 1000;
-      }
-
-      let vDist = Math.abs(clientY - targetY) + verticalPenalty;
-
-      let hDist = 0;
-      if (clientX < elRect.left) hDist = elRect.left - clientX;
-      else if (clientX > elRect.right) hDist = clientX - elRect.right;
-
-      let dist = vDist * 10 + hDist;
-
-      if (dist < minDistance && dist < 2000) {
-        minDistance = dist;
-        bestLine = el;
-      }
-    }
-
-    if (bestLine) {
-      const bestRect = bestLine.getBoundingClientRect();
+    if (lineElement) {
+      const elRect = lineElement.getBoundingClientRect();
       
-      if (bestLine.style.backgroundImage && bestLine.style.backgroundImage.includes('radial-gradient')) {
-         startX = clientX - rect.left;
-         width = `${bestRect.right - clientX - 16}px`;
-      } else {
-         startX = Math.max(0, bestRect.left - rect.left + 2); 
-         width = `${bestRect.width - 4}px`;
-      }
-      
-      if (bestLine.className && typeof bestLine.className === 'string' && bestLine.className.includes('border')) {
-        // Find line height by looking for adjacent lines
-        const siblingLines = lineElements.filter(el => {
-           if (el === bestLine) return false;
-           const r = el.getBoundingClientRect();
-           return Math.abs(r.left - bestRect.left) < 20;
-        });
-        
-        if (siblingLines.length > 0) {
-           siblingLines.sort((a, b) => a.getBoundingClientRect().bottom - b.getBoundingClientRect().bottom);
-           const linesAbove = siblingLines.filter(el => el.getBoundingClientRect().bottom < bestRect.bottom - 5);
-           if (linesAbove.length > 0) {
-               const prevRect = linesAbove[linesAbove.length - 1].getBoundingClientRect();
-               lineHeight = bestRect.bottom - prevRect.bottom;
-           } else {
-               const linesBelow = siblingLines.filter(el => el.getBoundingClientRect().bottom > bestRect.bottom + 5);
-               if (linesBelow.length > 0) {
-                   lineHeight = linesBelow[0].getBoundingClientRect().bottom - bestRect.bottom;
-               }
-           }
-        }
-        
-        if (lineHeight < 20 || lineHeight > 100) lineHeight = 40;
-        
-        // Align text box to fit within the cell
-        snappedY = (bestRect.bottom - rect.top) - lineHeight + (lineHeight === 40 ? 0 : 8); 
-      } else if (bestLine.style.backgroundSize) {
-         const match = bestLine.style.backgroundSize.match(/(\d+)px/g);
+      if (lineElement.style.backgroundImage && lineElement.style.backgroundSize) {
+         const match = lineElement.style.backgroundSize.match(/(\d+)px/g);
          if (match && match.length > 0) {
              lineHeight = parseInt(match[match.length - 1]);
-             const relativeY = clientY - bestRect.top;
-             const gridY = Math.ceil(Math.max(0, relativeY - 10) / lineHeight) * lineHeight;
-             const targetY = Math.max(lineHeight, gridY);
-             snappedY = targetY + bestRect.top - rect.top - lineHeight + (lineHeight === 40 ? 6 : 8); 
+             const relativeY = clientY - elRect.top;
+             const gridY = Math.ceil(relativeY / lineHeight) * lineHeight;
+             snappedY = elRect.top - rect.top + gridY - lineHeight + 6; 
          }
+      } else if (lineElement.className && typeof lineElement.className === 'string' && lineElement.className.includes('border-b')) {
+         lineHeight = 40;
+         snappedY = elRect.bottom - rect.top - lineHeight + 8;
+         startX = Math.max(0, elRect.left - rect.left + 2); 
+         width = `${elRect.width - 4}px`;
       }
     }
 
@@ -557,6 +481,68 @@ const GlobalCanvas = forwardRef(({
     // Reset composite operation just in case
     if (ctxRef.current) {
         ctxRef.current.globalCompositeOperation = 'source-over';
+    }
+
+    if (activeToolRef.current === 'highlighter' && pts.length > 5 && ctxRef.current && canvasRef.current) {
+      let minX = pts[0].x, maxX = pts[0].x;
+      let minY = pts[0].y, maxY = pts[0].y;
+      let xReversals = 0;
+      let lastDir = 0;
+      let yReversals = 0;
+      let lastYDir = 0;
+
+      for (let i = 1; i < pts.length; i++) {
+        minX = Math.min(minX, pts[i].x);
+        maxX = Math.max(maxX, pts[i].x);
+        minY = Math.min(minY, pts[i].y);
+        maxY = Math.max(maxY, pts[i].y);
+        
+        let dx = pts[i].x - pts[i-1].x;
+        if (Math.abs(dx) > 2) {
+          let dir = dx > 0 ? 1 : -1;
+          if (lastDir !== 0 && dir !== lastDir) xReversals++;
+          lastDir = dir;
+        }
+
+        let dy = pts[i].y - pts[i-1].y;
+        if (Math.abs(dy) > 2) {
+          let dir = dy > 0 ? 1 : -1;
+          if (lastYDir !== 0 && dir !== lastYDir) yReversals++;
+          lastYDir = dir;
+        }
+      }
+
+      const width = maxX - minX;
+      const height = maxY - minY;
+
+      if ((width > 40 && height < 30 && xReversals <= 2) || (height > 40 && width < 30 && yReversals <= 2)) {
+        if (preStrokeStateRef.current) {
+          ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+        }
+        
+        ctxRef.current.globalCompositeOperation = 'source-over';
+        ctxRef.current.strokeStyle = highlighterColor;
+        ctxRef.current.lineWidth = lineWidthRef.current;
+        ctxRef.current.lineCap = 'round';
+        ctxRef.current.lineJoin = 'round';
+        
+        ctxRef.current.beginPath();
+        
+        if (width > height) {
+            const startX = pts[0].x < pts[pts.length-1].x ? minX : maxX;
+            const endX = pts[0].x < pts[pts.length-1].x ? maxX : minX;
+            const avgY = (pts[0].y + pts[pts.length-1].y) / 2;
+            ctxRef.current.moveTo(startX, avgY);
+            ctxRef.current.lineTo(endX, avgY);
+        } else {
+            const startY = pts[0].y < pts[pts.length-1].y ? minY : maxY;
+            const endY = pts[0].y < pts[pts.length-1].y ? maxY : minY;
+            const avgX = (pts[0].x + pts[pts.length-1].x) / 2;
+            ctxRef.current.moveTo(avgX, startY);
+            ctxRef.current.lineTo(avgX, endY);
+        }
+        ctxRef.current.stroke();
+      }
     }
 
     if (activeToolRef.current === 'pen' && pts.length > 5 && ctxRef.current && canvasRef.current) {
