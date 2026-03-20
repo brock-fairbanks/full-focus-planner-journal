@@ -265,11 +265,16 @@ export default function Planner() {
                     if (currentTool === 'highlighter') {
                       return (
                         <>
-                          {[16, 24, 40].map(w => (
-                            <button key={w} onClick={() => setHighlighterWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${highlighterWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Thickness: ${w}`}>
-                              <div className="bg-slate-400 rounded-sm" style={{ width: w * 0.8, height: Math.max(2, w * 0.2) }}></div>
-                            </button>
-                          ))}
+                          <select 
+                            value={highlighterWidth} 
+                            onChange={(e) => setHighlighterWidth(Number(e.target.value))}
+                            className="h-6 px-1 rounded-sm bg-slate-100 hover:bg-slate-200 text-xs text-[#1e293b] outline-none cursor-pointer border-none font-medium"
+                            title="Highlighter Size"
+                          >
+                            {[10, 14, 18, 24, 30, 40, 50, 60, 80, 100].map(w => (
+                              <option key={w} value={w}>Size {w}</option>
+                            ))}
+                          </select>
                           <div className="w-px h-4 bg-slate-200 mx-1"></div>
                           {[
                             { c: 'rgba(253, 224, 71, 0.8)', bg: '#fef08a' },
@@ -283,11 +288,18 @@ export default function Planner() {
                       );
                     }
                     if (currentTool === 'eraser') {
-                      return [20, 50, 100].map(w => (
-                        <button key={w} onClick={() => setEraserWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${eraserWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Size: ${w}`}>
-                          <div className="border border-slate-400 rounded-full" style={{ width: Math.min(w * 0.4, 20), height: Math.min(w * 0.4, 20) }}></div>
-                        </button>
-                      ));
+                      return (
+                        <select 
+                          value={eraserWidth} 
+                          onChange={(e) => setEraserWidth(Number(e.target.value))}
+                          className="h-6 px-1 rounded-sm bg-slate-100 hover:bg-slate-200 text-xs text-[#1e293b] outline-none cursor-pointer border-none font-medium"
+                          title="Eraser Size"
+                        >
+                          {[10, 20, 30, 40, 50, 60, 80, 100, 150, 200].map(w => (
+                            <option key={w} value={w}>Size {w}</option>
+                          ))}
+                        </select>
+                      );
                     }
                   })()}
                 </div>
