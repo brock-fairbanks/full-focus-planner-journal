@@ -373,11 +373,11 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check if file is too large (limit to 24MB) for OpenAI Whisper API
-    const MAX_FILE_SIZE = 24 * 1024 * 1024; // 24MB
+    // Check if file is too large for standard web uploads
+    const MAX_FILE_SIZE = 95 * 1024 * 1024; // 95MB
     if (file.size > MAX_FILE_SIZE) {
       const sizeMB = Math.round(file.size / (1024 * 1024));
-      alert(`This file is too large (${sizeMB} MB). The OpenAI Whisper API has a strict limit of 25 MB.\n\nFor larger files, you'll need to compress them first, or we can switch back to the Gemini AI which supports up to 9.5 hours of audio in a single file.`);
+      alert(`This file is too large (${sizeMB} MB). Web uploads are limited to ~95 MB. Please compress it slightly before uploading.`);
       if (e.target) e.target.value = '';
       return;
     }
