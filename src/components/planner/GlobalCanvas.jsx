@@ -364,6 +364,7 @@ const GlobalCanvas = forwardRef(({
   const updateTextsState = (action) => {
     setTexts(prev => {
       const updated = typeof action === 'function' ? action(prev) : action;
+      textsRef.current = updated;
       localStorage.setItem(`planner_texts_${pageKey}`, JSON.stringify(updated));
       
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
