@@ -1,0 +1,1406 @@
+import React, { useState, useRef, useEffect } from "react";
+import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download, History, ChevronLeft, Save, Printer, Upload, Monitor, Pause, Play, Search, Volume2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { jsPDF } from "jspdf";
+import { useAuth } from '@/lib/AuthContext';
+import { format } from 'date-fns';
+
+const HighlightText = ({ text, highlight }) => {
+  if (!highlight || !highlight.trim()) {
+    return <span>{text}</span>;
+  }
+  const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escapedHighlight})`, 'gi');
+  const parts = text.split(regex);
+  return (
+    <span>
+      {parts.map((part, i) => 
+        regex.test(part) ? <mark key={i} className="bg-yellow-300 text-black rounded px-0.5">{part}</mark> : <span key={i}>{part}</span>
+      )}
+    </span>
+  );
+};
+
+const MobileTabs = ({ transcription, summary, audioUrl, isRecording, handleRetranscribe, isProcessing, toggleSpeech, playingSection, isLoadingAudio, searchQuery, generateSummary }) => {
+  const [activeTab, setActiveTab] = useState('summary');
+  return (
+    <div className="w-full flex flex-col pointer-events-auto flex-1 mt-2">
+        <div className="flex w-full bg-slate-200 rounded-lg p-1 mb-3 shrink-0">
+            <button 
+                onClick={() => setActiveTab('summary')}
+                className={`flex-1 py-2 text-xs font-bold rounded-md transition-colors ${activeTab === 'summary' ? 'bg-white text-[#F97316] shadow-sm' : 'text-slate-500'}`}
+            >
+                AI Summary
+            </button>
+            <button 
+                onClick={() => setActiveTab('transcription')}
+                className={`flex-1 py-2 text-xs font-bold rounded-md transition-colors ${activeTab === 'transcription' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-slate-500'}`}
+            >
+                Transcription
+            </button>
+        </div>
+        
+        <div className="flex-1 bg-white border border-[#cbd5e1] rounded-xl p-4 flex flex-col shadow-sm min-h-[400px]">
+            {activeTab === 'summary' && (
+                <div className="flex flex-col h-full">
+                  <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles size={16} className="text-[#F97316]" />
+                        <h3 className="text-sm font-bold text-[#1e293b]">Summary</h3>
+                      </div>
+                      <div className="flex gap-1">
+                          {summary && (
+                            <button
+                                onClick={() => toggleSpeech(summary, 'summary')}
+                                className="p-1.5 text-[#64748b] bg-slate-50 rounded"
+                            >
+                                {isLoadingAudio && playingSection === 'summary' ? <Loader2 size={14} className="animate-spin" /> : playingSection === 'summary' ? <Square size={14} className="fill-current text-[#F97316]" /> : <Volume2 size={14} />}
+                            </button>
+                          )}
+                          {transcription && !summary && (
+                              <button
+                                  onClick={generateSummary}
+                                  disabled={isProcessing}
+                                  className="text-[10px] font-medium text-white bg-[#F97316] px-2 py-1 rounded shadow-sm disabled:opacity-50"
+                              >
+                                  Generate
+                              </button>
+                          )}
+                      </div>
+                  </div>
+                  <div className="flex-1 text-sm text-[#334155] overflow-y-auto whitespace-pre-wrap">
+                      {summary ? <HighlightText text={summary} highlight={searchQuery} /> : <span className="text-[#94a3b8] italic">AI summary will appear here...</span>}
+                  </div>
+                </div>
+            )}
+            
+            {activeTab === 'transcription' && (
+                <div className="flex flex-col h-full">
+                  <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-1.5">
+                        <FileText size={16} className="text-[#1e293b]" />
+                        <h3 className="text-sm font-bold text-[#1e293b]">Transcription</h3>
+                      </div>
+                      {(transcription || audioUrl) && !isRecording && (
+                          <div className="flex gap-1">
+                              {audioUrl && (
+                                  <button
+                                      onClick={handleRetranscribe}
+                                      disabled={isProcessing}
+                                      className="text-[10px] font-medium text-[#1e293b] bg-slate-100 px-2 py-1 rounded disabled:opacity-50"
+                                  >
+                                      {transcription ? "Retranscribe" : "Transcribe"}
+                                  </button>
+                              )}
+                              {transcription && (
+                                  <button
+                                      onClick={() => toggleSpeech(transcription, 'transcription')}
+                                      className="p-1.5 text-[#64748b] bg-slate-50 rounded"
+                                  >
+                                      {isLoadingAudio && playingSection === 'transcription' ? <Loader2 size={14} className="animate-spin" /> : playingSection === 'transcription' ? <Square size={14} className="fill-current text-[#F97316]" /> : <Volume2 size={14} />}
+                                  </button>
+                              )}
+                          </div>
+                      )}
+                  </div>
+                  <div className="flex-1 text-sm text-[#334155] overflow-y-auto whitespace-pre-wrap">
+                      {transcription ? <HighlightText text={transcription} highlight={searchQuery} /> : <span className="text-[#94a3b8] italic">Transcription will appear here...</span>}
+                  </div>
+                </div>
+            )}
+        </div>
+    </div>
+  );
+}
+
+export default function MeetingSpreadMobile({ date, onClearCanvas }) {
+  const { user } = useAuth();
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState("");
+  const [transcription, setTranscription] = useState("");
+  const [summary, setSummary] = useState("");
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [recordingType, setRecordingType] = useState("meeting");
+  const [selectedModel, setSelectedModel] = useState(() => {
+    return localStorage.getItem("planner_meeting_model") || "gemini-3-flash-preview";
+  });
+  const selectedModelRef = useRef(selectedModel);
+  useEffect(() => {
+    selectedModelRef.current = selectedModel;
+    localStorage.setItem("planner_meeting_model", selectedModel);
+  }, [selectedModel]);
+  const [title, setTitleState] = useState("");
+  const titleRef = useRef("");
+  const setTitle = (t) => {
+    setTitleState(t);
+    titleRef.current = t;
+  };
+  const [isPaused, setIsPaused] = useState(false);
+  const manualPauseRef = useRef(false);
+  const isPausedRef = useRef(false);
+  const autoPausedRef = useRef(false);
+
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+    if (isRecording) {
+      document.title = isPaused ? "⏸ Paused - Planner" : "🔴 Recording - Planner";
+    } else {
+      document.title = "Planner";
+    }
+    return () => { document.title = "Planner"; };
+  }, [isPaused, isRecording]);
+  const [savedNotes, setSavedNotes] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [currentNoteId, setCurrentNoteId] = useState(null);
+  const [driveTextFileId, setDriveTextFileId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [playingSection, setPlayingSection] = useState(null);
+  const [pendingFile, setPendingFile] = useState(null);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const audioRef = useRef(null);
+  const mainAudioRef = useRef(null);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [preservePitch, setPreservePitch] = useState(true);
+
+  const toggleSpeech = async (text, section) => {
+    if (playingSection === section || isLoadingAudio) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setPlayingSection(null);
+      setIsLoadingAudio(false);
+      return;
+    }
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    if (!text) return;
+
+    try {
+      setIsLoadingAudio(true);
+      setPlayingSection(section);
+      
+      const response = await base44.functions.invoke('generateSpeech', { text, voice: 'onyx' });
+      
+      const audioUrl = `data:audio/mp3;base64,${response.data.audioContent}`;
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        setPlayingSection(null);
+      };
+      audio.onerror = () => {
+        setPlayingSection(null);
+        setIsLoadingAudio(false);
+      };
+      
+      await audio.play();
+      setIsLoadingAudio(false);
+    } catch (error) {
+      console.error("Audio generation failed:", error);
+      setPlayingSection(null);
+      setIsLoadingAudio(false);
+      alert("Failed to generate speech. The text might be too long.");
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
+    };
+  }, []);
+
+  const filteredNotes = savedNotes.filter(note => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (note.title && note.title.toLowerCase().includes(q)) ||
+      (note.transcription && note.transcription.toLowerCase().includes(q)) ||
+      (note.summary && note.summary.toLowerCase().includes(q))
+    );
+  });
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const fetchNotes = async () => {
+    try {
+      const notes = await base44.entities.MeetingNote.list("-created_date", 50);
+      setSavedNotes(notes);
+    } catch (e) {
+      console.error("Failed to load history", e);
+    }
+  };
+
+  const saveNote = async (newTranscription, newSummary, newAudioUrl = null) => {
+    if (!newTranscription && !newSummary && !newAudioUrl) return;
+    try {
+      const type = recordingTypeRef.current;
+      const updateData = {};
+      const currentTrans = newTranscription !== null ? newTranscription : transcription;
+      const currentSumm = newSummary !== null ? newSummary : summary;
+      if (newTranscription !== null) updateData.transcription = currentTrans;
+      if (newSummary !== null) updateData.summary = currentSumm;
+      if (newAudioUrl !== null) updateData.audio_url = newAudioUrl;
+      
+      if (currentNoteId) {
+        await base44.entities.MeetingNote.update(currentNoteId, updateData);
+        setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, ...updateData } : n));
+      } else {
+        const defaultTitle = `${type === 'lecture' ? 'Lecture' : 'Meeting'} ${format(new Date(), "MM/dd/yyyy h:mm a")}`;
+        const finalTitle = titleRef.current || defaultTitle;
+        const newNote = await base44.entities.MeetingNote.create({
+          date: new Date().toISOString().slice(0, 10),
+          title: finalTitle,
+          type: type,
+          session_id: sessionIdRef.current || `manual-${Date.now()}`,
+          ...updateData
+        });
+        setCurrentNoteId(newNote.id);
+        if (!titleRef.current) setTitle(finalTitle);
+        setSavedNotes(prev => [newNote, ...prev]);
+      }
+
+      if (user?.drive_connected && (newTranscription !== null || newSummary !== null)) {
+        let content = `${type === 'lecture' ? 'Lecture' : 'Meeting'} Notes\nDate: ${format(new Date(), "MM/dd/yyyy")}\n\n`;
+        if (currentSumm) content += `--- AI SUMMARY ---\n${currentSumm}\n\n`;
+        if (currentTrans) content += `--- TRANSCRIPTION ---\n${currentTrans}\n`;
+        
+        const rType = type === 'lecture' ? 'Lecture' : 'Meeting';
+        const dateStr = new Date().toISOString().slice(0,10);
+        const sId = sessionIdRef.current || 'manual';
+        const fileName = `${titleRef.current || rType}_Notes_${dateStr}_ID-${sId}.txt`;
+        
+        const payload = {
+            text_content: content,
+            file_name: fileName,
+            mime_type: 'text/plain'
+        };
+        
+        // Pass file_id if we already created it in this session to update it
+        setDriveTextFileId(prev => {
+            if (prev) payload.file_id = prev;
+            base44.functions.invoke('uploadToGoogleDrive', payload)
+                .then(res => {
+                    if (res.data && res.data.fileId && !prev) {
+                        setDriveTextFileId(res.data.fileId);
+                    }
+                })
+                .catch(e => console.error("Drive upload failed", e));
+            return prev;
+        });
+      }
+    } catch (e) {
+      console.error("Failed to save note", e);
+    }
+  };
+
+  const handleTitleBlur = async () => {
+    if (currentNoteId && title) {
+      try {
+        await base44.entities.MeetingNote.update(currentNoteId, { title });
+        setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, title } : n));
+      } catch (err) {
+        console.error("Failed to update title", err);
+      }
+    }
+  };
+
+  const loadNote = (note) => {
+    setTranscription(note.transcription || "");
+    setSummary(note.summary || "");
+    setRecordingType(note.type || "meeting");
+    setTitle(note.title || "");
+    recordingTypeRef.current = note.type || "meeting";
+    setCurrentNoteId(note.id);
+    sessionIdRef.current = note.session_id;
+    if (note.audio_url) {
+      const ext = note.audio_url.split('.').pop()?.split('?')[0] || 'webm';
+      setAudioUrl({ url: note.audio_url, extension: ext });
+    } else {
+      setAudioUrl(null);
+    }
+    setShowHistory(false);
+  };
+
+  const deleteNote = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this recording?")) return;
+    try {
+      await base44.entities.MeetingNote.delete(id);
+      setSavedNotes(prev => prev.filter(n => n.id !== id));
+      if (currentNoteId === id) {
+        startNew();
+      }
+    } catch (err) {
+      console.error("Failed to delete note", err);
+      alert("Failed to delete note.");
+    }
+  };
+
+  const startNew = () => {
+    setTranscription("");
+    setSummary("");
+    setTitle("");
+    setCurrentNoteId(null);
+    setDriveTextFileId(null);
+    sessionIdRef.current = null;
+    setAudioUrl(null);
+  };
+  
+  const recordingTypeRef = useRef("meeting");
+  const mediaRecorderRef = useRef(null);
+
+  const handleTypeChange = (type) => {
+    setRecordingType(type);
+    recordingTypeRef.current = type;
+  };
+  const partNumberRef = useRef(1);
+  const streamRef = useRef(null);
+  const isRecordingRef = useRef(false);
+  const sessionIdRef = useRef(null);
+  const wakeLockRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release().catch(console.error);
+      }
+    };
+  }, []);
+
+  const requestWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await navigator.wakeLock.request('screen');
+      }
+    } catch (err) {
+      console.error("Wake Lock error:", err);
+    }
+  };
+
+  const releaseWakeLock = async () => {
+    try {
+      if (wakeLockRef.current) {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
+    } catch (err) {
+      console.error("Wake Lock release error:", err);
+    }
+  };
+
+  const processChunk = async (audioBlob, partNum, mimeType, extension, isFinal) => {
+    if (isFinal) {
+      setIsProcessing(true);
+      setProcessingStatus("Uploading recording to server...");
+    }
+    let uploadedFileUrl = null;
+    try {
+      const dateStr = new Date().toISOString().slice(0,10);
+      const sessionId = sessionIdRef.current || 'unknown';
+      const rType = recordingTypeRef.current;
+      const safeTitle = titleRef.current ? titleRef.current.replace(/[^a-zA-Z0-9-_]/g, '_') : (rType === 'lecture' ? 'lecture' : 'meeting');
+
+      const cleanExtension = extension.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'webm';
+      const fileName = `${safeTitle}_${dateStr}_${sessionId}_part${partNum}.${cleanExtension}`;
+
+      const file = new File([audioBlob], fileName, { type: mimeType });
+      const uploadRes = await base44.integrations.Core.UploadFile({ file });
+      uploadedFileUrl = uploadRes.file_url;
+
+      if (user?.drive_connected) {
+        const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : 'Meeting');
+        const driveFileName = `${drivePrefix}_${dateStr}_ID-${sessionId}_Part${partNum}.${extension}`;
+
+        if (isFinal) setProcessingStatus("Backing up to Google Drive...");
+        base44.functions.invoke('uploadToGoogleDrive', {
+          file_url: uploadedFileUrl,
+          file_name: driveFileName,
+          mime_type: mimeType
+        }).catch(e => console.error("Drive upload failed", e));
+      }
+
+      if (isFinal) {
+        await saveNote(null, null, uploadedFileUrl);
+        setProcessingStatus("Sending to Gemini for transcription...");
+      }
+
+      const startRes = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe_start',
+        fileUrl: uploadedFileUrl,
+        mimeType: mimeType
+      });
+      
+      if (startRes.data.error) throw new Error(startRes.data.error);
+      
+      if (isFinal) setProcessingStatus("Gemini is processing the audio...");
+      let isCompleted = false;
+      let text = "";
+      
+      const prompt = rType === 'lecture' 
+        ? "Please transcribe this lecture accurately. Exclude any advertisements or sponsored content."
+        : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
+
+      while (!isCompleted) {
+        await new Promise(r => setTimeout(r, 5000));
+        const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
+          action: 'transcribe_poll',
+          fileName: startRes.data.fileName,
+          fileUri: startRes.data.fileUri,
+          prompt,
+          mimeType: mimeType,
+          model: selectedModelRef.current || 'gemini-3-flash-preview'
+        });
+        
+        if (pollRes.data.error) throw new Error(pollRes.data.error);
+        if (pollRes.data.status === 'completed') {
+          text = pollRes.data.text;
+          isCompleted = true;
+        } else if (pollRes.data.status === 'failed') {
+          throw new Error("Gemini failed to process the file");
+        }
+      }
+
+      if (isFinal) setProcessingStatus("Saving...");
+      setTranscription(prev => {
+        const newText = prev ? prev + "\n\n" + text : text;
+        saveNote(newText, null, uploadedFileUrl);
+        return newText;
+      });
+    } catch (err) {
+      console.error("Transcription error", err);
+      if (isFinal) alert("Failed to transcribe audio. The audio file has been saved, so you can try transcribing it again later.");
+    } finally {
+      if (isFinal) {
+        setIsProcessing(false);
+        setProcessingStatus("");
+      }
+    }
+  };
+
+  const fileInputRef = useRef(null);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const MAX_FILE_SIZE = 95 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      const sizeMB = Math.round(file.size / (1024 * 1024));
+      alert(`This file is too large (${sizeMB} MB). Web uploads are limited to ~95 MB. Please compress it slightly before uploading.`);
+      if (e.target) e.target.value = '';
+      return;
+    }
+
+    if (!title) {
+      setTitle(file.name.split('.')[0] || "Uploaded Audio");
+    }
+    setPendingFile(file);
+    if (e.target) e.target.value = '';
+  };
+
+  const confirmFileUpload = async () => {
+    const file = pendingFile;
+    if (!file) return;
+    
+    setPendingFile(null);
+    setIsProcessing(true);
+    setProcessingStatus(`Uploading ${file.name} to server...`);
+    setAudioUrl(null);
+    setTranscription("");
+    setSummary("");
+    
+    let uploadedFileUrl = null;
+    try {
+      sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const rType = recordingTypeRef.current;
+      
+      const fileExt = file.name.split('.').pop() || 'webm';
+      const cleanExtension = fileExt.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      
+      const safeFile = new File([file], `upload.${cleanExtension}`, { type: file.type || 'audio/webm' });
+      const uploadRes = await base44.integrations.Core.UploadFile({ file: safeFile });
+      uploadedFileUrl = uploadRes.file_url;
+      
+      const dateStr = new Date().toISOString().slice(0,10);
+      const sessionId = sessionIdRef.current;
+      const extension = cleanExtension;
+      const mimeType = file.type || 'audio/webm';
+      
+      setAudioUrl({ url: uploadedFileUrl, extension });
+      await saveNote(null, null, uploadedFileUrl);
+
+      if (user?.drive_connected) {
+        const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : rType === 'dialog' ? 'Dialog' : 'Meeting');
+        const driveFileName = `${drivePrefix}_${dateStr}_ID-${sessionId}_Uploaded.${extension}`;
+          
+        setProcessingStatus("Backing up file to Google Drive...");
+        base44.functions.invoke('uploadToGoogleDrive', {
+          file_url: uploadedFileUrl,
+          file_name: driveFileName,
+          mime_type: mimeType
+        }).catch(err => console.error("Drive upload failed", err));
+      }
+
+      setProcessingStatus("Sending to Gemini for transcription...");
+      const startRes = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe_start',
+        fileUrl: uploadedFileUrl,
+        mimeType: mimeType
+      });
+      
+      if (startRes.data.error) throw new Error(startRes.data.error);
+      const { fileName: geminiFileName, fileUri: geminiFileUri } = startRes.data;
+
+      setProcessingStatus("Gemini is processing the long audio...");
+      let isCompleted = false;
+      let finalTranscription = "";
+      
+      const prompt = rType === 'lecture' 
+        ? "Please transcribe this lecture accurately. Exclude any advertisements or sponsored content."
+        : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
+
+      while (!isCompleted) {
+        await new Promise(r => setTimeout(r, 5000));
+        const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
+          action: 'transcribe_poll',
+          fileName: geminiFileName,
+          fileUri: geminiFileUri,
+          prompt,
+          mimeType: mimeType,
+          model: selectedModelRef.current || 'gemini-3-flash-preview'
+        });
+        
+        if (pollRes.data.error) throw new Error(pollRes.data.error);
+        if (pollRes.data.status === 'completed') {
+          finalTranscription = pollRes.data.text;
+          isCompleted = true;
+        } else if (pollRes.data.status === 'failed') {
+          throw new Error("Gemini failed to process the file");
+        }
+      }
+      
+      setProcessingStatus("Saving...");
+      setTranscription(finalTranscription);
+      saveNote(finalTranscription, null, uploadedFileUrl);
+    } catch (err) {
+      if (uploadedFileUrl) {
+        saveNote(null, null, uploadedFileUrl);
+      }
+      console.error("Upload error", err);
+      const errorMsg = err.response?.data?.error || err.message || "Unknown error";
+      alert(`Failed to process uploaded file. Error: ${errorMsg}`);
+    } finally {
+      setIsProcessing(false);
+      setProcessingStatus("");
+    }
+  };
+
+  const startRecorderInstance = (stream) => {
+    let mimeType = 'audio/webm';
+    if (MediaRecorder.isTypeSupported('audio/webm')) {
+      mimeType = 'audio/webm';
+    } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+      mimeType = 'audio/mp4';
+    } else if (MediaRecorder.isTypeSupported('audio/mp3')) {
+      mimeType = 'audio/mp3';
+    }
+    
+    const options = { mimeType, audioBitsPerSecond: 32000 };
+    const mediaRecorder = new MediaRecorder(stream, options);
+
+    mediaRecorderRef.current = mediaRecorder;
+
+    const localChunks = [];
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        localChunks.push(event.data);
+      }
+    };
+
+    mediaRecorder.onstop = () => {
+      const actualMimeType = mediaRecorder.mimeType || mimeType;
+      const extensionMatch = actualMimeType.match(/\/(.*?)(;|$)/);
+      const extension = extensionMatch ? extensionMatch[1] : 'webm';
+
+      const audioBlob = new Blob(localChunks, { type: actualMimeType });
+
+      const url = URL.createObjectURL(audioBlob);
+      setAudioUrl({ url, extension });
+
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+
+      processChunk(audioBlob, 1, actualMimeType, extension, true);
+    };
+
+    mediaRecorder.start();
+    if (isPausedRef.current) {
+      mediaRecorder.pause();
+    }
+  };
+
+  const togglePause = () => {
+    if (!mediaRecorderRef.current) return;
+    if (mediaRecorderRef.current.state === "recording") {
+      mediaRecorderRef.current.pause();
+      manualPauseRef.current = true;
+      setIsPaused(true);
+    } else if (mediaRecorderRef.current.state === "paused") {
+      mediaRecorderRef.current.resume();
+      manualPauseRef.current = false;
+      autoPausedRef.current = false;
+      setIsPaused(false);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      partNumberRef.current = 1;
+      isRecordingRef.current = true;
+      manualPauseRef.current = false;
+      setIsPaused(false);
+      sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
+      setAudioUrl(null);
+      setIsRecording(true);
+      
+      await requestWakeLock();
+      
+      startRecorderInstance(stream);
+    } catch (err) {
+      console.error("Failed to start recording", err);
+      alert("Microphone access denied or error occurred.");
+    }
+  };
+
+  const startSystemAudioRecording = async () => {
+    try {
+      const getDisplayMedia = navigator.mediaDevices?.getDisplayMedia || navigator.getDisplayMedia;
+      
+      if (!getDisplayMedia) {
+         alert("Your browser does not support system audio recording (getDisplayMedia API is missing). Try using the 'Record Mic' option instead.");
+         return;
+      }
+
+      const stream = await getDisplayMedia.call(navigator.mediaDevices || navigator, { 
+        video: true,
+        audio: true 
+      });
+      
+      if (stream.getAudioTracks().length === 0) {
+        stream.getTracks().forEach(t => t.stop());
+        alert("No audio selected. Please check 'Share tab audio' in the selection dialog.");
+        return;
+      }
+      
+      stream.getVideoTracks().forEach(t => t.stop());
+      const audioStream = new MediaStream([stream.getAudioTracks()[0]]);
+      
+      streamRef.current = audioStream;
+      partNumberRef.current = 1;
+      isRecordingRef.current = true;
+      manualPauseRef.current = false;
+      setIsPaused(false);
+      sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
+      setAudioUrl(null);
+      setIsRecording(true);
+      
+      await requestWakeLock();
+      
+      startRecorderInstance(audioStream);
+
+      // Auto-pause setup
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaStreamSource(audioStream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      let silenceStart = null;
+      autoPausedRef.current = false;
+
+      const checkAudioLevel = () => {
+        if (!isRecordingRef.current) {
+          audioCtx.close().catch(console.error);
+          return;
+        }
+        
+        analyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          sum += dataArray[i];
+        }
+        const average = sum / dataArray.length;
+
+        if (average < 2) {
+          if (!silenceStart) silenceStart = Date.now();
+          else if (Date.now() - silenceStart > 10000 && !autoPausedRef.current && !manualPauseRef.current) { 
+            if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+              mediaRecorderRef.current.pause();
+              autoPausedRef.current = true;
+              setIsPaused(true);
+            }
+          }
+        } else {
+          silenceStart = null;
+          if (autoPausedRef.current && !manualPauseRef.current) {
+            if (mediaRecorderRef.current && mediaRecorderRef.current.state === "paused") {
+              mediaRecorderRef.current.resume();
+              autoPausedRef.current = false;
+              setIsPaused(false);
+            }
+          }
+        }
+        
+        requestAnimationFrame(checkAudioLevel);
+      };
+      checkAudioLevel();
+
+    } catch (err) {
+      console.error("Failed to start system audio recording", err);
+      alert("Could not start system audio recording. Permission was denied or the feature is not supported by your browser.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecordingRef.current) {
+      if (!titleRef.current) {
+        const defaultName = recordingTypeRef.current === 'lecture' ? 'Lecture Notes' : 'Meeting Notes';
+        const userInput = window.prompt("Please name this recording before saving:", defaultName);
+        if (userInput !== null && userInput.trim() !== "") {
+          setTitle(userInput.trim());
+          if (currentNoteId) {
+            base44.entities.MeetingNote.update(currentNoteId, { title: userInput.trim() }).catch(console.error);
+            setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, title: userInput.trim() } : n));
+          }
+        }
+      }
+
+      isRecordingRef.current = false;
+      setIsProcessing(true);
+      setIsRecording(false);
+      setIsPaused(false);
+      manualPauseRef.current = false;
+      mediaRecorderRef.current.stop();
+      releaseWakeLock();
+    }
+  };
+
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current && isRecordingRef.current) {
+      if (!window.confirm("Are you sure you want to cancel? This recording will not be saved.")) return;
+      
+      mediaRecorderRef.current.onstop = null;
+      
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      
+      mediaRecorderRef.current.stop();
+      
+      isRecordingRef.current = false;
+      setIsRecording(false);
+      setIsPaused(false);
+      manualPauseRef.current = false;
+      releaseWakeLock();
+      
+      startNew(); 
+    }
+  };
+
+  const downloadPdf = (sectionTitle, content) => {
+    if (!content) return;
+    const doc = new jsPDF();
+    const mainTitle = title || (recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes');
+    doc.setFontSize(18);
+    doc.text(`${mainTitle} - ${sectionTitle}`, 20, 20);
+    doc.setFontSize(11);
+    
+    const cleanContent = content.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+    const lines = cleanContent.split('\n');
+    
+    let y = 35;
+    const pageHeight = doc.internal.pageSize.height;
+    
+    for (const line of lines) {
+      if (line.trim() === '') {
+         y += 6;
+         continue;
+      }
+      
+      const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ');
+      const textToPrint = isBullet ? `• ${line.trim().substring(2)}` : line;
+      const xOffset = isBullet ? 25 : 20; 
+      const maxWidth = isBullet ? 160 : 170;
+      
+      const splitText = doc.splitTextToSize(textToPrint, maxWidth);
+      
+      for (let i = 0; i < splitText.length; i++) {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(splitText[i], i === 0 ? xOffset : xOffset + 4, y);
+        y += 6;
+      }
+      y += 4; 
+    }
+    
+    doc.save(`${mainTitle.toLowerCase().replace(/\s+/g, '_')}_${sectionTitle.toLowerCase()}.pdf`);
+  };
+
+  const printContent = (sectionTitle, content) => {
+    if (!content) return;
+    const printWindow = window.open('', '_blank');
+    const mainTitle = title || (recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes');
+    
+    let inList = false;
+    const htmlLines = content.split('\n').map(line => {
+      let formattedLine = line
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+      if (formattedLine.trim().startsWith('- ') || formattedLine.trim().startsWith('* ')) {
+        const item = `<li style="margin-bottom: 8px;">${formattedLine.trim().substring(2)}</li>`;
+        if (!inList) {
+          inList = true;
+          return `<ul style="margin-left: 20px; margin-bottom: 1.5em;">${item}`;
+        }
+        return item;
+      } else {
+        let prefix = '';
+        if (inList) {
+          inList = false;
+          prefix = '</ul>';
+        }
+        return formattedLine.trim() ? `${prefix}<p>${formattedLine}</p>` : `${prefix}<br/>`;
+      }
+    });
+    if (inList) htmlLines.push('</ul>');
+    
+    const htmlContent = htmlLines.join('');
+    
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>${mainTitle} - ${sectionTitle}</title>
+          <style>
+            body { font-family: sans-serif; padding: 40px; line-height: 1.8; color: #333; max-width: 800px; margin: 0 auto; font-size: 1.1rem; }
+            h1 { margin-bottom: 8px; color: #111; }
+            h2 { margin-bottom: 24px; color: #666; font-size: 1.25rem; font-weight: normal; }
+            p { margin-bottom: 1.5em; }
+            ul { padding-left: 20px; }
+            li { line-height: 1.6; }
+          </style>
+        </head>
+        <body>
+          <h1>${mainTitle}</h1>
+          <h2>${sectionTitle}</h2>
+          ${htmlContent}
+          <script>
+            window.onload = () => { 
+              setTimeout(() => { window.print(); window.close(); }, 250);
+            }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  const generateSummary = async () => {
+    if (!transcription) return;
+    setIsProcessing(true);
+    setProcessingStatus("Generating AI Summary...");
+    try {
+      const prompt = recordingType === 'lecture' 
+        ? `Please provide a highly detailed, in-depth summary of the following lecture transcription. Include key concepts, comprehensive explanations, important examples or case studies, and a structured outline of the topics covered:\n\n${transcription}`
+        : `Please summarize the following meeting transcription concisely, highlighting the main points, decisions, and action items:\n\n${transcription}`;
+
+      const res = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'summarize',
+        transcription,
+        recordingType,
+        model: selectedModel
+      });
+      const result = res.data.text;
+      setSummary(result);
+      saveNote(null, result);
+    } catch (err) {
+      console.error("Summary error", err);
+      alert("Failed to generate summary. The text might be too long.");
+    } finally {
+      setIsProcessing(false);
+      setProcessingStatus("");
+    }
+  };
+
+  const handleRetranscribe = async () => {
+    if (!audioUrl) return;
+    setIsProcessing(true);
+    setProcessingStatus("Transcribing audio with AI...");
+    try {
+      let fileUrlToUse = audioUrl.url;
+      const mimeType = audioUrl.extension ? (audioUrl.extension === 'mp3' ? 'audio/mp3' : audioUrl.extension === 'mp4' ? 'audio/mp4' : 'audio/webm') : 'audio/webm';
+      
+      if (fileUrlToUse.startsWith('blob:')) {
+        setProcessingStatus("Uploading audio...");
+        const response = await fetch(fileUrlToUse);
+        const blob = await response.blob();
+        
+        const cleanExtension = (audioUrl.extension || 'webm').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        
+        const file = new File([blob], `recording.${cleanExtension}`, { type: mimeType });
+        const uploadRes = await base44.integrations.Core.UploadFile({ file });
+        fileUrlToUse = uploadRes.file_url;
+        
+        await saveNote(null, null, fileUrlToUse);
+      }
+      
+      setProcessingStatus("Sending to Gemini for transcription...");
+      const startRes = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe_start',
+        fileUrl: fileUrlToUse,
+        mimeType: mimeType
+      });
+      
+      if (startRes.data && startRes.data.error) throw new Error(startRes.data.error);
+      const { fileName: geminiFileName, fileUri: geminiFileUri } = startRes.data;
+
+      setProcessingStatus("Gemini is processing the audio...");
+      let isCompleted = false;
+      let finalTranscription = "";
+      const rType = recordingTypeRef.current;
+      
+      const prompt = rType === 'lecture' 
+        ? "Please transcribe this lecture accurately. Exclude any advertisements or sponsored content."
+        : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
+
+      while (!isCompleted) {
+        await new Promise(r => setTimeout(r, 5000));
+        const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
+          action: 'transcribe_poll',
+          fileName: geminiFileName,
+          fileUri: geminiFileUri,
+          prompt,
+          mimeType: mimeType,
+          model: selectedModelRef.current || 'gemini-3-flash-preview'
+        });
+        
+        if (pollRes.data && pollRes.data.error) throw new Error(pollRes.data.error);
+        if (pollRes.data.status === 'completed') {
+          finalTranscription = pollRes.data.text;
+          isCompleted = true;
+        } else if (pollRes.data.status === 'failed') {
+          throw new Error("Gemini failed to process the file");
+        }
+      }
+      
+      setTranscription(finalTranscription);
+      saveNote(finalTranscription, null, fileUrlToUse);
+    } catch (err) {
+      console.error("Retranscription error", err);
+      const errorMsg = err.response?.data?.error || err.message || "Unknown error";
+      alert(`Failed to retranscribe audio. Error: ${errorMsg}`);
+    } finally {
+      setIsProcessing(false);
+      setProcessingStatus("");
+    }
+  };
+
+  return (
+    <div className="relative w-full min-h-[calc(100vh-100px)] p-3 md:p-4 flex flex-col bg-[#FAF9F6] pb-32 overflow-y-auto">
+      {/* Header */}
+      <div className="flex flex-col w-full mb-4 relative z-30 pointer-events-auto gap-3">
+        <div className="flex justify-between items-center w-full">
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onBlur={handleTitleBlur}
+              placeholder={recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes'}
+              className="text-xl font-serif font-bold text-[#1e293b] bg-transparent border-b-2 border-transparent hover:border-[#cbd5e1] focus:border-[#F97316] outline-none placeholder:text-[#94a3b8] w-[60%] transition-colors pb-1"
+            />
+            <button 
+              onClick={() => setShowHistory(!showHistory)}
+              className="flex items-center justify-center gap-1.5 bg-[#1e293b] text-white px-3 py-1.5 rounded-lg font-medium shadow-sm text-sm"
+            >
+              <History size={14} /> History
+            </button>
+        </div>
+        <div className="flex justify-between items-center w-full">
+            <select
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="bg-white border border-slate-200 text-slate-700 text-xs rounded-lg px-2 py-1.5 shadow-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] font-medium max-w-[140px]"
+            >
+              <option value="gemini-3-flash-preview">Gemini 3 Flash</option>
+              <option value="gemini-3.1-pro-preview">Gemini 3 Pro</option>
+            </select>
+            
+            <button 
+              onClick={startNew}
+              className="flex items-center gap-1 text-xs font-medium text-[#94a3b8] hover:text-red-500 bg-white/80 border border-[#E2E8F0] px-2 py-1.5 rounded-md shadow-sm"
+            >
+              <Trash2 size={14} /> Reset
+            </button>
+        </div>
+      </div>
+
+      {!showHistory && audioUrl && !isRecording && !isProcessing && (
+        <div className="w-full bg-white border border-[#cbd5e1] rounded-xl p-3 mb-4 shadow-sm relative z-30 pointer-events-auto flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <div className="bg-[#1e293b] p-1.5 rounded text-white shrink-0">
+              <Mic size={16} />
+            </div>
+            <span className="text-xs font-bold text-[#1e293b] truncate">Recording Audio</span>
+          </div>
+          <audio 
+            ref={mainAudioRef}
+            controls 
+            src={audioUrl.url} 
+            className="h-8 w-full" 
+            onLoadedData={(e) => { 
+              e.target.playbackRate = playbackSpeed; 
+              e.target.preservesPitch = preservePitch;
+              if ('webkitPreservesPitch' in e.target) e.target.webkitPreservesPitch = preservePitch;
+            }}
+            onRateChange={(e) => { if (e.target.playbackRate !== playbackSpeed) setPlaybackSpeed(e.target.playbackRate); }}
+          />
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    const newVal = !preservePitch;
+                    setPreservePitch(newVal);
+                    if (mainAudioRef.current) {
+                      mainAudioRef.current.preservesPitch = newVal;
+                      if ('webkitPreservesPitch' in mainAudioRef.current) mainAudioRef.current.webkitPreservesPitch = newVal;
+                    }
+                  }}
+                  className={`text-[10px] px-2 py-1 rounded font-medium border ${preservePitch ? 'bg-[#1e293b] text-white border-[#1e293b]' : 'bg-white text-slate-600 border-slate-300'}`}
+                >
+                  Pitch: {preservePitch ? 'On' : 'Off'}
+                </button>
+                <select
+                  value={playbackSpeed}
+                  onChange={(e) => {
+                    const speed = parseFloat(e.target.value);
+                    setPlaybackSpeed(speed);
+                    if (mainAudioRef.current) mainAudioRef.current.playbackRate = speed;
+                  }}
+                  className="bg-slate-100 text-[#1e293b] text-[10px] rounded px-1 py-1 font-medium cursor-pointer"
+                >
+                  <option value="0.5">0.5x</option>
+                  <option value="1">1x</option>
+                  <option value="1.5">1.5x</option>
+                  <option value="2">2x</option>
+                </select>
+            </div>
+            <button 
+              onClick={async (e) => {
+                e.preventDefault();
+                try {
+                  const response = await fetch(audioUrl.url);
+                  const blob = await response.blob();
+                  const blobUrl = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.style.display = 'none';
+                  a.href = blobUrl;
+                  const safeTitle = title ? title.replace(/[^a-zA-Z0-9-_]/g, '_') : 'meeting_recording';
+                  a.download = `${safeTitle}.${audioUrl.extension}`;
+                  document.body.appendChild(a);
+                  a.click();
+                  window.URL.revokeObjectURL(blobUrl);
+                  document.body.removeChild(a);
+                } catch (err) {
+                  console.error('Download failed:', err);
+                  window.open(audioUrl.url, '_blank');
+                }
+              }}
+              className="flex items-center gap-1 text-[10px] font-medium text-[#1e293b] bg-slate-100 px-2 py-1 rounded"
+            >
+              <Download size={12} /> DL (.{audioUrl.extension})
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showHistory ? (
+        <div className="w-full bg-white border border-[#cbd5e1] rounded-xl p-4 mb-4 shadow-sm relative z-30 pointer-events-auto">
+          <div className="flex items-center gap-2 mb-4">
+            <button onClick={() => setShowHistory(false)} className="p-1 text-[#64748b]">
+              <ChevronLeft size={20} />
+            </button>
+            <h2 className="text-lg font-bold text-[#1e293b]">Past Recordings</h2>
+          </div>
+          
+          <div className="flex flex-col gap-3">
+            {filteredNotes.length > 0 ? filteredNotes.map(note => (
+              <div 
+                key={note.id} 
+                onClick={() => loadNote(note)}
+                className="relative p-3 border border-slate-200 rounded-lg shadow-sm bg-slate-50 flex flex-col"
+              >
+                <button
+                  onClick={(e) => deleteNote(note.id, e)}
+                  className="absolute top-2 right-2 p-1 text-slate-400 hover:text-red-500 rounded"
+                >
+                  <Trash2 size={16} />
+                </button>
+                <div className="flex justify-between items-start mb-1 pr-6">
+                  <span className="text-[10px] font-medium text-slate-500">
+                    {note.date ? `${note.date.split('-')[1]}/${note.date.split('-')[2]}` : ''}
+                  </span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 capitalize">
+                    {note.type}
+                  </span>
+                </div>
+                <h3 className="font-medium text-sm text-[#1e293b] mb-1 truncate pr-6">{note.title}</h3>
+                <p className="text-xs text-slate-500 line-clamp-2">
+                  {note.summary || note.transcription || "No content"}
+                </p>
+              </div>
+            )) : (
+              <div className="text-center py-4 text-sm text-[#94a3b8]">
+                No saved recordings found.
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="w-full bg-white border border-[#cbd5e1] rounded-xl p-4 mb-4 shadow-sm relative z-30 pointer-events-auto">
+            <div className="flex flex-col items-center gap-4">
+              <div className="text-center">
+                <h2 className="text-base font-bold text-[#1e293b] mb-1">Record Audio</h2>
+              </div>
+
+              {!isRecording && !transcription && (
+                <div className="flex flex-wrap justify-center bg-slate-100 p-1 rounded-lg gap-1 w-full">
+                  <button onClick={() => handleTypeChange('meeting')} className={`flex-1 py-1.5 rounded text-xs font-medium ${recordingType === 'meeting' ? 'bg-[#1e293b] text-white' : 'text-[#64748b]'}`}>Meeting</button>
+                  <button onClick={() => handleTypeChange('lecture')} className={`flex-1 py-1.5 rounded text-xs font-medium ${recordingType === 'lecture' ? 'bg-[#1e293b] text-white' : 'text-[#64748b]'}`}>Lecture</button>
+                  <button onClick={() => handleTypeChange('dialog')} className={`flex-1 py-1.5 rounded text-xs font-medium ${recordingType === 'dialog' ? 'bg-[#1e293b] text-white' : 'text-[#64748b]'}`}>Dialog</button>
+                </div>
+              )}
+
+              <div className="flex flex-col w-full gap-2">
+                {!isRecording ? (
+                  <>
+                    <button 
+                      onClick={startRecording}
+                      disabled={isProcessing}
+                      className="flex justify-center items-center gap-2 bg-red-500 text-white px-4 py-2.5 rounded-full font-medium text-sm disabled:opacity-50 shadow-sm w-full"
+                    >
+                      <Mic size={16} /> Record Mic
+                    </button>
+                    {/* System audio generally isn't supported on mobile, so we might hide it or keep it */}
+                    <button 
+                      onClick={startSystemAudioRecording}
+                      disabled={isProcessing}
+                      className="flex justify-center items-center gap-2 bg-indigo-500 text-white px-4 py-2.5 rounded-full font-medium text-sm disabled:opacity-50 shadow-sm w-full"
+                    >
+                      <Monitor size={16} /> Record System
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex flex-col gap-2 w-full">
+                    <div className="flex gap-2 w-full">
+                        <button 
+                          onClick={togglePause}
+                          className="flex-1 flex justify-center items-center gap-2 bg-amber-500 text-white py-2.5 rounded-full font-medium text-sm shadow-sm"
+                        >
+                          {isPaused ? <Play size={16} className="fill-current" /> : <Pause size={16} className="fill-current" />}
+                          {isPaused ? "Resume" : "Pause"}
+                        </button>
+                        <button 
+                          onClick={cancelRecording}
+                          className="flex-1 flex justify-center items-center gap-2 bg-slate-200 text-slate-700 py-2.5 rounded-full font-medium text-sm shadow-sm"
+                        >
+                          Cancel
+                        </button>
+                    </div>
+                    <button 
+                      onClick={stopRecording}
+                      className={`flex justify-center items-center gap-2 text-white px-4 py-2.5 rounded-full font-medium text-sm shadow-sm w-full ${!isPaused ? 'bg-red-600 animate-pulse' : 'bg-[#1e293b]'}`}
+                    >
+                      <Square size={16} className="fill-current" /> Stop Recording
+                    </button>
+                  </div>
+                )}
+                {!isRecording && !transcription && (
+                  <>
+                    <input type="file" accept="*/*" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isProcessing}
+                      className="flex justify-center items-center gap-2 bg-slate-100 text-[#1e293b] px-4 py-2.5 rounded-full font-medium text-sm disabled:opacity-50 shadow-sm border border-slate-200 w-full mt-1"
+                    >
+                      <Upload size={16} /> Upload Audio
+                    </button>
+                  </>
+                )}
+              </div>
+              
+              {isProcessing && (
+                <div className="flex items-center gap-2 text-[#F97316] font-medium text-xs text-center">
+                  <Loader2 size={14} className="animate-spin shrink-0" />
+                  <span>{processingStatus || "Processing..."}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="w-full mb-4 relative z-30 pointer-events-auto">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <input 
+                type="text" 
+                placeholder="Search notes..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] bg-white shadow-sm"
+              />
+            </div>
+          </div>
+
+          {searchQuery.trim() ? (
+            <div className="w-full flex flex-col gap-4 relative z-30 pointer-events-auto mb-4">
+              {filteredNotes.length > 0 ? filteredNotes.map(note => (
+                <div key={note.id} className="bg-white border border-[#cbd5e1] rounded-xl p-4 shadow-sm">
+                  <div className="flex justify-between items-start mb-3 gap-2">
+                    <div className="flex flex-col gap-1">
+                      <h3 className="text-base font-serif font-bold text-[#1e293b]">{note.title || "Untitled"}</h3>
+                      <div className="flex gap-2 items-center">
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 capitalize">
+                            {note.type}
+                          </span>
+                          <span className="text-[10px] font-medium text-slate-500">{note.date}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col">
+                      <h4 className="text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                        <FileText size={14} /> Transcription
+                      </h4>
+                      <div className="bg-slate-50 border border-slate-100 p-2 rounded text-xs text-[#334155] max-h-40 overflow-y-auto whitespace-pre-wrap">
+                        <HighlightText text={note.transcription || "No transcription"} highlight={searchQuery} />
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      <h4 className="text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                        <Sparkles size={14} className="text-[#F97316]" /> AI Summary
+                      </h4>
+                      <div className="bg-slate-50 border border-slate-100 p-2 rounded text-xs text-[#334155] max-h-40 overflow-y-auto whitespace-pre-wrap">
+                        <HighlightText text={note.summary || "No summary"} highlight={searchQuery} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )) : (
+                <div className="bg-white border border-[#cbd5e1] rounded-xl p-4 text-center text-sm text-slate-500 shadow-sm">
+                  No results found.
+                </div>
+              )}
+            </div>
+          ) : (
+            <MobileTabs 
+                transcription={transcription} 
+                summary={summary} 
+                audioUrl={audioUrl} 
+                isRecording={isRecording}
+                handleRetranscribe={handleRetranscribe}
+                isProcessing={isProcessing}
+                toggleSpeech={toggleSpeech}
+                playingSection={playingSection}
+                isLoadingAudio={isLoadingAudio}
+                searchQuery={searchQuery}
+                generateSummary={generateSummary}
+            />
+          )}
+        </>
+      )}
+
+      {/* File Upload Confirmation Modal */}
+      {pendingFile && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full p-5 animate-in fade-in zoom-in duration-200">
+            <h3 className="text-lg font-bold text-[#1e293b] mb-3">Upload Audio</h3>
+            <div className="mb-3">
+              <label className="block text-xs font-medium text-slate-700 mb-1">File</label>
+              <div className="p-2 bg-slate-50 border border-slate-200 rounded text-xs text-slate-600 truncate">
+                {pendingFile.name}
+              </div>
+            </div>
+            
+            <div className="mb-3">
+              <label className="block text-xs font-medium text-slate-700 mb-1">Recording Name</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Give this recording a name..."
+                className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-[#F97316]"
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-slate-700 mb-1">Type</label>
+              <div className="grid grid-cols-3 gap-1">
+                <button
+                  onClick={() => handleTypeChange('meeting')}
+                  className={`px-2 py-1.5 rounded text-xs font-medium border ${recordingType === 'meeting' ? 'bg-[#1e293b] text-white border-[#1e293b]' : 'bg-white text-slate-600 border-slate-200'}`}
+                >
+                  Meeting
+                </button>
+                <button
+                  onClick={() => handleTypeChange('lecture')}
+                  className={`px-2 py-1.5 rounded text-xs font-medium border ${recordingType === 'lecture' ? 'bg-[#1e293b] text-white border-[#1e293b]' : 'bg-white text-slate-600 border-slate-200'}`}
+                >
+                  Lecture
+                </button>
+                <button
+                  onClick={() => handleTypeChange('dialog')}
+                  className={`px-2 py-1.5 rounded text-xs font-medium border ${recordingType === 'dialog' ? 'bg-[#1e293b] text-white border-[#1e293b]' : 'bg-white text-slate-600 border-slate-200'}`}
+                >
+                  Dialog
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setPendingFile(null)}
+                className="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmFileUpload}
+                className="px-3 py-1.5 text-xs font-medium text-white bg-[#F97316] rounded shadow-sm flex items-center gap-1"
+              >
+                <Upload size={12} /> Upload
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

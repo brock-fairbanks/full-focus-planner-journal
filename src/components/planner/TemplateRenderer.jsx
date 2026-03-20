@@ -6,10 +6,14 @@ import Rituals from "./templates/Rituals.jsx";
 import WeeklyReview from "./templates/WeeklyReview.jsx";
 import JournalSpread from "./templates/JournalSpread.jsx";
 import MeetingSpread from "./templates/MeetingSpread.jsx";
+import MeetingSpreadMobile from "./templates/MeetingSpreadMobile.jsx";
 import ChatSpread from "./templates/ChatSpread.jsx";
 import ScratchpadSpread from "./templates/ScratchpadSpread.jsx";
+import { useIsMobile } from "@/hooks/use-mobile.jsx";
 
 export default function TemplateRenderer({ template, date, onSubSectionChange, onClearCanvas, journalMode }) {
+  const isMobile = useIsMobile();
+
   const templates = {
     DAILY: <DailySpread date={date} onSubSectionChange={onSubSectionChange} onClearCanvas={onClearCanvas} />,
     IDEAL_WEEK: <IdealWeek date={date} onClearCanvas={onClearCanvas} />,
@@ -17,7 +21,7 @@ export default function TemplateRenderer({ template, date, onSubSectionChange, o
     RITUALS: <Rituals date={date} onClearCanvas={onClearCanvas} />,
     WEEKLY: <WeeklyReview date={date} onClearCanvas={onClearCanvas} />,
     JOURNAL: <JournalSpread date={date} onSubSectionChange={onSubSectionChange} onClearCanvas={onClearCanvas} journalMode={journalMode} />,
-    MEETING: <MeetingSpread date={date} onClearCanvas={onClearCanvas} />,
+    MEETING: isMobile ? <MeetingSpreadMobile date={date} onClearCanvas={onClearCanvas} /> : <MeetingSpread date={date} onClearCanvas={onClearCanvas} />,
     CHAT: <ChatSpread date={date} onClearCanvas={onClearCanvas} />,
     SCRATCHPAD: <ScratchpadSpread date={date} onSubSectionChange={onSubSectionChange} onClearCanvas={onClearCanvas} />,
   };
