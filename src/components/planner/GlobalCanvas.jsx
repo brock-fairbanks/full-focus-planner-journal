@@ -607,9 +607,54 @@ const GlobalCanvas = forwardRef(({
         if (width > height) {
             const startX = pts[0].x < pts[pts.length-1].x ? minX : maxX;
             const endX = pts[0].x < pts[pts.length-1].x ? maxX : minX;
-            const avgY = (pts[0].y + pts[pts.length-1].y) / 2;
-            ctxRef.current.moveTo(startX, avgY);
-            ctxRef.current.lineTo(endX, avgY);
+            let finalY = (pts[0].y + pts[pts.length-1].y) / 2;
+            
+            let snapped = false;
+            if (textsRef.current && textsRef.current.length > 0) {
+                let minDist = 24;
+                for (const t of textsRef.current) {
+                    const textCenterY = t.y + (t.lineHeight || 32) / 2;
+                    const tWidth = parseInt(t.width) || 200;
+                    if (Math.abs(finalY - textCenterY) < minDist && startX < t.x + tWidth && endX > t.x) {
+                        minDist = Math.abs(finalY - textCenterY);
+                        finalY = textCenterY;
+                        snapped = true;
+                    }
+                }
+            }
+
+            if (!snapped && canvasRef.current) {
+                const rect = canvasRef.current.getBoundingClientRect();
+                const clientY = finalY + rect.top;
+                const lineElements = Array.from(document.querySelectorAll('[class*="border-b"], [style*="gradient"], hr'));
+                let minDistance = 24;
+                
+                for (const el of lineElements) {
+                    const elRect = el.getBoundingClientRect();
+                    if (elRect.width === 0 || elRect.height === 0) continue;
+                    
+                    let targetY = null;
+                    if (el.style.backgroundSize) {
+                        const match = el.style.backgroundSize.match(/(\d+)px/g);
+                        if (match && match.length > 0) {
+                            const lh = parseInt(match[match.length - 1]);
+                            const relativeY = clientY - elRect.top;
+                            const gridY = Math.floor(relativeY / lh) * lh + (lh / 2);
+                            targetY = elRect.top + gridY;
+                        }
+                    } else if (el.className && typeof el.className === 'string' && el.className.includes('border-b')) {
+                        targetY = elRect.bottom - 16; 
+                    }
+
+                    if (targetY !== null && Math.abs(clientY - targetY) < minDistance) {
+                        minDistance = Math.abs(clientY - targetY);
+                        finalY = targetY - rect.top;
+                    }
+                }
+            }
+
+            ctxRef.current.moveTo(startX, finalY);
+            ctxRef.current.lineTo(endX, finalY);
         } else {
             const startY = pts[0].y < pts[pts.length-1].y ? minY : maxY;
             const endY = pts[0].y < pts[pts.length-1].y ? maxY : minY;
