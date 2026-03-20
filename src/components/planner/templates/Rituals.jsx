@@ -30,7 +30,7 @@ export default function Rituals({ date, onClearCanvas }) {
       </div>
 
       {/* Evening Shutdown */}
-      <div className="flex-1 flex flex-col md:pl-8">
+      <div className="flex-1 flex flex-col pl-8">
         <div className="flex items-center gap-3 mb-8">
           <Moon size={28} style={{ color: "#8b5cf6" }} />
           <h2 className="text-2xl font-serif font-bold" style={{ color: "#1e293b" }}>
