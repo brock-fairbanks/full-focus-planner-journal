@@ -563,7 +563,7 @@ const GlobalCanvas = forwardRef(({
     lineWidthRef.current = baseWidth;
     
     ctxRef.current.lineWidth = baseWidth;
-    ctxRef.current.lineCap = 'round';
+    ctxRef.current.lineCap = activeToolRef.current === 'highlighter' ? 'square' : 'round';
     ctxRef.current.lineJoin = 'round';
     ctxRef.current.beginPath();
     ctxRef.current.moveTo(x, y);
@@ -682,7 +682,7 @@ const GlobalCanvas = forwardRef(({
         ctxRef.current.globalCompositeOperation = 'source-over';
         ctxRef.current.strokeStyle = highlighterColor;
         ctxRef.current.lineWidth = lineWidthRef.current;
-        ctxRef.current.lineCap = 'round';
+        ctxRef.current.lineCap = 'square';
         ctxRef.current.lineJoin = 'round';
         
         ctxRef.current.beginPath();
