@@ -126,84 +126,67 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
     };
 
     return (
-        <div className="flex flex-col h-full min-h-[800px] w-full bg-[#FAF9F6]">
-            {/* Header / Toolbar */}
-            <div className="h-16 px-6 bg-white/90 backdrop-blur-md border border-[#E2E8F0] flex items-center justify-between pointer-events-auto shrink-0 relative z-40 shadow-sm rounded-xl mx-4 mt-4">
-                <div className="flex items-center gap-4 flex-1">
-                    {/* History Button */}
-                    <button 
-                        onClick={() => setShowHistory(true)}
+        <div className="w-full h-full min-h-[800px] relative bg-white" style={getBgStyle()}>
+            {/* Compact Header / Toolbar (Positioned exactly between top-left and top-right tools in Planner.jsx) */}
+            <div className="absolute -top-[42px] left-1/2 -translate-x-1/2 h-[34px] px-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] flex items-center justify-center gap-3 pointer-events-auto z-[60] shadow-sm rounded-lg whitespace-nowrap">
+                
+                {/* History Button */}
+                <button 
+                    onClick={() => setShowHistory(true)}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 text-xs font-bold text-[#1e293b] hover:bg-slate-100 px-2 py-1.5 rounded transition-colors"
+                >
+                    <History size={14} />
+                    History
+                </button>
+
+                <div className="w-px h-4 bg-slate-200" />
+
+                {/* Title Input */}
+                <input 
+                    ref={titleInputRef}
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    placeholder="Untitled Note"
+                    className="text-sm font-bold bg-transparent border-none outline-none text-[#1e293b] w-48 font-serif placeholder:text-slate-300 focus:ring-1 focus:ring-orange-200/50 rounded px-1"
+                />
+
+                <div className="w-px h-4 bg-slate-200" />
+
+                {/* Pattern Select */}
+                <div className="flex items-center gap-1.5 text-[11px] px-1">
+                    <span className="font-bold text-slate-400 uppercase tracking-wider">Pattern</span>
+                    <select 
+                        value={background}
+                        onChange={(e) => setBackground(e.target.value)}
                         onPointerDown={(e) => e.stopPropagation()}
-                        className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-lg transition-colors text-sm font-bold text-slate-700"
+                        className="bg-transparent border-none outline-none focus:ring-1 focus:ring-[#F97316]/50 font-bold text-[#1e293b] cursor-pointer hover:bg-slate-100 transition-colors py-0.5 rounded"
                     >
-                        <History size={16} />
-                        History
-                    </button>
-
-                    <button 
-                        onClick={createNewNote}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        className="flex items-center gap-2 px-3 py-2 bg-orange-50 text-[#F97316] hover:bg-orange-100 rounded-lg transition-colors text-sm font-bold"
-                        title="Create New Page"
-                    >
-                        <Plus size={16} />
-                        New Page
-                    </button>
-
-                    <div className="w-px h-8 bg-slate-200" />
-
-                    {/* Title Input (Pointer events stopped to prevent global canvas eating focus) */}
-                    <input 
-                        ref={titleInputRef}
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        placeholder="Untitled Note"
-                        className="text-xl font-bold bg-transparent border-none outline-none text-[#1e293b] w-80 font-serif placeholder:text-slate-300 focus:ring-2 focus:ring-orange-200/50 rounded px-2 py-1"
-                    />
+                        <option value="none">Blank</option>
+                        <option value="lined-narrow">Lined (Narrow)</option>
+                        <option value="lined-wide">Lined (Wide)</option>
+                        <option value="grid-small">Grid (Small)</option>
+                        <option value="grid-large">Grid (Large)</option>
+                        <option value="dotted">Dotted</option>
+                    </select>
                 </div>
-
-                <div className="flex items-center gap-5">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Pattern</span>
-                        <select 
-                            value={background}
-                            onChange={(e) => setBackground(e.target.value)}
-                            onPointerDown={(e) => e.stopPropagation()}
-                            className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-[#F97316]/50 text-sm font-bold text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors"
-                        >
-                            <option value="none">Blank Page</option>
-                            <option value="lined-narrow">Lined (Narrow)</option>
-                            <option value="lined-wide">Lined (Wide)</option>
-                            <option value="grid-small">Grid (Small)</option>
-                            <option value="grid-large">Grid (Large)</option>
-                            <option value="dotted">Dotted</option>
-                        </select>
-                    </div>
-                    
-                    <div className="w-px h-8 bg-slate-200" />
-                    
-                    <div className="flex flex-col items-end justify-center min-w-[80px]">
-                        {isSaving ? (
-                            <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
-                                Saving...
-                            </span>
-                        ) : lastSaved ? (
-                            <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
-                                <Check size={12} /> Saved
-                            </span>
-                        ) : null}
-                    </div>
+                
+                <div className="w-px h-4 bg-slate-200" />
+                
+                {/* Save Status */}
+                <div className="flex items-center justify-center min-w-[50px] pr-2">
+                    {isSaving ? (
+                        <span className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                            Saving...
+                        </span>
+                    ) : lastSaved ? (
+                        <span className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                            <Check size={10} /> Saved
+                        </span>
+                    ) : null}
                 </div>
-            </div>
-
-            {/* Canvas Area */}
-            <div 
-                className="flex-1 w-full h-full relative mx-4 mb-4 rounded-b-xl overflow-hidden bg-white shadow-sm border-x border-b border-[#E2E8F0] mt-2"
-                style={getBgStyle()}
-            >
-                {/* The GlobalCanvas will overlay exactly on top of this in Planner.jsx */}
             </div>
 
             {/* History Overlay (Covers everything including GlobalCanvas) */}
