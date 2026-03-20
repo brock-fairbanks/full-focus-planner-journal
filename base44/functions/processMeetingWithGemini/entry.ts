@@ -10,7 +10,12 @@ Deno.serve(async (req) => {
 
         const body = await req.json();
         console.log("Received body:", JSON.stringify(body));
-        const { action } = body;
+        let { action } = body;
+        
+        // Fallback for older clients or malformed requests
+        if (!action && body.fileUrl) {
+            action = "transcribe_start";
+        }
 
         if (action === "transcribe_start") {
             const { fileUrl, mimeType } = body;
