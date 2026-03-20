@@ -339,16 +339,45 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       // Save the note immediately to preserve the audio file if the transcribe call fails
       if (isFinal) {
         await saveNote(null, null, uploadedFileUrl);
-        setProcessingStatus("Transcribing audio with OpenAI Whisper...");
+        setProcessingStatus("Sending to Gemini for transcription...");
       }
 
-      const res = await base44.functions.invoke('transcribeAudio', {
+      const startRes = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe_start',
         fileUrl: uploadedFileUrl,
         mimeType: mimeType
       });
       
-      if (res.data.error) throw new Error(res.data.error);
-      const text = res.data.text;
+      if (startRes.data.error) throw new Error(startRes.data.error);
+      
+      if (isFinal) setProcessingStatus("Gemini is processing the audio...");
+      let isCompleted = false;
+      let text = "";
+      
+      const rType = recordingTypeRef.current;
+      const prompt = rType === 'lecture' 
+        ? "Please transcribe this lecture accurately. Exclude any advertisements or sponsored content."
+        : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
+
+      while (!isCompleted) {
+        await new Promise(r => setTimeout(r, 5000));
+        const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
+          action: 'transcribe_poll',
+          fileName: startRes.data.fileName,
+          fileUri: startRes.data.fileUri,
+          prompt,
+          mimeType: mimeType,
+          model: selectedModelRef.current || 'gemini-3-flash-preview'
+        });
+        
+        if (pollRes.data.error) throw new Error(pollRes.data.error);
+        if (pollRes.data.status === 'completed') {
+          text = pollRes.data.text;
+          isCompleted = true;
+        } else if (pollRes.data.status === 'failed') {
+          throw new Error("Gemini failed to process the file");
+        }
+      }
 
       if (isFinal) setProcessingStatus("Saving...");
       setTranscription(prev => {
@@ -435,18 +464,47 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         }).catch(err => console.error("Drive upload failed", err));
       }
 
-      setProcessingStatus("Extracting audio and transcribing with OpenAI Whisper (this may take a minute)...");
-      const res = await base44.functions.invoke('transcribeAudio', {
+      setProcessingStatus("Sending to Gemini for transcription (this handles massive files)...");
+      const startRes = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe_start',
         fileUrl: uploadedFileUrl,
         mimeType: mimeType
       });
       
-      if (res.data.error) throw new Error(res.data.error);
-      const text = res.data.text;
+      if (startRes.data.error) throw new Error(startRes.data.error);
+      const { fileName: geminiFileName, fileUri: geminiFileUri } = startRes.data;
+
+      setProcessingStatus("Gemini is processing the long audio (can take a few minutes)...");
+      let isCompleted = false;
+      let finalTranscription = "";
+      
+      const prompt = rType === 'lecture' 
+        ? "Please transcribe this lecture accurately. Exclude any advertisements or sponsored content."
+        : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
+
+      while (!isCompleted) {
+        await new Promise(r => setTimeout(r, 5000));
+        const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
+          action: 'transcribe_poll',
+          fileName: geminiFileName,
+          fileUri: geminiFileUri,
+          prompt,
+          mimeType: mimeType,
+          model: selectedModelRef.current || 'gemini-3-flash-preview'
+        });
+        
+        if (pollRes.data.error) throw new Error(pollRes.data.error);
+        if (pollRes.data.status === 'completed') {
+          finalTranscription = pollRes.data.text;
+          isCompleted = true;
+        } else if (pollRes.data.status === 'failed') {
+          throw new Error("Gemini failed to process the file");
+        }
+      }
       
       setProcessingStatus("Saving...");
-      setTranscription(text);
-      saveNote(text, null, uploadedFileUrl);
+      setTranscription(finalTranscription);
+      saveNote(finalTranscription, null, uploadedFileUrl);
     } catch (err) {
       if (uploadedFileUrl) {
         saveNote(null, null, uploadedFileUrl);
@@ -751,16 +809,47 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         await saveNote(null, null, fileUrlToUse);
       }
       
-      setProcessingStatus("Transcribing with OpenAI Whisper...");
-      const res = await base44.functions.invoke('transcribeAudio', {
+      setProcessingStatus("Sending to Gemini for transcription...");
+      const startRes = await base44.functions.invoke('processMeetingWithGemini', {
+        action: 'transcribe_start',
         fileUrl: fileUrlToUse,
         mimeType: mimeType
       });
       
-      if (res.data.error) throw new Error(res.data.error);
-      const text = res.data.text;
-      setTranscription(text);
-      saveNote(text, null, fileUrlToUse);
+      if (startRes.data.error) throw new Error(startRes.data.error);
+      const { fileName: geminiFileName, fileUri: geminiFileUri } = startRes.data;
+
+      setProcessingStatus("Gemini is processing the audio...");
+      let isCompleted = false;
+      let finalTranscription = "";
+      const rType = recordingTypeRef.current;
+      
+      const prompt = rType === 'lecture' 
+        ? "Please transcribe this lecture accurately. Exclude any advertisements or sponsored content."
+        : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
+
+      while (!isCompleted) {
+        await new Promise(r => setTimeout(r, 5000));
+        const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
+          action: 'transcribe_poll',
+          fileName: geminiFileName,
+          fileUri: geminiFileUri,
+          prompt,
+          mimeType: mimeType,
+          model: selectedModelRef.current || 'gemini-3-flash-preview'
+        });
+        
+        if (pollRes.data.error) throw new Error(pollRes.data.error);
+        if (pollRes.data.status === 'completed') {
+          finalTranscription = pollRes.data.text;
+          isCompleted = true;
+        } else if (pollRes.data.status === 'failed') {
+          throw new Error("Gemini failed to process the file");
+        }
+      }
+      
+      setTranscription(finalTranscription);
+      saveNote(finalTranscription, null, fileUrlToUse);
     } catch (err) {
       console.error("Retranscription error", err);
       alert("Failed to retranscribe audio.");
