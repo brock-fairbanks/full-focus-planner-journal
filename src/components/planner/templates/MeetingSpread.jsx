@@ -726,20 +726,36 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     doc.text(`${mainTitle} - ${sectionTitle}`, 20, 20);
     doc.setFontSize(11);
     
-    // Add extra newline breaks for better spacing between paragraphs
-    const formattedContent = content.replace(/\n/g, '\n\n').replace(/\n\n\n+/g, '\n\n');
-    const splitText = doc.splitTextToSize(formattedContent, 170);
+    // Clean up markdown bold/italics for basic PDF text
+    const cleanContent = content.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+    const lines = cleanContent.split('\n');
     
     let y = 35;
     const pageHeight = doc.internal.pageSize.height;
     
-    for (let i = 0; i < splitText.length; i++) {
-      if (y > pageHeight - 20) {
-        doc.addPage();
-        y = 20;
+    for (const line of lines) {
+      if (line.trim() === '') {
+         y += 6;
+         continue;
       }
-      doc.text(splitText[i], 20, y);
-      y += splitText[i].trim() === '' ? 8 : 6;
+      
+      const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ');
+      const textToPrint = isBullet ? `• ${line.trim().substring(2)}` : line;
+      const xOffset = isBullet ? 25 : 20; // Indent bullets
+      const maxWidth = isBullet ? 160 : 170;
+      
+      const splitText = doc.splitTextToSize(textToPrint, maxWidth);
+      
+      for (let i = 0; i < splitText.length; i++) {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        // If it's a multiline bullet point, indent the subsequent lines too
+        doc.text(splitText[i], i === 0 ? xOffset : xOffset + 4, y);
+        y += 6;
+      }
+      y += 4; // Extra space after paragraphs/bullets
     }
     
     doc.save(`${mainTitle.toLowerCase().replace(/\s+/g, '_')}_${sectionTitle.toLowerCase()}.pdf`);
@@ -749,7 +765,33 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     if (!content) return;
     const printWindow = window.open('', '_blank');
     const mainTitle = title || (recordingType === 'lecture' ? 'Lecture Notes' : 'Meeting Notes');
-    const htmlContent = content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '<br/>').join('');
+    
+    // Convert basic markdown to HTML
+    let inList = false;
+    const htmlLines = content.split('\n').map(line => {
+      let formattedLine = line
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+      if (formattedLine.trim().startsWith('- ') || formattedLine.trim().startsWith('* ')) {
+        const item = `<li style="margin-bottom: 8px;">${formattedLine.trim().substring(2)}</li>`;
+        if (!inList) {
+          inList = true;
+          return `<ul style="margin-left: 20px; margin-bottom: 1.5em;">${item}`;
+        }
+        return item;
+      } else {
+        let prefix = '';
+        if (inList) {
+          inList = false;
+          prefix = '</ul>';
+        }
+        return formattedLine.trim() ? `${prefix}<p>${formattedLine}</p>` : `${prefix}<br/>`;
+      }
+    });
+    if (inList) htmlLines.push('</ul>');
+    
+    const htmlContent = htmlLines.join('');
     
     printWindow.document.write(`
       <html>
@@ -760,6 +802,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             h1 { margin-bottom: 8px; color: #111; }
             h2 { margin-bottom: 24px; color: #666; font-size: 1.25rem; font-weight: normal; }
             p { margin-bottom: 1.5em; }
+            ul { padding-left: 20px; }
+            li { line-height: 1.6; }
           </style>
         </head>
         <body>
