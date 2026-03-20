@@ -35,7 +35,7 @@ export default function Planner() {
   const [penWidth, setPenWidth] = useState(2.2);
   const [eraserWidth, setEraserWidth] = useState(30);
   const [highlighterWidth, setHighlighterWidth] = useState(16);
-  const [highlighterColor, setHighlighterColor] = useState('rgba(253, 224, 71, 0.4)');
+  const [highlighterColor, setHighlighterColor] = useState('rgba(253, 224, 71, 0.6)');
   const pointerStartRef = useRef(null);
   const lastPenTimeRef = useRef(0);
 
@@ -272,10 +272,10 @@ export default function Planner() {
                           ))}
                           <div className="w-px h-4 bg-slate-200 mx-1"></div>
                           {[
-                            { c: 'rgba(253, 224, 71, 0.4)', bg: '#fef08a' },
-                            { c: 'rgba(167, 243, 208, 0.4)', bg: '#a7f3d0' },
-                            { c: 'rgba(251, 207, 232, 0.4)', bg: '#fbcfe8' },
-                            { c: 'rgba(191, 219, 254, 0.4)', bg: '#bfdbfe' }
+                            { c: 'rgba(253, 224, 71, 0.6)', bg: '#fef08a' },
+                            { c: 'rgba(167, 243, 208, 0.6)', bg: '#a7f3d0' },
+                            { c: 'rgba(251, 207, 232, 0.6)', bg: '#fbcfe8' },
+                            { c: 'rgba(191, 219, 254, 0.6)', bg: '#bfdbfe' }
                           ].map(item => (
                             <button key={item.c} onClick={() => setHighlighterColor(item.c)} className={`w-5 h-5 rounded-full border border-slate-200 ${highlighterColor === item.c ? 'ring-2 ring-offset-1 ring-slate-400' : ''}`} style={{ backgroundColor: item.bg }} title="Color" />
                           ))}
