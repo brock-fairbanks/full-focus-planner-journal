@@ -67,6 +67,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [pendingFile, setPendingFile] = useState(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const audioRef = useRef(null);
+  const mainAudioRef = useRef(null);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
   const toggleSpeech = async (text, section) => {
     if (playingSection === section || isLoadingAudio) {
