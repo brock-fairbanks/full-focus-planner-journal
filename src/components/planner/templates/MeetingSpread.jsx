@@ -818,7 +818,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         mimeType: mimeType
       });
       
-      if (startRes.data.error) throw new Error(startRes.data.error);
+      if (startRes.data && startRes.data.error) throw new Error(startRes.data.error);
       const { fileName: geminiFileName, fileUri: geminiFileUri } = startRes.data;
 
       setProcessingStatus("Gemini is processing the audio...");
@@ -841,7 +841,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           model: selectedModelRef.current || 'gemini-3-flash-preview'
         });
         
-        if (pollRes.data.error) throw new Error(pollRes.data.error);
+        if (pollRes.data && pollRes.data.error) throw new Error(pollRes.data.error);
         if (pollRes.data.status === 'completed') {
           finalTranscription = pollRes.data.text;
           isCompleted = true;
