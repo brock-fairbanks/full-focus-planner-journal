@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
             return Response.json({ text });
         }
 
-        return Response.json({ error: `Invalid action received: ${action}` }, { status: 400 });
+        return Response.json({ error: `Invalid action received: ${action}. Body keys: ${Object.keys(body).join(', ')}` }, { status: 400 });
     } catch (error) {
         return Response.json({ error: error.message }, { status: 500 });
     }
