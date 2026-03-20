@@ -22,21 +22,21 @@ const HighlightText = ({ text, highlight }) => {
 };
 
 const MobileTabs = ({ transcription, summary, audioUrl, isRecording, handleRetranscribe, isProcessing, toggleSpeech, playingSection, isLoadingAudio, searchQuery, generateSummary }) => {
-  const [activeTab, setActiveTab] = useState('summary');
+  const [activeTab, setActiveTab] = useState('transcription');
   return (
     <div className="w-full flex flex-col pointer-events-auto flex-1 mt-2">
         <div className="flex w-full bg-slate-200 rounded-lg p-1 mb-3 shrink-0">
-            <button 
-                onClick={() => setActiveTab('summary')}
-                className={`flex-1 py-3 text-sm font-bold rounded-md transition-colors ${activeTab === 'summary' ? 'bg-white text-[#F97316] shadow-sm' : 'text-slate-500'}`}
-            >
-                AI Summary
-            </button>
             <button 
                 onClick={() => setActiveTab('transcription')}
                 className={`flex-1 py-3 text-sm font-bold rounded-md transition-colors ${activeTab === 'transcription' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-slate-500'}`}
             >
                 Transcription
+            </button>
+            <button 
+                onClick={() => setActiveTab('summary')}
+                className={`flex-1 py-3 text-sm font-bold rounded-md transition-colors ${activeTab === 'summary' ? 'bg-white text-[#F97316] shadow-sm' : 'text-slate-500'}`}
+            >
+                AI Summary
             </button>
         </div>
         
