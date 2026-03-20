@@ -1005,7 +1005,7 @@ const GlobalCanvas = forwardRef(({
           }
         }}
         className="w-full h-full"
-        style={{ background: "transparent", display: "block" }}
+        style={{ background: "transparent", display: "block", touchAction: "none" }}
       />
       {texts.map(textObj => (
         <TextItem 
