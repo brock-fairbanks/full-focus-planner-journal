@@ -168,7 +168,9 @@ const GlobalCanvas = forwardRef(({
         img.onload = () => {
           if (canvasRef.current) {
             const dpr = window.devicePixelRatio || 1;
-            ctx.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
+            const logicalWidth = canvasRef.current.width / dpr;
+            const logicalHeight = canvasRef.current.height / dpr;
+            ctx.drawImage(img, 0, 0, logicalWidth, logicalHeight);
           }
         };
         img.src = localImageData;
@@ -389,7 +391,7 @@ const GlobalCanvas = forwardRef(({
           const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
           syncToBackend(dataUrl, updated);
         }
-      }, 30000);
+      }, 3000);
       
       return updated;
     });
@@ -450,7 +452,7 @@ const GlobalCanvas = forwardRef(({
             syncToBackend(dataUrl, textsRef.current);
           }
           saveTimeout.current = null;
-        }, 30000); 
+        }, 3000); 
     } else if (!targetText && ctxRef.current) {
         const ctx = ctxRef.current;
         const rect = canvasRef.current.getBoundingClientRect();
@@ -482,7 +484,7 @@ const GlobalCanvas = forwardRef(({
             syncToBackend(dataUrl, textsRef.current);
           }
           saveTimeout.current = null;
-        }, 30000); 
+        }, 3000); 
     }
   };
 
@@ -986,7 +988,7 @@ const GlobalCanvas = forwardRef(({
         syncToBackend(dataUrl, textsRef.current);
       }
       saveTimeout.current = null;
-    }, 30000); 
+    }, 3000); 
   };
 
   return (
