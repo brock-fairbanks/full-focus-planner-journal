@@ -329,6 +329,38 @@ const GlobalCanvas = forwardRef(({
           }
           saveTimeout.current = null;
         }, 1500); 
+    } else if (!targetText && ctxRef.current) {
+        const ctx = ctxRef.current;
+        const rect = canvasRef.current.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const scaleX = (canvasRef.current.width / dpr) / rect.width;
+        const scaleY = (canvasRef.current.height / dpr) / rect.height;
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
+        
+        undoStackRef.current.push(ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height));
+        if (undoStackRef.current.length > 30) undoStackRef.current.shift();
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 24;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x - 150, y);
+        ctx.lineTo(x + 150, y);
+        ctx.stroke();
+        ctx.restore();
+        
+        if (saveTimeout.current) clearTimeout(saveTimeout.current);
+        saveTimeout.current = setTimeout(() => {
+          if (canvasRef.current) {
+            const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+            localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
+            if (onSave) onSave(dataUrl);
+            syncToBackend(dataUrl, textsRef.current);
+          }
+          saveTimeout.current = null;
+        }, 1500); 
     }
   };
 
