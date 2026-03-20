@@ -374,7 +374,7 @@ const GlobalCanvas = forwardRef(({
         if (recordData.page_key === pageKey) {
             syncIdRef.current = recordData.id;
             // Use myRecentSaves instead of time offsets to bypass clock skew issues between devices
-            if (recordData.updated_at && !myRecentSaves.current.has(recordData.updated_at) && recordData.updated_at > lastLocalUpdateTime.current) {
+            if (recordData.updated_at && !myRecentSaves.current.has(recordData.updated_at)) {
                 lastLocalUpdateTime.current = recordData.updated_at;
                 localStorage.setItem(`planner_updated_at_${pageKey}`, recordData.updated_at.toString());
                 if (isDrawing.current) return; // Don't interrupt drawing
