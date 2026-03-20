@@ -339,7 +339,7 @@ export default function Planner() {
           
           {/* Drawing Layer (z-20) */}
           {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
-            <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-auto" style={{ top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px" }}>
+            <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-auto max-w-5xl mx-auto w-full" style={{ top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px" }}>
               <GlobalCanvas 
                 key={pageKey}
                 ref={canvasRef} 
