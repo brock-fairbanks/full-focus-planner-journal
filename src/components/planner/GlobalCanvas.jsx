@@ -247,16 +247,6 @@ const GlobalCanvas = forwardRef(({
       clearTimeout(timer);
       clearTimeout(resizeTimer);
       ro.disconnect();
-      if (saveTimeout.current) {
-        clearTimeout(saveTimeout.current);
-        saveTimeout.current = null;
-        if (canvasRef.current) {
-          const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
-          localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
-          if (onSave) onSave(dataUrl);
-          syncToBackend(dataUrl, textsRef.current);
-        }
-      }
     };
   }, [pageKey, savedImageData, onSave]);
 
