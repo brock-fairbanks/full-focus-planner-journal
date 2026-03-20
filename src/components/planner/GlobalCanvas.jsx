@@ -184,11 +184,7 @@ const GlobalCanvas = forwardRef(({
       const width = rect.width || (window.innerWidth - 80);
       const height = rect.height || window.innerHeight;
 
-      const contentContainer = document.querySelector('.max-w-4xl, .max-w-5xl, .max-w-6xl');
-      if (contentContainer) {
-          const cRect = contentContainer.getBoundingClientRect();
-          layoutAnchorRef.current = { x: cRect.left - rect.left, y: cRect.top - rect.top };
-      }
+      layoutAnchorRef.current = { x: 0, y: 0 };
       
       canvas.width = width * dpr;
       canvas.height = height * dpr;
