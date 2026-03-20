@@ -821,12 +821,18 @@ const GlobalCanvas = forwardRef(({
             }
         }
 
-        // Replace with a perfectly straight strike-through line
-        ctxRef.current.beginPath();
-        ctxRef.current.moveTo(minX, finalY);
-        ctxRef.current.lineTo(maxX, finalY);
+        // Replace with perfectly straight double strike-through lines
         ctxRef.current.strokeStyle = '#1e293b';
-        ctxRef.current.lineWidth = 4;
+        ctxRef.current.lineWidth = 2;
+        
+        ctxRef.current.beginPath();
+        ctxRef.current.moveTo(minX, finalY - 2);
+        ctxRef.current.lineTo(maxX, finalY - 2);
+        ctxRef.current.stroke();
+        
+        ctxRef.current.beginPath();
+        ctxRef.current.moveTo(minX, finalY + 2);
+        ctxRef.current.lineTo(maxX, finalY + 2);
         ctxRef.current.stroke();
       }
       // Checkmark detection -> replace with a perfect checkbox with green check
