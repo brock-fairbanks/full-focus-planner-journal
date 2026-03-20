@@ -805,13 +805,28 @@ const GlobalCanvas = forwardRef(({
         if (preStrokeStateRef.current) {
           ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
         }
+        
+        let finalY = (pts[0].y + pts[pts.length-1].y) / 2;
+        
+        // Snap to text vertical center if nearby
+        if (textsRef.current && textsRef.current.length > 0) {
+            let minDist = 24;
+            for (const t of textsRef.current) {
+                const textCenterY = t.y + (t.lineHeight || 32) / 2;
+                const tWidth = parseInt(t.width) || 200;
+                if (Math.abs(finalY - textCenterY) < minDist && minX < t.x + tWidth && maxX > t.x) {
+                    minDist = Math.abs(finalY - textCenterY);
+                    finalY = textCenterY;
+                }
+            }
+        }
+
         // Replace with a perfectly straight strike-through line
         ctxRef.current.beginPath();
-        const avgY = (pts[0].y + pts[pts.length-1].y) / 2;
-        ctxRef.current.moveTo(minX, avgY);
-        ctxRef.current.lineTo(maxX, avgY);
+        ctxRef.current.moveTo(minX, finalY);
+        ctxRef.current.lineTo(maxX, finalY);
         ctxRef.current.strokeStyle = '#1e293b';
-        ctxRef.current.lineWidth = 3;
+        ctxRef.current.lineWidth = 4;
         ctxRef.current.stroke();
       }
       // Checkmark detection -> replace with a perfect checkbox with green check
