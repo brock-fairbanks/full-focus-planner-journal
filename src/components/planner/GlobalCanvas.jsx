@@ -104,6 +104,12 @@ const GlobalCanvas = forwardRef(({
       const rect = canvas.getBoundingClientRect();
       const width = rect.width || (window.innerWidth - 80);
       const height = rect.height || window.innerHeight;
+
+      const contentContainer = document.querySelector('.max-w-4xl, .max-w-5xl, .max-w-6xl');
+      if (contentContainer) {
+          const cRect = contentContainer.getBoundingClientRect();
+          layoutAnchorRef.current = { x: cRect.left - rect.left, y: cRect.top - rect.top };
+      }
       
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -141,6 +147,23 @@ const GlobalCanvas = forwardRef(({
       if (newWidth === 0 || newHeight === 0) return;
       if (Math.abs(canvas.width - newWidth * dpr) < 2 && Math.abs(canvas.height - newHeight * dpr) < 2) return;
 
+      let currentAnchorX = 0;
+      let currentAnchorY = 0;
+      const contentContainer = document.querySelector('.max-w-4xl, .max-w-5xl, .max-w-6xl');
+      if (contentContainer) {
+          const cRect = contentContainer.getBoundingClientRect();
+          currentAnchorX = cRect.left - rect.left;
+          currentAnchorY = cRect.top - rect.top;
+      }
+
+      let shiftX = 0;
+      let shiftY = 0;
+      if (layoutAnchorRef.current) {
+          shiftX = currentAnchorX - layoutAnchorRef.current.x;
+          shiftY = currentAnchorY - layoutAnchorRef.current.y;
+      }
+      layoutAnchorRef.current = { x: currentAnchorX, y: currentAnchorY };
+
       const dataUrl = canvas.toDataURL("image/png");
       
       canvas.width = newWidth * dpr;
@@ -156,10 +179,25 @@ const GlobalCanvas = forwardRef(({
       img.onload = () => {
         if (canvasRef.current) {
           const dpr = window.devicePixelRatio || 1;
-          ctx.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
+          ctx.drawImage(img, shiftX, shiftY, img.width / dpr, img.height / dpr);
+          
+          if (shiftX !== 0 || shiftY !== 0) {
+              const newDataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+              localStorage.setItem(`planner_drawing_${pageKey}`, newDataUrl);
+              if (saveTimeout.current) clearTimeout(saveTimeout.current);
+              saveTimeout.current = setTimeout(() => {
+                syncToBackend(newDataUrl, textsRef.current);
+              }, 1500);
+          }
         }
       };
       img.src = dataUrl;
+
+      if ((shiftX !== 0 || shiftY !== 0) && textsRef.current.length > 0) {
+         const updatedTexts = textsRef.current.map(t => ({ ...t, x: t.x + shiftX, y: t.y + shiftY }));
+         textsRef.current = updatedTexts; 
+         updateTextsState(updatedTexts); 
+      }
     };
 
     const timer = setTimeout(initCanvas, 50);
@@ -187,6 +225,7 @@ const GlobalCanvas = forwardRef(({
     };
   }, [pageKey, savedImageData, onSave]);
 
+  const layoutAnchorRef = useRef({ x: 0, y: 0 });
   const lastTapRef = useRef(0);
   const tapCountRef = useRef(0);
   const [texts, setTexts] = useState([]);
