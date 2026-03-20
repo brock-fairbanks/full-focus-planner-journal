@@ -115,6 +115,19 @@ const GlobalCanvas = forwardRef(({
     }
   }));
 
+  useLayoutEffect(() => {
+    return () => {
+      if (saveTimeout.current && canvasRef.current) {
+        clearTimeout(saveTimeout.current);
+        saveTimeout.current = null;
+        const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+        localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
+        if (onSave) onSave(dataUrl);
+        syncToBackend(dataUrl, textsRef.current);
+      }
+    };
+  }, [pageKey, onSave]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
