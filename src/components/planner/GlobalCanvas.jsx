@@ -1084,19 +1084,6 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
         placeholder={isEditing ? "Type here..." : ""}
         readOnly={textObj.isLoading}
       />
-      {textObj.isStrikethrough && (
-        <div className="absolute pointer-events-none flex flex-col justify-center gap-[3px]" 
-             style={{ 
-               top: `${(lh || 32) / 2}px`, 
-               transform: 'translateY(-50%)', 
-               left: textObj.strikethroughBounds ? `${Math.max(0, textObj.strikethroughBounds.minX - textObj.x)}px` : '4px',
-               width: textObj.strikethroughBounds ? `${textObj.strikethroughBounds.maxX - textObj.strikethroughBounds.minX}px` : 'calc(100% - 12px)'
-             }}>
-           <div className="w-full h-[3px] bg-[#1e293b] rounded-full"></div>
-           <div className="w-full h-[3px] bg-[#1e293b] rounded-full"></div>
-           <div className="w-full h-[3px] bg-[#1e293b] rounded-full"></div>
-        </div>
-      )}
       {isEditing && !textObj.isLoading && (
         <button 
           onPointerDown={(e) => {
