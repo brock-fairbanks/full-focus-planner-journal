@@ -240,9 +240,19 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                     <div className="h-20 px-8 border-b border-[#E2E8F0] flex items-center justify-between bg-white shrink-0">
                         <div className="flex items-center gap-4">
                             <h2 className="text-2xl font-bold text-[#1e293b] font-serif">Scratchpad History</h2>
-                            <span className="bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 rounded-full">{notes.length} Pages</span>
+                            <span className="bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 rounded-full">{filteredNotes.length} Pages</span>
                         </div>
                         <div className="flex items-center gap-4">
+                            <div className="relative">
+                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Search notes..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="pl-9 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm focus:ring-2 focus:ring-[#F97316]/50 outline-none w-64"
+                                />
+                            </div>
                             <button 
                                 onClick={createNewNote}
                                 className="flex items-center gap-2 px-4 py-2 bg-[#F97316] text-white rounded-lg hover:bg-orange-600 transition-colors font-bold text-sm shadow-sm"
