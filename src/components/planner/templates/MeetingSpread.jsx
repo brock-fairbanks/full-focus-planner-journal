@@ -718,6 +718,29 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current && isRecordingRef.current) {
+      if (!window.confirm("Are you sure you want to cancel? This recording will not be saved.")) return;
+      
+      // Prevent the onstop handler from processing the chunk
+      mediaRecorderRef.current.onstop = null;
+      
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      
+      mediaRecorderRef.current.stop();
+      
+      isRecordingRef.current = false;
+      setIsRecording(false);
+      setIsPaused(false);
+      manualPauseRef.current = false;
+      releaseWakeLock();
+      
+      startNew(); // Reset the UI state
+    }
+  };
+
   const downloadPdf = (sectionTitle, content) => {
     if (!content) return;
     const doc = new jsPDF();
