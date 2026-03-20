@@ -114,15 +114,15 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
     const getBgStyle = () => {
         switch (background) {
             case "lined-narrow":
-                return { backgroundImage: "repeating-linear-gradient(transparent, transparent 31px, #cbd5e1 31px, #cbd5e1 32px)", backgroundSize: "100% 32px", backgroundAttachment: "local" };
+                return { backgroundImage: "repeating-linear-gradient(transparent, transparent 31px, #93c5fd 31px, #93c5fd 32px)", backgroundSize: "100% 32px", backgroundAttachment: "local" };
             case "lined-wide":
-                return { backgroundImage: "repeating-linear-gradient(transparent, transparent 47px, #cbd5e1 47px, #cbd5e1 48px)", backgroundSize: "100% 48px", backgroundAttachment: "local" };
+                return { backgroundImage: "repeating-linear-gradient(transparent, transparent 47px, #93c5fd 47px, #93c5fd 48px)", backgroundSize: "100% 48px", backgroundAttachment: "local" };
             case "grid-small":
-                return { backgroundImage: "linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px)", backgroundSize: "20px 20px" };
+                return { backgroundImage: "linear-gradient(#93c5fd 1px, transparent 1px), linear-gradient(90deg, #93c5fd 1px, transparent 1px)", backgroundSize: "20px 20px" };
             case "grid-large":
-                return { backgroundImage: "linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px)", backgroundSize: "40px 40px" };
+                return { backgroundImage: "linear-gradient(#93c5fd 1px, transparent 1px), linear-gradient(90deg, #93c5fd 1px, transparent 1px)", backgroundSize: "40px 40px" };
             case "dotted":
-                return { backgroundImage: "radial-gradient(#64748b 1.5px, transparent 1.5px)", backgroundSize: "24px 24px" };
+                return { backgroundImage: "radial-gradient(#60a5fa 1.5px, transparent 1.5px)", backgroundSize: "24px 24px" };
             default:
                 return {};
         }
