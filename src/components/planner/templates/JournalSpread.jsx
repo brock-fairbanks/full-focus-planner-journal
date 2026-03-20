@@ -189,13 +189,13 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
   return (
     <div className="flex flex-col w-full min-h-full bg-[#FAF9F6]">
       {/* Secondary Navigation Bar */}
-      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E2E8F0] px-8 md:px-12 h-[64px] md:h-[72px] shrink-0 bg-[#FAF9F6]">
-        <div className="flex gap-2 md:gap-4 items-center">
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E2E8F0] px-12 h-[72px] shrink-0 bg-[#FAF9F6]">
+        <div className="flex gap-4 items-center">
           {LAYOUT_TABS[layoutMode].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveSubSection(tab)}
-              className={`text-sm md:text-base font-serif font-bold transition-all px-4 py-2 rounded-lg select-none shadow-sm flex items-center ${
+              className={`text-base font-serif font-bold transition-all px-4 py-2 rounded-lg select-none shadow-sm flex items-center ${
                 activeSubSection === tab 
                   ? "bg-[#1e293b] text-white border border-[#1e293b]" 
                   : "bg-white text-[#94a3b8] border border-[#E2E8F0] hover:bg-[#f8fafc] hover:text-[#1e293b]"
