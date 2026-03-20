@@ -326,7 +326,7 @@ const GlobalCanvas = forwardRef(({
         const records = await base44.entities.PlannerSync.filter({ page_key: pageKey });
         if (records.length > 0 && isSubscribed) {
           syncIdRef.current = records[0].id;
-          if (records[0].updated_at && records[0].updated_at > lastLocalUpdateTime.current) {
+          if (records[0].updated_at && records[0].updated_at !== lastLocalUpdateTime.current) {
             lastLocalUpdateTime.current = records[0].updated_at;
             localStorage.setItem(`planner_updated_at_${pageKey}`, records[0].updated_at.toString());
             if (isDrawing.current) return; // Don't overwrite if user is actively drawing
