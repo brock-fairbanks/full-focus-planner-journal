@@ -87,7 +87,7 @@ const GlobalCanvas = forwardRef(({
   useImperativeHandle(ref, () => ({
     clear: () => {
       if (canvasRef.current && ctxRef.current) {
-        undoStackRef.current.push(ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height));
+        undoStackRef.current.push(getCanvasSnapshot());
         if (undoStackRef.current.length > 30) undoStackRef.current.shift();
         ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         updateTextsState([]);
@@ -102,7 +102,7 @@ const GlobalCanvas = forwardRef(({
       if (undoStackRef.current.length > 0) {
         const prevState = undoStackRef.current.pop();
         if (canvasRef.current && ctxRef.current) {
-          ctxRef.current.putImageData(prevState, 0, 0);
+          putCanvasSnapshot(prevState);
           const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
           localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
           if (onSave) onSave(dataUrl);
@@ -386,7 +386,7 @@ const GlobalCanvas = forwardRef(({
     if (targetText && ctxRef.current) {
         const ctx = ctxRef.current;
         
-        undoStackRef.current.push(ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height));
+        undoStackRef.current.push(getCanvasSnapshot());
         if (undoStackRef.current.length > 30) undoStackRef.current.shift();
 
         ctx.save();
@@ -422,7 +422,7 @@ const GlobalCanvas = forwardRef(({
         const x = (clientX - rect.left) * scaleX;
         const y = (clientY - rect.top) * scaleY;
         
-        undoStackRef.current.push(ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height));
+        undoStackRef.current.push(getCanvasSnapshot());
         if (undoStackRef.current.length > 30) undoStackRef.current.shift();
 
         ctx.save();
@@ -617,9 +617,9 @@ const GlobalCanvas = forwardRef(({
     });
     
       if (doubleTapSnapshotRef.current && ctxRef.current) {
-        ctxRef.current.putImageData(doubleTapSnapshotRef.current, 0, 0);
+        putCanvasSnapshot(doubleTapSnapshotRef.current);
       } else if (pointerType !== 'touch' && preStrokeStateRef.current && ctxRef.current) {
-        ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+        putCanvasSnapshot(preStrokeStateRef.current);
       }
       isDrawing.current = false;
     }, 250);
@@ -636,7 +636,7 @@ const GlobalCanvas = forwardRef(({
 
     if (now - lastTapRef.current > DOUBLE_TAP_DELAY) {
       if (ctxRef.current && canvasRef.current) {
-        doubleTapSnapshotRef.current = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+        doubleTapSnapshotRef.current = getCanvasSnapshot();
       }
     }
 
@@ -670,7 +670,7 @@ const GlobalCanvas = forwardRef(({
     if (!ctxRef.current || !canvasRef.current) return;
     
     // Save canvas state for potential stroke replacement (scratch out / strike through)
-    preStrokeStateRef.current = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+    preStrokeStateRef.current = getCanvasSnapshot();
     
     isDrawing.current = true;
     
@@ -823,7 +823,7 @@ const GlobalCanvas = forwardRef(({
 
       if ((width > 40 && height < 30 && xReversals <= 2) || (height > 40 && width < 30 && yReversals <= 2)) {
         if (preStrokeStateRef.current) {
-          ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+          putCanvasSnapshot(preStrokeStateRef.current);
         }
         
         ctxRef.current.globalCompositeOperation = 'source-over';
@@ -950,7 +950,7 @@ const GlobalCanvas = forwardRef(({
       // Strike-through detection (mostly horizontal, straight line)
       if (width > 60 && height < 20 && xReversals <= 1) {
         if (preStrokeStateRef.current) {
-          ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+          putCanvasSnapshot(preStrokeStateRef.current);
         }
         
         let finalY = (pts[0].y + pts[pts.length-1].y) / 2;
@@ -1006,7 +1006,7 @@ const GlobalCanvas = forwardRef(({
       // Checkmark detection -> replace with a perfect checkbox with green check
       else if (isCheckmark) {
         if (preStrokeStateRef.current) {
-          ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+          putCanvasSnapshot(preStrokeStateRef.current);
         }
         const boxSize = Math.min(24, Math.max(16, width));
         const boxX = minX;
@@ -1038,7 +1038,7 @@ const GlobalCanvas = forwardRef(({
       // Circle detection -> extract text using AI
       else if (isCircle) {
         if (preStrokeStateRef.current) {
-          ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+          putCanvasSnapshot(preStrokeStateRef.current);
         }
         
         const tempCanvas = document.createElement('canvas');
