@@ -354,7 +354,6 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       let isCompleted = false;
       let text = "";
       
-      const rType = recordingTypeRef.current;
       const prompt = rType === 'lecture' 
         ? "Please transcribe this lecture accurately. Exclude any advertisements or sponsored content."
         : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
