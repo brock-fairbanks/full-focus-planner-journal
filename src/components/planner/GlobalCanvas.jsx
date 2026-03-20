@@ -474,12 +474,13 @@ const GlobalCanvas = forwardRef(({
       }
     });
     
-    if (doubleTapSnapshotRef.current && ctxRef.current) {
-      ctxRef.current.putImageData(doubleTapSnapshotRef.current, 0, 0);
-    } else if (pointerType !== 'touch' && preStrokeStateRef.current && ctxRef.current) {
-      ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
-    }
-    isDrawing.current = false;
+      if (doubleTapSnapshotRef.current && ctxRef.current) {
+        ctxRef.current.putImageData(doubleTapSnapshotRef.current, 0, 0);
+      } else if (pointerType !== 'touch' && preStrokeStateRef.current && ctxRef.current) {
+        ctxRef.current.putImageData(preStrokeStateRef.current, 0, 0);
+      }
+      isDrawing.current = false;
+    }, 250);
   };
 
   const lastTapPosRef = useRef({ x: 0, y: 0 });
