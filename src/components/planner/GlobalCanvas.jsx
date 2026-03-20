@@ -450,7 +450,7 @@ const GlobalCanvas = forwardRef(({
             syncToBackend(dataUrl, textsRef.current);
           }
           saveTimeout.current = null;
-        }, 1500); 
+        }, 30000); 
     } else if (!targetText && ctxRef.current) {
         const ctx = ctxRef.current;
         const rect = canvasRef.current.getBoundingClientRect();
@@ -482,7 +482,7 @@ const GlobalCanvas = forwardRef(({
             syncToBackend(dataUrl, textsRef.current);
           }
           saveTimeout.current = null;
-        }, 1500); 
+        }, 30000); 
     }
   };
 
