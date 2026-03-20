@@ -549,8 +549,8 @@ const GlobalCanvas = forwardRef(({
     lastTapRef.current = now;
     lastTapPosRef.current = { x: e.clientX, y: e.clientY };
 
-    // Prevent drawing with finger (touch), allow stylus/pen and mouse
-    if (e.pointerType === 'touch') return;
+    // Allow drawing with finger (touch) for mobile support
+    // removed: if (e.pointerType === 'touch') return;
 
     if (!ctxRef.current || !canvasRef.current) return;
     
