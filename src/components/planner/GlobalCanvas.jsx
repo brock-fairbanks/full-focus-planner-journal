@@ -792,8 +792,8 @@ const GlobalCanvas = forwardRef(({
   };
 
   const draw = (e) => {
-    e.stopPropagation();
     if (!isDrawing.current || !ctxRef.current || !canvasScaleRef.current) return;
+    e.stopPropagation();
     const { left, top, scaleX, scaleY } = canvasScaleRef.current;
     
     const nativeEvent = e.nativeEvent || e;
