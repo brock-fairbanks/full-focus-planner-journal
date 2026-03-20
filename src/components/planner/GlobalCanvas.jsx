@@ -238,7 +238,9 @@ const GlobalCanvas = forwardRef(({
       img.onload = () => {
         if (canvasRef.current) {
           const dpr = window.devicePixelRatio || 1;
-          ctx.drawImage(img, shiftX, shiftY, img.width / dpr, img.height / dpr);
+          const logicalWidth = canvasRef.current.width / dpr;
+          const logicalHeight = canvasRef.current.height / dpr;
+          ctx.drawImage(img, shiftX, shiftY, logicalWidth, logicalHeight);
           
           if (shiftX !== 0 || shiftY !== 0) {
               const newDataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
@@ -883,7 +885,9 @@ const GlobalCanvas = forwardRef(({
         if (canvasRef.current && ctxRef.current) {
           ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
           const dpr = window.devicePixelRatio || 1;
-          ctxRef.current.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
+          const logicalWidth = canvasRef.current.width / dpr;
+          const logicalHeight = canvasRef.current.height / dpr;
+          ctxRef.current.drawImage(img, 0, 0, logicalWidth, logicalHeight);
           localStorage.setItem(`planner_drawing_${pageKey}`, pendingRemoteDrawingRef.current);
           pendingRemoteDrawingRef.current = null;
         }
