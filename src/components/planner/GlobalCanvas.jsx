@@ -933,6 +933,7 @@ const GlobalCanvas = forwardRef(({
           activeTemplate={activeTemplate}
           updateText={(id, updated) => updateTextsState(prev => prev.map(t => t.id === id ? updated : t))}
           deleteText={(id) => updateTextsState(prev => prev.filter(t => t.id !== id))}
+          onTripleClick={() => handleTripleClickAction(0, 0, textObj)}
         />
       ))}
     </div>
