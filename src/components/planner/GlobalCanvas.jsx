@@ -250,10 +250,30 @@ const GlobalCanvas = forwardRef(({
   const lastTapRef = useRef(0);
   const tapCountRef = useRef(0);
   const [texts, setTexts] = useState([]);
+  const [activeTextId, setActiveTextId] = useState(null);
+  const prevGlobalTextSizeRef = useRef(globalTextSize);
 
   useEffect(() => {
     textsRef.current = texts;
   }, [texts]);
+
+  useEffect(() => {
+    if (prevGlobalTextSizeRef.current !== globalTextSize) {
+      prevGlobalTextSizeRef.current = globalTextSize;
+      if (activeTextId) {
+        updateTextsState(prev => {
+          const target = prev.find(t => t.id === activeTextId);
+          const newSize = globalTextSize > 0 ? globalTextSize : null;
+          if (target && target.customFontSize !== newSize) {
+            return prev.map(t => 
+              t.id === activeTextId ? { ...t, customFontSize: newSize } : t
+            );
+          }
+          return prev;
+        });
+      }
+    }
+  }, [globalTextSize, activeTextId]);
 
   useEffect(() => {
     let isSubscribed = true;
@@ -1070,13 +1090,17 @@ const GlobalCanvas = forwardRef(({
           updateText={(id, updated) => updateTextsState(prev => prev.map(t => t.id === id ? updated : t))}
           deleteText={(id) => updateTextsState(prev => prev.filter(t => t.id !== id))}
           onTripleClick={() => handleTripleClickAction(0, 0, textObj)}
+          onFocus={() => {
+            setActiveTextId(textObj.id);
+            if (onTextFocus) onTextFocus(textObj.customFontSize);
+          }}
         />
       ))}
     </div>
   );
 });
 
-const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleClick }) => {
+const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleClick, onFocus }) => {
   const [isEditing, setIsEditing] = useState(textObj.isEditing);
   const [val, setVal] = useState(textObj.text);
   const textareaRef = useRef(null);
@@ -1145,6 +1169,7 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
         rows={1}
         onChange={handleInput}
         onBlur={handleBlur}
+        onFocus={onFocus}
         onClick={(e) => { 
           if (e.detail === 3) {
             if (onTripleClick) onTripleClick();

@@ -351,6 +351,7 @@ export default function Planner() {
                 highlighterWidth={highlighterWidth}
                 highlighterColor={highlighterColor}
                 globalTextSize={textSize}
+                onTextFocus={(size) => setTextSize(size || 0)}
               />
             </div>
           )}
