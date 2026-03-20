@@ -307,8 +307,14 @@ const GlobalCanvas = forwardRef(({
   };
 
   const handleDoubleClickAction = (clientX, clientY, pointerType) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const clickY = clientY - rect.top;
+    if (pendingDoubleClickRef.current) clearTimeout(pendingDoubleClickRef.current);
+    
+    pendingDoubleClickRef.current = setTimeout(() => {
+      pendingDoubleClickRef.current = null;
+      if (!canvasRef.current) return;
+      
+      const rect = canvasRef.current.getBoundingClientRect();
+      const clickY = clientY - rect.top;
     let snappedY = Math.round((clickY - 16) / 32) * 32;
 
     let startX = clientX - rect.left;
