@@ -879,8 +879,8 @@ const GlobalCanvas = forwardRef(({
   };
 
   const endDrawing = (e) => {
-    e.stopPropagation();
     if (!isDrawing.current) return;
+    e.stopPropagation();
     if (e && e.pointerId) {
         try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
     }
