@@ -161,6 +161,7 @@ const GlobalCanvas = forwardRef(({
   }, [pageKey, savedImageData, onSave]);
 
   const lastTapRef = useRef(0);
+  const tapCountRef = useRef(0);
   const [texts, setTexts] = useState([]);
 
   useEffect(() => {
