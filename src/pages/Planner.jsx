@@ -222,7 +222,7 @@ export default function Planner() {
           isFullscreen 
             ? "left-0 top-0" 
             : (activeTemplate === "JOURNAL" ? "left-40 md:left-44 top-[104px]" : "left-20 top-[104px]")
-        } right-0 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto transition-all duration-300 ease-in-out`}
+        } right-0 bottom-0 ${activeTemplate === 'SCRATCHPAD' ? 'bg-[#E5E0D8]' : 'bg-[#FAF9F6]'} overflow-y-auto overflow-x-auto transition-all duration-300 ease-in-out`}
       >
         <div className="relative min-h-full w-full flex flex-col min-w-[1024px]">
           {/* Fullscreen Toggle & Tools */}
