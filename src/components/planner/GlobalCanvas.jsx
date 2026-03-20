@@ -281,29 +281,10 @@ const GlobalCanvas = forwardRef(({
   const tapCountRef = useRef(0);
   const [texts, setTexts] = useState([]);
   const [activeTextId, setActiveTextId] = useState(null);
-  const prevGlobalTextSizeRef = useRef(globalTextSize);
 
   useEffect(() => {
     textsRef.current = texts;
   }, [texts]);
-
-  useEffect(() => {
-    if (prevGlobalTextSizeRef.current !== globalTextSize) {
-      prevGlobalTextSizeRef.current = globalTextSize;
-      if (activeTextId) {
-        updateTextsState(prev => {
-          const target = prev.find(t => t.id === activeTextId);
-          const newSize = globalTextSize > 0 ? globalTextSize : null;
-          if (target && target.customFontSize !== newSize) {
-            return prev.map(t => 
-              t.id === activeTextId ? { ...t, customFontSize: newSize } : t
-            );
-          }
-          return prev;
-        });
-      }
-    }
-  }, [globalTextSize, activeTextId]);
 
   useEffect(() => {
     let isSubscribed = true;
@@ -396,6 +377,13 @@ const GlobalCanvas = forwardRef(({
                            // Canvas size is now permanently fixed
                            const dpr = window.devicePixelRatio || 1;
                        }
+                       textsArray = textsArray.map(incomingText => {
+                           const localText = textsRef.current.find(t => t.id === incomingText.id);
+                           if (localText && localText.isEditing) {
+                               return { ...incomingText, isEditing: true, text: localText.text };
+                           }
+                           return { ...incomingText, isEditing: false };
+                       });
                        setTexts(textsArray);
                        localStorage.setItem(`planner_texts_${pageKey}`, JSON.stringify(textsArray));
                    } catch(e) {}
@@ -682,8 +670,7 @@ const GlobalCanvas = forwardRef(({
           text: '',
           isEditing: true,
           lineHeight,
-          width,
-          customFontSize: globalTextSize > 0 ? globalTextSize : null
+          width
         };
         return [...prev, newText];
       }
@@ -701,8 +688,8 @@ const GlobalCanvas = forwardRef(({
   const lastTapPosRef = useRef({ x: 0, y: 0 }); // Tracks last tap position to detect double/triple taps
 
   const startDrawing = (e) => {
-    const isPen = e.pointerType === 'pen';
-    if (isPen) {
+    const isPenOrMouse = e.pointerType === 'pen' || e.pointerType === 'mouse';
+    if (isPenOrMouse) {
         e.stopPropagation();
         e.target.setPointerCapture(e.pointerId);
     }
@@ -715,12 +702,11 @@ const GlobalCanvas = forwardRef(({
       }
     }
 
-    // Only check double tap if it's not a pen, or if it's a mouse/touch that hasn't moved much
     const dx = Math.abs(e.clientX - lastTapPosRef.current.x);
     const dy = Math.abs(e.clientY - lastTapPosRef.current.y);
     const isSameSpot = dx < 40 && dy < 40;
 
-    if (!isPen && isSameSpot && now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+    if (e.pointerType === 'touch' && isSameSpot && now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       tapCountRef.current += 1;
       if (tapCountRef.current === 3) {
          handleTripleClickAction(e.clientX, e.clientY);
@@ -739,8 +725,7 @@ const GlobalCanvas = forwardRef(({
     lastTapRef.current = now;
     lastTapPosRef.current = { x: e.clientX, y: e.clientY };
 
-    // Only allow drawing with pen to enable scrolling with finger without leaving marks
-    if (e.pointerType !== 'pen') {
+    if (!isPenOrMouse) {
         if (e.target.hasPointerCapture(e.pointerId)) {
             try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
         }
@@ -1054,10 +1039,7 @@ const GlobalCanvas = forwardRef(({
           updateText={(id, updated) => updateTextsState(prev => prev.map(t => t.id === id ? updated : t))}
           deleteText={(id) => updateTextsState(prev => prev.filter(t => t.id !== id))}
           onTripleClick={() => handleTripleClickAction(0, 0, textObj)}
-          onFocus={() => {
-            setActiveTextId(textObj.id);
-            if (onTextFocus) onTextFocus(textObj.customFontSize);
-          }}
+          onFocus={() => setActiveTextId(textObj.id)}
         />
       ))}
     </div>
