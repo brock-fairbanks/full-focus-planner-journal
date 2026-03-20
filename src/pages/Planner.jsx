@@ -351,11 +351,9 @@ export default function Planner() {
           {/* Drawing Layer (z-20) */}
           {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
             <div 
-              className={`absolute bottom-0 z-20 pointer-events-auto max-w-5xl mx-auto ${activeTemplate === "SCRATCHPAD" ? "" : "inset-x-0 w-full"}`} 
+              className={`absolute bottom-0 z-20 pointer-events-auto max-w-5xl mx-auto inset-x-0 w-full`} 
               style={{ 
-                top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : (activeTemplate === "SCRATCHPAD" ? "64px" : "0px"),
-                left: activeTemplate === "SCRATCHPAD" ? "256px" : undefined,
-                width: activeTemplate === "SCRATCHPAD" ? "calc(100% - 256px)" : "100%"
+                top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px",
               }}
             >
               <GlobalCanvas 
