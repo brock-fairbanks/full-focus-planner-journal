@@ -22,7 +22,7 @@ const GlobalCanvas = forwardRef(({
   const canvasScaleRef = useRef(null);
   const syncIdRef = useRef(null);
   const undoStackRef = useRef([]);
-  const lastLocalUpdateTime = useRef(Date.now());
+  const lastLocalUpdateTime = useRef(0);
   const textsRef = useRef([]);
 
   const syncToBackend = async (dataUrl, currentTexts) => {
