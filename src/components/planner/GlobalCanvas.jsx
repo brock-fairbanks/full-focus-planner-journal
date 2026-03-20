@@ -857,7 +857,11 @@ const GlobalCanvas = forwardRef(({
         if (snappedTextId) {
             updateTextsState(prev => prev.map(t => {
                 if (t.id === snappedTextId) {
-                    return { ...t, isStrikethrough: !t.isStrikethrough };
+                    if (t.isStrikethrough) {
+                        return { ...t, isStrikethrough: false, strikethroughBounds: null };
+                    } else {
+                        return { ...t, isStrikethrough: true, strikethroughBounds: { minX, maxX } };
+                    }
                 }
                 return t;
             }));
@@ -1115,7 +1119,13 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
         readOnly={textObj.isLoading}
       />
       {textObj.isStrikethrough && (
-        <div className="absolute inset-x-0 pointer-events-none flex flex-col justify-center gap-[3px]" style={{ top: `${(lh || 32) / 2}px`, transform: 'translateY(-50%)', paddingLeft: '4px', paddingRight: '8px' }}>
+        <div className="absolute pointer-events-none flex flex-col justify-center gap-[3px]" 
+             style={{ 
+               top: `${(lh || 32) / 2}px`, 
+               transform: 'translateY(-50%)', 
+               left: textObj.strikethroughBounds ? `${Math.max(0, textObj.strikethroughBounds.minX - textObj.x)}px` : '4px',
+               width: textObj.strikethroughBounds ? `${textObj.strikethroughBounds.maxX - textObj.strikethroughBounds.minX}px` : 'calc(100% - 12px)'
+             }}>
            <div className="w-full h-[3px] bg-[#1e293b] rounded-full"></div>
            <div className="w-full h-[3px] bg-[#1e293b] rounded-full"></div>
            <div className="w-full h-[3px] bg-[#1e293b] rounded-full"></div>
