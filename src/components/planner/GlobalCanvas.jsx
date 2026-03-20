@@ -257,6 +257,50 @@ const GlobalCanvas = forwardRef(({
   const activeToolRef = useRef('pen');
   const lineWidthRef = useRef(2.2);
 
+  const handleTripleClickAction = (clientX, clientY, textObj = null) => {
+    let targetText = textObj;
+    if (!targetText && canvasRef.current) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        
+        targetText = textsRef.current.find(t => {
+           const tWidth = parseInt(t.width) || 200;
+           const lines = t.text ? t.text.split('\n').length : 1;
+           const tHeight = (t.lineHeight || 32) * lines;
+           return x >= t.x - 20 && x <= t.x + tWidth + 20 && y >= t.y - 20 && y <= t.y + tHeight + 20;
+        });
+    }
+
+    if (targetText && ctxRef.current) {
+        const ctx = ctxRef.current;
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 15;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        const lines = targetText.text ? targetText.text.split('\n').length : 1;
+        for (let i = 0; i < lines; i++) {
+           const lineY = targetText.y + (targetText.lineHeight || 32) * (i + 0.5);
+           ctx.moveTo(targetText.x - 10, lineY);
+           ctx.lineTo(targetText.x + parseInt(targetText.width || 200) + 10, lineY);
+        }
+        ctx.stroke();
+        ctx.restore();
+        
+        if (saveTimeout.current) clearTimeout(saveTimeout.current);
+        saveTimeout.current = setTimeout(() => {
+          if (canvasRef.current) {
+            const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+            localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
+            if (onSave) onSave(dataUrl);
+            syncToBackend(dataUrl, textsRef.current);
+          }
+          saveTimeout.current = null;
+        }, 1500); 
+    }
+  };
+
   const handleDoubleClickAction = (clientX, clientY, pointerType) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const clickY = clientY - rect.top;
