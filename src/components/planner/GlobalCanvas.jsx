@@ -78,9 +78,20 @@ const GlobalCanvas = forwardRef(({
       setTimeout(() => { if (myRecentSaves.current) myRecentSaves.current.delete(timestamp); }, 15000);
     }
     try {
+      // Upload the image to bypass the 200KB database string limit
+      let finalDrawingData = dataUrl;
+      try {
+        const uploadRes = await base44.integrations.Core.UploadFile({ file: dataUrl });
+        if (uploadRes && uploadRes.file_url) {
+          finalDrawingData = uploadRes.file_url;
+        }
+      } catch (uploadError) {
+        console.error('Failed to upload image to CDN, falling back to direct string:', uploadError);
+      }
+
       if (syncIdRef.current) {
         await base44.entities.PlannerSync.update(syncIdRef.current, {
-          drawing_data: dataUrl,
+          drawing_data: finalDrawingData,
           texts_data: JSON.stringify(currentTexts),
           updated_at: timestamp
         });
@@ -89,14 +100,14 @@ const GlobalCanvas = forwardRef(({
         if (records.length > 0) {
           syncIdRef.current = records[0].id;
           await base44.entities.PlannerSync.update(syncIdRef.current, {
-            drawing_data: dataUrl,
+            drawing_data: finalDrawingData,
             texts_data: JSON.stringify(currentTexts),
             updated_at: timestamp
           });
         } else {
           const res = await base44.entities.PlannerSync.create({
             page_key: pageKey,
-            drawing_data: dataUrl,
+            drawing_data: finalDrawingData,
             texts_data: JSON.stringify(currentTexts),
             updated_at: timestamp
           });
