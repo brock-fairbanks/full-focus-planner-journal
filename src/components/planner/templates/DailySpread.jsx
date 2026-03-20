@@ -66,13 +66,13 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
             title="Clear entire page"
           >
             <Trash2 size={16} />
-            <span className="hidden md:inline">Clear Page</span>
+            <span className="inline">Clear Page</span>
           </button>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 p-6 md:p-10 flex justify-center">
+      <div className="flex-1 p-10 flex justify-center">
         <div className="w-full max-w-4xl">
           {activeSubSection === "Big 3" && (
             <div className="mt-2">
