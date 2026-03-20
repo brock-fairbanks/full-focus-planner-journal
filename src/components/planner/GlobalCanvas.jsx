@@ -13,7 +13,8 @@ const GlobalCanvas = forwardRef(({
   eraserWidth = 30,
   highlighterWidth = 16,
   highlighterColor = 'rgba(253, 224, 71, 0.8)',
-  globalTextSize = 0
+  globalTextSize = 0,
+  onTextFocus
 }, ref) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
