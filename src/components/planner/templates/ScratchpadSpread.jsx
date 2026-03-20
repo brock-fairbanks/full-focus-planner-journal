@@ -270,16 +270,28 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                     </div>
                     <div className="flex-1 overflow-y-auto p-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                            {notes.map(note => (
+                            {filteredNotes.map(note => (
                                 <div 
                                     key={note.id} 
-                                    onClick={() => selectNote(note)}
+                                    onClick={() => !editingNoteId && selectNote(note)}
                                     className={`relative group bg-white border ${activeNoteId === note.id ? 'border-[#F97316] ring-2 ring-[#F97316]/20' : 'border-[#E2E8F0]'} rounded-xl p-5 cursor-pointer hover:shadow-md transition-all flex flex-col h-40`}
                                 >
                                     <div className="flex-1">
-                                        <h3 className={`font-bold text-lg mb-1 truncate ${activeNoteId === note.id ? 'text-[#F97316]' : 'text-[#1e293b]'}`}>
-                                            {note.title || "Untitled Note"}
-                                        </h3>
+                                        {editingNoteId === note.id ? (
+                                            <input
+                                                autoFocus
+                                                value={editTitleValue}
+                                                onChange={(e) => setEditTitleValue(e.target.value)}
+                                                onKeyDown={(e) => handleRenameSubmit(e, note.id)}
+                                                onBlur={(e) => handleRenameSubmit(e, note.id)}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="w-full font-bold text-lg mb-1 border-b border-[#F97316] outline-none bg-transparent"
+                                            />
+                                        ) : (
+                                            <h3 className={`font-bold text-lg mb-1 truncate pr-8 ${activeNoteId === note.id ? 'text-[#F97316]' : 'text-[#1e293b]'}`}>
+                                                {note.title || "Untitled Note"}
+                                            </h3>
+                                        )}
                                         <div className="flex items-center gap-2 text-xs text-slate-400 font-medium mt-2">
                                             <span className="capitalize">{note.background.replace("-", " ")}</span>
                                         </div>
@@ -288,6 +300,17 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                                         <div className="text-[11px] text-slate-400 font-medium">
                                             {new Date(note.updated_at).toLocaleDateString()} {new Date(note.updated_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                         </div>
+                                    </div>
+                                    <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                        {!editingNoteId && (
+                                            <button 
+                                                onClick={(e) => startRenaming(e, note)}
+                                                className="p-2 text-slate-300 hover:text-[#F97316] hover:bg-orange-50 rounded-lg"
+                                                title="Rename Note"
+                                            >
+                                                <Pencil size={16} />
+                                            </button>
+                                        )}
                                     </div>
                                     <button 
                                         onClick={(e) => { e.stopPropagation(); deleteNote(note.id); }}
