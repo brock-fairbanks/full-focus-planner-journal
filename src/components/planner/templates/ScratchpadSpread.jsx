@@ -134,6 +134,18 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
             {portalTarget && createPortal(
                 <div className="h-[34px] px-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] flex items-center justify-center gap-3 pointer-events-auto shadow-sm rounded-lg whitespace-nowrap">
                 
+                {/* Clear Button */}
+                <button 
+                    onClick={onClearCanvas}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 text-xs font-bold text-[#1e293b] hover:bg-slate-100 px-2 py-1.5 rounded transition-colors"
+                >
+                    <Eraser size={14} />
+                    Clear
+                </button>
+
+                <div className="w-px h-4 bg-slate-200" />
+
                 {/* History Button */}
                 <button 
                     onClick={() => setShowHistory(true)}
