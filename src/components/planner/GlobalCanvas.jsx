@@ -282,7 +282,7 @@ const GlobalCanvas = forwardRef(({
   useEffect(() => {
     let isSubscribed = true;
     syncIdRef.current = null;
-    lastLocalUpdateTime.current = 0; // Reset for new page to enforce fresh pull
+    lastLocalUpdateTime.current = parseInt(localStorage.getItem(`planner_updated_at_${pageKey}`) || '0'); // Reset for new page to enforce fresh pull
     
     // First load from local storage for fast feedback
     const saved = localStorage.getItem(`planner_texts_${pageKey}`);
