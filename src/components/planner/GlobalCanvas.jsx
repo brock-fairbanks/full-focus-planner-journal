@@ -830,6 +830,7 @@ const GlobalCanvas = forwardRef(({
         }
         
         let finalY = (pts[0].y + pts[pts.length-1].y) / 2;
+        let snappedTextId = null;
         
         // Snap to text vertical center if nearby
         if (textsRef.current && textsRef.current.length > 0) {
@@ -840,11 +841,22 @@ const GlobalCanvas = forwardRef(({
                 if (Math.abs(finalY - textCenterY) < minDist && minX < t.x + tWidth && maxX > t.x) {
                     minDist = Math.abs(finalY - textCenterY);
                     finalY = textCenterY;
+                    snappedTextId = t.id;
                 }
             }
         }
 
-        // Replace with perfectly straight double strike-through lines
+        if (snappedTextId) {
+            updateTextsState(prev => prev.map(t => {
+                if (t.id === snappedTextId) {
+                    return { ...t, isStrikethrough: !t.isStrikethrough };
+                }
+                return t;
+            }));
+            return;
+        }
+
+        // Replace with perfectly straight double strike-through lines (if not over text)
         ctxRef.current.strokeStyle = '#1e293b';
         ctxRef.current.lineWidth = 2;
         
