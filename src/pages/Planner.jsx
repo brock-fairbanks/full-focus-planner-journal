@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addDays } from "date-fns";
-import { Mic, MessagesSquare, Eraser, Pen, Highlighter, Undo } from "lucide-react";
+import { Mic, MessagesSquare, Eraser, Pen, Highlighter, Undo, FileEdit } from "lucide-react";
 import TabBar from "../components/planner/TabBar.jsx";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
@@ -22,6 +22,7 @@ export default function Planner() {
     if (p.includes("journal")) return "JOURNAL";
     if (p.includes("meeting")) return "MEETING";
     if (p.includes("chat")) return "CHAT";
+    if (p.includes("scratchpad")) return "SCRATCHPAD";
     return "DAILY";
   }, []);
 
@@ -145,7 +146,8 @@ export default function Planner() {
       QUARTERLY_GOALS: "/goals",
       JOURNAL: "/journal",
       MEETING: "/meeting",
-      CHAT: "/chat"
+      CHAT: "/chat",
+      SCRATCHPAD: "/scratchpad"
     };
     navigate(pathMap[templateId] || "/today");
   };
@@ -161,7 +163,10 @@ export default function Planner() {
       datePart = d.toISOString().split('T')[0];
     }
   }
-  const pageKey = `${activeTemplate}${(activeTemplate === "DAILY" || activeTemplate === "JOURNAL") && subSection ? `_${subSection}` : ''}_${datePart}`;
+  let pageKey = `${activeTemplate}${(activeTemplate === "DAILY" || activeTemplate === "JOURNAL") && subSection ? `_${subSection}` : ''}_${datePart}`;
+  if (activeTemplate === "SCRATCHPAD") {
+      pageKey = subSection ? `SCRATCHPAD_${subSection}` : `SCRATCHPAD_${datePart}`;
+  }
 
   return (
     <div 
@@ -200,6 +205,12 @@ export default function Planner() {
                 className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-md transition-colors ${activeTemplate === 'CHAT' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
             >
                 <MessagesSquare size={16} /> AI Chat
+            </button>
+            <button 
+                onClick={() => handleTabChange("SCRATCHPAD")}
+                className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-md transition-colors ${activeTemplate === 'SCRATCHPAD' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
+            >
+                <FileEdit size={16} /> Scratchpad
             </button>
           </div>
         </>
@@ -339,7 +350,14 @@ export default function Planner() {
           
           {/* Drawing Layer (z-20) */}
           {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
-            <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-auto max-w-5xl mx-auto w-full" style={{ top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px" }}>
+            <div 
+              className={`absolute bottom-0 z-20 pointer-events-auto max-w-5xl mx-auto ${activeTemplate === "SCRATCHPAD" ? "" : "inset-x-0 w-full"}`} 
+              style={{ 
+                top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : (activeTemplate === "SCRATCHPAD" ? "64px" : "0px"),
+                left: activeTemplate === "SCRATCHPAD" ? "256px" : undefined,
+                width: activeTemplate === "SCRATCHPAD" ? "calc(100% - 256px)" : "100%"
+              }}
+            >
               <GlobalCanvas 
                 key={pageKey}
                 ref={canvasRef} 
