@@ -918,6 +918,11 @@ const GlobalCanvas = forwardRef(({
         onPointerUp={endDrawing}
         onPointerCancel={endDrawing}
         onDoubleClick={(e) => handleDoubleClickAction(e.clientX, e.clientY, 'mouse')}
+        onClick={(e) => {
+          if (e.detail === 3) {
+            handleTripleClickAction(e.clientX, e.clientY);
+          }
+        }}
         className="w-full h-full"
         style={{ background: "transparent", display: "block" }}
       />
