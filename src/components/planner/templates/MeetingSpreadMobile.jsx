@@ -1209,14 +1209,6 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
                     >
                       <Mic size={20} /> Record Mic
                     </button>
-                    {/* System audio generally isn't supported on mobile, so we might hide it or keep it */}
-                    <button 
-                      onClick={startSystemAudioRecording}
-                      disabled={isProcessing}
-                      className="flex justify-center items-center gap-2 bg-indigo-500 text-white px-4 py-3.5 rounded-full font-medium text-base disabled:opacity-50 shadow-sm w-full"
-                    >
-                      <Monitor size={20} /> Record System
-                    </button>
                   </>
                 ) : (
                   <div className="flex flex-col gap-3 w-full">
@@ -1242,18 +1234,6 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
                       <Square size={20} className="fill-current" /> Stop Recording
                     </button>
                   </div>
-                )}
-                {!isRecording && !transcription && (
-                  <>
-                    <input type="file" accept="*/*" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isProcessing}
-                      className="flex justify-center items-center gap-2 bg-slate-100 text-[#1e293b] px-4 py-3.5 rounded-full font-medium text-base disabled:opacity-50 shadow-sm border border-slate-200 w-full mt-2"
-                    >
-                      <Upload size={20} /> Upload Audio
-                    </button>
-                  </>
                 )}
               </div>
               
