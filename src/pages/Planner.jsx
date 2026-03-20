@@ -169,36 +169,6 @@ export default function Planner() {
 
           {/* Tools Sub Header */}
           <div className={`fixed top-16 right-0 h-10 bg-[#FAF9F6] border-b border-[#E2E8F0] flex items-center justify-end px-4 gap-4 z-40 ${activeTemplate === "JOURNAL" ? "left-40 md:left-44" : "left-20"} transition-all duration-300 ease-in-out shadow-sm`}>
-            {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
-              <div className="flex items-center gap-1 border-r border-[#E2E8F0] pr-4">
-                <button
-                  onClick={() => setIsEraserMode(false)}
-                  className={`p-1.5 rounded-md transition-colors ${!isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
-                  title="Pen"
-                >
-                  <Pen size={16} />
-                </button>
-                <button
-                  onClick={() => setIsEraserMode(true)}
-                  className={`p-1.5 rounded-md transition-colors ${isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
-                  title="Eraser"
-                >
-                  <Eraser size={16} />
-                </button>
-                <div className="flex items-center ml-2 gap-1 bg-white border border-slate-200 rounded-md p-0.5">
-                  {[1, 2.2, 4].map(w => (
-                    <button
-                      key={w}
-                      onClick={() => setStrokeWidth(w)}
-                      className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${strokeWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`}
-                      title={`Thickness: ${w}`}
-                    >
-                      <div className="bg-[#1e293b] rounded-full" style={{ width: w + 2, height: w + 2 }}></div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
             <button 
                 onClick={() => handleTabChange("MEETING")}
                 className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-md transition-colors ${activeTemplate === 'MEETING' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
@@ -224,8 +194,8 @@ export default function Planner() {
         } right-0 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto transition-all duration-300 ease-in-out`}
       >
         <div className="relative min-h-full w-full flex flex-col">
-          {/* Fullscreen Toggle Button */}
-          <div className="w-full flex justify-start p-2 shrink-0 z-30">
+          {/* Fullscreen Toggle & Tools */}
+          <div className="w-full flex justify-between items-start p-2 shrink-0 z-30 pointer-events-auto">
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
               className="p-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] rounded-md shadow-sm text-[#94a3b8] hover:text-[#1e293b] transition-colors"
@@ -249,6 +219,36 @@ export default function Planner() {
               )}
             </svg>
             </button>
+            {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
+              <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] p-1 rounded-lg shadow-sm">
+                <button
+                  onClick={() => setIsEraserMode(false)}
+                  className={`p-1.5 rounded-md transition-colors ${!isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  title="Pen"
+                >
+                  <Pen size={16} />
+                </button>
+                <button
+                  onClick={() => setIsEraserMode(true)}
+                  className={`p-1.5 rounded-md transition-colors ${isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  title="Eraser"
+                >
+                  <Eraser size={16} />
+                </button>
+                <div className="flex items-center ml-1 gap-1 border-l border-slate-200 pl-1">
+                  {[1, 2.2, 4].map(w => (
+                    <button
+                      key={w}
+                      onClick={() => setStrokeWidth(w)}
+                      className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${strokeWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`}
+                      title={`Thickness: ${w}`}
+                    >
+                      <div className="bg-[#1e293b] rounded-full" style={{ width: w + 2, height: w + 2 }}></div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Template Layer */}
