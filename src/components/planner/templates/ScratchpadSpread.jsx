@@ -28,22 +28,22 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
             const sortedData = data.sort((a, b) => b.updated_at - a.updated_at);
             setNotes(sortedData);
             if (sortedData.length > 0) {
-                selectNote(sortedData[0]);
-            } else {
-                createNewNote();
+                selectNote(sortedData[0], false);
             }
         } catch (error) {
             console.error(error);
         }
     };
 
-    const selectNote = (note) => {
+    const selectNote = (note, closeHistory = true) => {
         setActiveNoteId(note.id);
         setTitle(note.title);
         setBackground(note.background || "none");
         setLastSaved(note.updated_at);
         onSubSectionChange(note.id);
-        setShowHistory(false);
+        if (closeHistory) {
+            setShowHistory(false);
+        }
     };
 
     const createNewNote = async () => {
