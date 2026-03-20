@@ -242,37 +242,25 @@ const GlobalCanvas = forwardRef(({
         if (canvasRef.current) {
           const oldLogicalWidth = img.width / dpr;
           const oldLogicalHeight = img.height / dpr;
+          ctx.drawImage(img, shiftX, shiftY, oldLogicalWidth, oldLogicalHeight);
           
-          ctx.drawImage(img, 0, 0, newWidth, newHeight);
-          
-          const scaleX = newWidth / oldLogicalWidth;
-          const scaleY = newHeight / oldLogicalHeight;
-
-          if (scaleX !== 1 || scaleY !== 1) {
+          if (shiftX !== 0 || shiftY !== 0) {
               const newDataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
               localStorage.setItem(`planner_drawing_${pageKey}`, newDataUrl);
               if (saveTimeout.current) clearTimeout(saveTimeout.current);
               saveTimeout.current = setTimeout(() => {
                 syncToBackend(newDataUrl, textsRef.current);
               }, 1500);
-
-              if (textsRef.current.length > 0) {
-                 const updatedTexts = textsRef.current.map(t => ({ 
-                     ...t, 
-                     x: t.x * scaleX, 
-                     y: t.y * scaleY,
-                     width: typeof t.width === 'string' && t.width.endsWith('px') ? `${parseFloat(t.width) * scaleX}px` : t.width,
-                     lineHeight: (t.lineHeight || 32) * scaleY,
-                     customFontSize: t.customFontSize ? t.customFontSize * Math.min(scaleX, scaleY) : null,
-                     baselineY: t.baselineY ? t.baselineY * scaleY : undefined
-                 }));
-                 textsRef.current = updatedTexts; 
-                 updateTextsState(updatedTexts); 
-              }
           }
         }
       };
       img.src = dataUrl;
+
+      if ((shiftX !== 0 || shiftY !== 0) && textsRef.current.length > 0) {
+         const updatedTexts = textsRef.current.map(t => ({ ...t, x: t.x + shiftX, y: t.y + shiftY }));
+         textsRef.current = updatedTexts; 
+         updateTextsState(updatedTexts); 
+      }
     };
 
     const timer = setTimeout(initCanvas, 50);
