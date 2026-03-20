@@ -24,15 +24,21 @@ const GlobalCanvas = forwardRef(({
   const undoStackRef = useRef([]);
   const lastLocalUpdateTime = useRef(0);
   const textsRef = useRef([]);
+  const myRecentSaves = useRef(new Set());
 
   const syncToBackend = async (dataUrl, currentTexts) => {
-    lastLocalUpdateTime.current = Date.now();
+    const timestamp = Date.now();
+    lastLocalUpdateTime.current = timestamp;
+    if (myRecentSaves.current) {
+      myRecentSaves.current.add(timestamp);
+      setTimeout(() => { if (myRecentSaves.current) myRecentSaves.current.delete(timestamp); }, 15000);
+    }
     try {
       if (syncIdRef.current) {
         await base44.entities.PlannerSync.update(syncIdRef.current, {
           drawing_data: dataUrl,
           texts_data: JSON.stringify(currentTexts),
-          updated_at: lastLocalUpdateTime.current
+          updated_at: timestamp
         });
       } else {
         const records = await base44.entities.PlannerSync.filter({ page_key: pageKey });
@@ -41,14 +47,14 @@ const GlobalCanvas = forwardRef(({
           await base44.entities.PlannerSync.update(syncIdRef.current, {
             drawing_data: dataUrl,
             texts_data: JSON.stringify(currentTexts),
-            updated_at: lastLocalUpdateTime.current
+            updated_at: timestamp
           });
         } else {
           const res = await base44.entities.PlannerSync.create({
             page_key: pageKey,
             drawing_data: dataUrl,
             texts_data: JSON.stringify(currentTexts),
-            updated_at: lastLocalUpdateTime.current
+            updated_at: timestamp
           });
           syncIdRef.current = res.id;
         }
@@ -192,6 +198,7 @@ const GlobalCanvas = forwardRef(({
   useEffect(() => {
     let isSubscribed = true;
     syncIdRef.current = null;
+    lastLocalUpdateTime.current = 0; // Reset for new page to enforce fresh pull
     
     // First load from local storage for fast feedback
     const saved = localStorage.getItem(`planner_texts_${pageKey}`);
@@ -209,18 +216,23 @@ const GlobalCanvas = forwardRef(({
           syncIdRef.current = records[0].id;
           if (records[0].updated_at && records[0].updated_at > lastLocalUpdateTime.current) {
             lastLocalUpdateTime.current = records[0].updated_at;
+            if (isDrawing.current) return; // Don't overwrite if user is actively drawing
             if (records[0].drawing_data && canvasRef.current && ctxRef.current) {
                const img = new Image();
                img.crossOrigin = "anonymous";
                img.onload = () => {
+                   if (isDrawing.current) return;
                    ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
                    const dpr = window.devicePixelRatio || 1;
                    ctxRef.current.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
+                   localStorage.setItem(`planner_drawing_${pageKey}`, records[0].drawing_data);
                };
                img.src = records[0].drawing_data;
             }
             if (records[0].texts_data) {
-               setTexts(JSON.parse(records[0].texts_data));
+               const parsedTexts = JSON.parse(records[0].texts_data);
+               setTexts(parsedTexts);
+               localStorage.setItem(`planner_texts_${pageKey}`, records[0].texts_data);
             }
           }
         }
@@ -232,20 +244,26 @@ const GlobalCanvas = forwardRef(({
         if (!isSubscribed) return;
         if (event.data.page_key === pageKey) {
             syncIdRef.current = event.data.id;
-            if (event.data.updated_at && event.data.updated_at > lastLocalUpdateTime.current + 500) {
+            // Use myRecentSaves instead of time offsets to bypass clock skew issues between devices
+            if (event.data.updated_at && !myRecentSaves.current.has(event.data.updated_at)) {
                 lastLocalUpdateTime.current = event.data.updated_at;
+                if (isDrawing.current) return; // Don't interrupt drawing
                 if (event.data.drawing_data && canvasRef.current && ctxRef.current) {
                     const img = new Image();
                     img.crossOrigin = "anonymous";
                     img.onload = () => {
+                        if (isDrawing.current) return;
                         ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
                         const dpr = window.devicePixelRatio || 1;
                         ctxRef.current.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
+                        localStorage.setItem(`planner_drawing_${pageKey}`, event.data.drawing_data);
                     };
                     img.src = event.data.drawing_data;
                 }
                 if (event.data.texts_data) {
-                    setTexts(JSON.parse(event.data.texts_data));
+                    const parsedTexts = JSON.parse(event.data.texts_data);
+                    setTexts(parsedTexts);
+                    localStorage.setItem(`planner_texts_${pageKey}`, event.data.texts_data);
                 }
             }
         }
