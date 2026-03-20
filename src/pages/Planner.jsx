@@ -341,6 +341,7 @@ export default function Planner() {
           {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
             <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-auto" style={{ top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px" }}>
               <GlobalCanvas 
+                key={pageKey}
                 ref={canvasRef} 
                 pageKey={pageKey} 
                 activeTemplate={activeTemplate} 
