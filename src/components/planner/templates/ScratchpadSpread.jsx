@@ -174,20 +174,16 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                     
                     <div className="w-px h-8 bg-slate-200" />
                     
-                    <div className="flex flex-col items-end justify-center min-w-[120px]">
-                        <button 
-                            onClick={saveNote}
-                            onPointerDown={(e) => e.stopPropagation()}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1e293b] hover:bg-slate-800 text-white rounded-lg transition-colors text-sm font-bold shadow-sm"
-                        >
-                            {isSaving ? <Check size={16} className="text-green-400" /> : <Save size={16} />}
-                            {isSaving ? "Saved" : "Save"}
-                        </button>
-                        {lastSaved && (
-                            <span className="text-[10px] text-slate-400 mt-1 font-medium tracking-wide">
-                                {new Date(lastSaved).toLocaleDateString()} {new Date(lastSaved).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    <div className="flex flex-col items-end justify-center min-w-[80px]">
+                        {isSaving ? (
+                            <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
+                                Saving...
                             </span>
-                        )}
+                        ) : lastSaved ? (
+                            <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
+                                <Check size={12} /> Saved
+                            </span>
+                        ) : null}
                     </div>
                 </div>
             </div>
