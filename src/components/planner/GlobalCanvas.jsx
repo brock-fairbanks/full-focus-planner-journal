@@ -222,22 +222,9 @@ const GlobalCanvas = forwardRef(({
       if (newWidth === 0 || newHeight === 0) return;
       if (Math.abs(canvas.width - newWidth * dpr) < 2 && Math.abs(canvas.height - newHeight * dpr) < 2) return;
 
-      let currentAnchorX = 0;
-      let currentAnchorY = 0;
-      const contentContainer = document.querySelector('.max-w-4xl, .max-w-5xl, .max-w-6xl');
-      if (contentContainer) {
-          const cRect = contentContainer.getBoundingClientRect();
-          currentAnchorX = cRect.left - rect.left;
-          currentAnchorY = cRect.top - rect.top;
-      }
-
       let shiftX = 0;
       let shiftY = 0;
-      if (layoutAnchorRef.current) {
-          shiftX = currentAnchorX - layoutAnchorRef.current.x;
-          shiftY = currentAnchorY - layoutAnchorRef.current.y;
-      }
-      layoutAnchorRef.current = { x: currentAnchorX, y: currentAnchorY };
+      layoutAnchorRef.current = { x: 0, y: 0 };
 
       const dataUrl = canvas.toDataURL("image/png");
       
