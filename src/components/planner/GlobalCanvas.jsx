@@ -389,7 +389,7 @@ const GlobalCanvas = forwardRef(({
           const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
           syncToBackend(dataUrl, updated);
         }
-      }, 400);
+      }, 30000);
       
       return updated;
     });
@@ -986,7 +986,7 @@ const GlobalCanvas = forwardRef(({
         syncToBackend(dataUrl, textsRef.current);
       }
       saveTimeout.current = null;
-    }, 400); 
+    }, 30000); 
   };
 
   return (
