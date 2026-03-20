@@ -19,7 +19,7 @@ export default function IdealWeek({ date, onClearCanvas }) {
         Ideal Week
       </h1>
 
-      <div className="flex gap-2 text-[11px] font-bold min-w-[800px] md:min-w-0">
+      <div className="flex gap-2 text-[11px] font-bold min-w-0">
         {/* Time column */}
         <div className="w-16 shrink-0">
           {HOURS.map((hour) => (
