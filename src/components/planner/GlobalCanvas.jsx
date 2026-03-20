@@ -1219,8 +1219,8 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
         }}
         className="w-full bg-transparent outline-none resize-none overflow-hidden pr-8"
         style={{
-          lineHeight: activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`,
-          fontSize: activeTemplate === 'IDEAL_WEEK' ? `${idealWeekFontSize}px` : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
+          lineHeight: textObj.customFontSize ? '1.2' : (activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`),
+          fontSize: textObj.customFontSize ? `${textObj.customFontSize}px` : (activeTemplate === 'IDEAL_WEEK' ? `${idealWeekFontSize}px` : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`),
           fontFamily: "'Caveat', cursive",
           color: textObj.isLoading ? '#94a3b8' : '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
