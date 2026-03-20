@@ -209,9 +209,7 @@ const GlobalCanvas = forwardRef(({
         img.onload = () => {
           if (canvasRef.current) {
             const dpr = window.devicePixelRatio || 1;
-            const logicalWidth = canvasRef.current.width / dpr;
-            const offsetX = (logicalWidth - img.width) / 2;
-            ctx.drawImage(img, offsetX, 0, img.width, img.height);
+            ctx.drawImage(img, 0, 0, img.width, img.height);
           }
         };
         img.src = localImageData;
