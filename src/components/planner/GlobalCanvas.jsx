@@ -895,6 +895,12 @@ const GlobalCanvas = forwardRef(({
         try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
     }
     isDrawing.current = false;
+
+    if (drawingFrameRef.current) {
+      cancelAnimationFrame(drawingFrameRef.current);
+      drawingFrameRef.current = null;
+      renderPoints();
+    }
     
     const pts = pointsRef.current;
     if (pts.length > 1 && preStrokeStateRef.current) {
