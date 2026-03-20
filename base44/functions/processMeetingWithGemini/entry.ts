@@ -9,6 +9,7 @@ Deno.serve(async (req) => {
         if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
         const body = await req.json();
+        console.log("Received body:", JSON.stringify(body));
         const { action } = body;
 
         if (action === "transcribe_start") {
