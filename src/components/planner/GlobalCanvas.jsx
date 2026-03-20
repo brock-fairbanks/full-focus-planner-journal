@@ -405,13 +405,6 @@ const GlobalCanvas = forwardRef(({
         });
     }
 
-    if (targetText) {
-        if (targetText.isStrikethrough) {
-            updateTextsState(prev => prev.map(t => t.id === targetText.id ? { ...t, isStrikethrough: false, strikethroughBounds: null } : t));
-            return; // Skip canvas erasing to preserve highlighters underneath
-        }
-    }
-
     if (targetText && ctxRef.current) {
         const ctx = ctxRef.current;
         
