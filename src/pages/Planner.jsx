@@ -36,6 +36,7 @@ export default function Planner() {
   const [eraserWidth, setEraserWidth] = useState(30);
   const [highlighterWidth, setHighlighterWidth] = useState(16);
   const [highlighterColor, setHighlighterColor] = useState('rgba(253, 224, 71, 0.8)');
+  const [textSize, setTextSize] = useState(0); // 0 = Auto
   const pointerStartRef = useRef(null);
   const lastPenTimeRef = useRef(0);
 
@@ -304,6 +305,17 @@ export default function Planner() {
                   })()}
                 </div>
                 <div className="flex items-center ml-1 gap-1 border-l border-slate-200 pl-1">
+                  <select 
+                    value={textSize} 
+                    onChange={(e) => setTextSize(Number(e.target.value))}
+                    className="h-6 px-1 rounded-sm bg-slate-100 hover:bg-slate-200 text-xs text-[#1e293b] outline-none cursor-pointer border-none font-medium mr-1"
+                    title="Text Size"
+                  >
+                    <option value={0}>Auto Size</option>
+                    {[12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 64].map(size => (
+                      <option key={size} value={size}>Text {size}px</option>
+                    ))}
+                  </select>
                   <button
                     onClick={() => canvasRef.current?.undo && canvasRef.current.undo()}
                     className="p-1.5 rounded-md transition-colors text-slate-400 hover:bg-slate-100 hover:text-slate-600"
@@ -334,6 +346,7 @@ export default function Planner() {
                 eraserWidth={eraserWidth}
                 highlighterWidth={highlighterWidth}
                 highlighterColor={highlighterColor}
+                globalTextSize={textSize}
               />
             </div>
           )}

@@ -12,7 +12,8 @@ const GlobalCanvas = forwardRef(({
   penWidth = 2.2,
   eraserWidth = 30,
   highlighterWidth = 16,
-  highlighterColor = 'rgba(253, 224, 71, 0.8)'
+  highlighterColor = 'rgba(253, 224, 71, 0.8)',
+  globalTextSize = 0
 }, ref) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
@@ -610,7 +611,8 @@ const GlobalCanvas = forwardRef(({
           text: '',
           isEditing: true,
           lineHeight,
-          width
+          width,
+          customFontSize: globalTextSize > 0 ? globalTextSize : null
         };
         return [...prev, newText];
       }
@@ -1248,37 +1250,19 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
         </div>
       )}
       {isEditing && !textObj.isLoading && (
-        <div 
-          className="absolute z-50 flex items-center gap-1 bg-white shadow-md border border-slate-200 rounded-md p-1"
-          style={{ right: 0, top: "100%", marginTop: "4px" }}
-          onPointerDown={(e) => e.stopPropagation()}
+        <button 
+          onPointerDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            deleteText(textObj.id);
+          }}
+          className="absolute right-0 top-0 p-2 text-red-500 hover:bg-red-50 rounded z-50 bg-white shadow-sm border border-red-100"
+          title="Delete text"
         >
-          <select 
-            value={textObj.customFontSize || ""} 
-            onChange={(e) => {
-              updateText(textObj.id, { ...textObj, customFontSize: e.target.value ? Number(e.target.value) : null });
-            }}
-            className="h-7 px-1 text-sm bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 outline-none cursor-pointer font-sans text-slate-700"
-          >
-            <option value="">Auto Size</option>
-            {[12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 64].map(size => (
-              <option key={size} value={size}>{size}px</option>
-            ))}
-          </select>
-          <button 
-            onPointerDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              deleteText(textObj.id);
-            }}
-            className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
-            title="Delete text"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-            </svg>
-          </button>
-        </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+          </svg>
+        </button>
       )}
     </div>
   );
