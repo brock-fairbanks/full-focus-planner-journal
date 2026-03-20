@@ -512,9 +512,8 @@ const GlobalCanvas = forwardRef(({
   const lastTapPosRef = useRef({ x: 0, y: 0 }); // Tracks last tap position to detect double/triple taps
 
   const startDrawing = (e) => {
-    if (e.pointerType !== 'touch') {
-        e.target.setPointerCapture(e.pointerId);
-    }
+    e.stopPropagation();
+    e.target.setPointerCapture(e.pointerId);
     const isPen = e.pointerType === 'pen';
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 500; 
