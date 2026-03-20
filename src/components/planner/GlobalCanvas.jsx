@@ -284,29 +284,36 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       const elRect = el.getBoundingClientRect();
       if (elRect.width === 0 || elRect.height === 0) continue;
 
-      let vDist;
+      let targetY;
       if (el.style.backgroundSize) {
          const match = el.style.backgroundSize.match(/(\d+)px/g);
          if (match && match.length > 0) {
              const lh = parseInt(match[match.length - 1]);
              const relativeY = clientY - elRect.top;
-             const gridY = Math.ceil(Math.max(1, relativeY) / lh) * lh;
-             const absoluteGridY = elRect.top + gridY;
-             vDist = Math.abs(clientY - absoluteGridY);
+             const gridY = Math.ceil(Math.max(0, relativeY - 10) / lh) * lh;
+             targetY = elRect.top + Math.max(lh, gridY);
          } else {
-             vDist = Math.abs(clientY - elRect.bottom);
+             targetY = elRect.bottom;
          }
       } else {
-         vDist = Math.abs(clientY - elRect.bottom);
+         targetY = elRect.bottom;
       }
+
+      // We want lines that are BELOW the click, or very close above (if they clicked slightly below the line)
+      let verticalPenalty = 0;
+      if (targetY < clientY - 15) {
+         verticalPenalty = 1000;
+      }
+
+      let vDist = Math.abs(clientY - targetY) + verticalPenalty;
 
       let hDist = 0;
       if (clientX < elRect.left) hDist = elRect.left - clientX;
       else if (clientX > elRect.right) hDist = clientX - elRect.right;
 
-      let dist = vDist * 20 + hDist;
+      let dist = vDist * 10 + hDist;
 
-      if (dist < minDistance && dist < 1000) {
+      if (dist < minDistance && dist < 2000) {
         minDistance = dist;
         bestLine = el;
       }
@@ -324,24 +331,28 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
       }
       
       if (bestLine.className && typeof bestLine.className === 'string' && bestLine.className.includes('border')) {
-        // Find line height by looking for the next line
+        // Find line height by looking for adjacent lines
         const siblingLines = lineElements.filter(el => {
            if (el === bestLine) return false;
            const r = el.getBoundingClientRect();
-           return Math.abs(r.left - bestRect.left) < 20 && r.top > bestRect.top;
+           return Math.abs(r.left - bestRect.left) < 20;
         });
         
         if (siblingLines.length > 0) {
-           siblingLines.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
-           const nextRect = siblingLines[0].getBoundingClientRect();
-           lineHeight = nextRect.top - bestRect.top;
-           if (lineHeight < 20 || lineHeight > 100) lineHeight = 40;
-        } else {
-           lineHeight = 40; // fallback
+           siblingLines.sort((a, b) => a.getBoundingClientRect().bottom - b.getBoundingClientRect().bottom);
+           const linesAbove = siblingLines.filter(el => el.getBoundingClientRect().bottom < bestRect.bottom - 5);
+           if (linesAbove.length > 0) {
+               const prevRect = linesAbove[linesAbove.length - 1].getBoundingClientRect();
+               lineHeight = bestRect.bottom - prevRect.bottom;
+           } else {
+               const linesBelow = siblingLines.filter(el => el.getBoundingClientRect().bottom > bestRect.bottom + 5);
+               if (linesBelow.length > 0) {
+                   lineHeight = linesBelow[0].getBoundingClientRect().bottom - bestRect.bottom;
+               }
+           }
         }
         
-        // Cap the text box height so large gaps don't create massive text
-        lineHeight = Math.min(lineHeight, 40);
+        if (lineHeight < 20 || lineHeight > 100) lineHeight = 40;
         
         // Align text box to fit within the cell
         snappedY = (bestRect.bottom - rect.top) - lineHeight + (lineHeight === 40 ? 0 : 8); 
@@ -350,9 +361,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
          if (match && match.length > 0) {
              lineHeight = parseInt(match[match.length - 1]);
              const relativeY = clientY - bestRect.top;
-             const gridY = Math.ceil(Math.max(1, relativeY) / lineHeight) * lineHeight;
-             // Offset to align Caveat font baseline with the grid line
-             snappedY = gridY + bestRect.top - rect.top - lineHeight + (lineHeight === 40 ? 6 : 8); 
+             const gridY = Math.ceil(Math.max(0, relativeY - 10) / lineHeight) * lineHeight;
+             const targetY = Math.max(lineHeight, gridY);
+             snappedY = targetY + bestRect.top - rect.top - lineHeight + (lineHeight === 40 ? 6 : 8); 
          }
       }
     }
