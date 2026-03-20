@@ -942,13 +942,6 @@ const GlobalCanvas = forwardRef(({
                           pts[pts.length-1].y < pts[0].y + 10 && // ends higher or near where it started
                           width < 100 && height > 10;
 
-      const isCircle = xReversals >= 1 && xReversals <= 6 && 
-                       yReversals >= 1 && yReversals <= 6 &&
-                       Math.abs(pts[0].x - pts[pts.length-1].x) < Math.max(40, width * 0.4) &&
-                       Math.abs(pts[0].y - pts[pts.length-1].y) < Math.max(40, height * 0.4) &&
-                       width > 40 && height > 20 && 
-                       pts.length > 15;
-
       // Strike-through detection (mostly horizontal, straight line)
       if (width > 60 && height < 20 && xReversals <= 1) {
         if (preStrokeStateRef.current) {
