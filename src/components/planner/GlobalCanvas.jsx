@@ -50,6 +50,7 @@ const GlobalCanvas = forwardRef(({
   const syncToBackend = async (dataUrl, currentTexts) => {
     const timestamp = Date.now();
     lastLocalUpdateTime.current = timestamp;
+    localStorage.setItem(`planner_updated_at_${pageKey}`, timestamp.toString());
     if (myRecentSaves.current) {
       myRecentSaves.current.add(timestamp);
       setTimeout(() => { if (myRecentSaves.current) myRecentSaves.current.delete(timestamp); }, 15000);
