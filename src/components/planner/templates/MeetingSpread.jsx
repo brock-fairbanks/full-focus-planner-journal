@@ -854,7 +854,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       saveNote(finalTranscription, null, fileUrlToUse);
     } catch (err) {
       console.error("Retranscription error", err);
-      alert("Failed to retranscribe audio.");
+      const errorMsg = err.response?.data?.error || err.message || "Unknown error";
+      alert(`Failed to retranscribe audio. Error: ${errorMsg}`);
     } finally {
       setIsProcessing(false);
       setProcessingStatus("");
