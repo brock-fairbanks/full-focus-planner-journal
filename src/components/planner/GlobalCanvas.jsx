@@ -116,7 +116,10 @@ const GlobalCanvas = forwardRef(({
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.onload = () => {
-          if (canvasRef.current) ctx.drawImage(img, 0, 0, width, height);
+          if (canvasRef.current) {
+            const dpr = window.devicePixelRatio || 1;
+            ctx.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
+          }
         };
         img.src = localImageData;
       }
@@ -145,7 +148,10 @@ const GlobalCanvas = forwardRef(({
 
       const img = new Image();
       img.onload = () => {
-        if (canvasRef.current) ctx.drawImage(img, 0, 0, newWidth, newHeight);
+        if (canvasRef.current) {
+          const dpr = window.devicePixelRatio || 1;
+          ctx.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
+        }
       };
       img.src = dataUrl;
     };
@@ -208,7 +214,8 @@ const GlobalCanvas = forwardRef(({
                img.crossOrigin = "anonymous";
                img.onload = () => {
                    ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
-                   ctxRef.current.drawImage(img, 0, 0, canvasRef.current.width, canvasRef.current.height);
+                   const dpr = window.devicePixelRatio || 1;
+                   ctxRef.current.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
                };
                img.src = records[0].drawing_data;
             }
@@ -232,7 +239,8 @@ const GlobalCanvas = forwardRef(({
                     img.crossOrigin = "anonymous";
                     img.onload = () => {
                         ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
-                        ctxRef.current.drawImage(img, 0, 0, canvasRef.current.width, canvasRef.current.height);
+                        const dpr = window.devicePixelRatio || 1;
+                        ctxRef.current.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
                     };
                     img.src = event.data.drawing_data;
                 }

@@ -256,7 +256,7 @@ export default function Planner() {
                   {(() => {
                     const currentTool = isEraserMode ? 'eraser' : activeTool;
                     if (currentTool === 'pen') {
-                      return [1, 2.2, 4].map(w => (
+                      return [1.5, 3, 5].map(w => (
                         <button key={w} onClick={() => setPenWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${penWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Thickness: ${w}`}>
                           <div className="bg-[#1e293b] rounded-full" style={{ width: w + 2, height: w + 2 }}></div>
                         </button>
@@ -265,7 +265,7 @@ export default function Planner() {
                     if (currentTool === 'highlighter') {
                       return (
                         <>
-                          {[12, 16, 24].map(w => (
+                          {[16, 24, 40].map(w => (
                             <button key={w} onClick={() => setHighlighterWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${highlighterWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Thickness: ${w}`}>
                               <div className="bg-slate-400 rounded-sm" style={{ width: w * 0.8, height: Math.max(2, w * 0.2) }}></div>
                             </button>
@@ -283,7 +283,7 @@ export default function Planner() {
                       );
                     }
                     if (currentTool === 'eraser') {
-                      return [10, 30, 50].map(w => (
+                      return [20, 50, 100].map(w => (
                         <button key={w} onClick={() => setEraserWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${eraserWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Size: ${w}`}>
                           <div className="border border-slate-400 rounded-full" style={{ width: Math.min(w * 0.4, 20), height: Math.min(w * 0.4, 20) }}></div>
                         </button>
