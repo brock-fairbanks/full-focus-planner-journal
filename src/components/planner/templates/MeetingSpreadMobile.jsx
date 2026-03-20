@@ -28,13 +28,13 @@ const MobileTabs = ({ transcription, summary, audioUrl, isRecording, handleRetra
         <div className="flex w-full bg-slate-200 rounded-lg p-1 mb-3 shrink-0">
             <button 
                 onClick={() => setActiveTab('summary')}
-                className={`flex-1 py-2 text-xs font-bold rounded-md transition-colors ${activeTab === 'summary' ? 'bg-white text-[#F97316] shadow-sm' : 'text-slate-500'}`}
+                className={`flex-1 py-3 text-sm font-bold rounded-md transition-colors ${activeTab === 'summary' ? 'bg-white text-[#F97316] shadow-sm' : 'text-slate-500'}`}
             >
                 AI Summary
             </button>
             <button 
                 onClick={() => setActiveTab('transcription')}
-                className={`flex-1 py-2 text-xs font-bold rounded-md transition-colors ${activeTab === 'transcription' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-slate-500'}`}
+                className={`flex-1 py-3 text-sm font-bold rounded-md transition-colors ${activeTab === 'transcription' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-slate-500'}`}
             >
                 Transcription
             </button>
@@ -1038,16 +1038,16 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
             />
             <button 
               onClick={() => setShowHistory(!showHistory)}
-              className="flex items-center justify-center gap-1.5 bg-[#1e293b] text-white px-3 py-1.5 rounded-lg font-medium shadow-sm text-sm"
+              className="flex items-center justify-center gap-1.5 bg-[#1e293b] text-white px-4 py-2 rounded-lg font-medium shadow-sm text-sm"
             >
-              <History size={14} /> History
+              <History size={16} /> History
             </button>
         </div>
         <div className="flex justify-between items-center w-full">
             <select
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
-              className="bg-white border border-slate-200 text-slate-700 text-xs rounded-lg px-2 py-1.5 shadow-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] font-medium max-w-[140px]"
+              className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] font-medium max-w-[160px]"
             >
               <option value="gemini-3-flash-preview">Gemini 3 Flash</option>
               <option value="gemini-3.1-pro-preview">Gemini 3 Pro</option>
@@ -1055,9 +1055,9 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
             
             <button 
               onClick={startNew}
-              className="flex items-center gap-1 text-xs font-medium text-[#94a3b8] hover:text-red-500 bg-white/80 border border-[#E2E8F0] px-2 py-1.5 rounded-md shadow-sm"
+              className="flex items-center gap-1 text-sm font-medium text-[#94a3b8] hover:text-red-500 bg-white/80 border border-[#E2E8F0] px-3 py-2 rounded-lg shadow-sm"
             >
-              <Trash2 size={14} /> Reset
+              <Trash2 size={16} /> Reset
             </button>
         </div>
       </div>
@@ -1192,10 +1192,10 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
               </div>
 
               {!isRecording && !transcription && (
-                <div className="flex flex-wrap justify-center bg-slate-100 p-1 rounded-lg gap-1 w-full">
-                  <button onClick={() => handleTypeChange('meeting')} className={`flex-1 py-1.5 rounded text-xs font-medium ${recordingType === 'meeting' ? 'bg-[#1e293b] text-white' : 'text-[#64748b]'}`}>Meeting</button>
-                  <button onClick={() => handleTypeChange('lecture')} className={`flex-1 py-1.5 rounded text-xs font-medium ${recordingType === 'lecture' ? 'bg-[#1e293b] text-white' : 'text-[#64748b]'}`}>Lecture</button>
-                  <button onClick={() => handleTypeChange('dialog')} className={`flex-1 py-1.5 rounded text-xs font-medium ${recordingType === 'dialog' ? 'bg-[#1e293b] text-white' : 'text-[#64748b]'}`}>Dialog</button>
+                <div className="flex flex-wrap justify-center bg-slate-100 p-1.5 rounded-lg gap-1.5 w-full">
+                  <button onClick={() => handleTypeChange('meeting')} className={`flex-1 py-2.5 rounded-md text-sm font-medium ${recordingType === 'meeting' ? 'bg-[#1e293b] text-white' : 'text-[#64748b]'}`}>Meeting</button>
+                  <button onClick={() => handleTypeChange('lecture')} className={`flex-1 py-2.5 rounded-md text-sm font-medium ${recordingType === 'lecture' ? 'bg-[#1e293b] text-white' : 'text-[#64748b]'}`}>Lecture</button>
+                  <button onClick={() => handleTypeChange('dialog')} className={`flex-1 py-2.5 rounded-md text-sm font-medium ${recordingType === 'dialog' ? 'bg-[#1e293b] text-white' : 'text-[#64748b]'}`}>Dialog</button>
                 </div>
               )}
 
@@ -1205,41 +1205,41 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
                     <button 
                       onClick={startRecording}
                       disabled={isProcessing}
-                      className="flex justify-center items-center gap-2 bg-red-500 text-white px-4 py-2.5 rounded-full font-medium text-sm disabled:opacity-50 shadow-sm w-full"
+                      className="flex justify-center items-center gap-2 bg-red-500 text-white px-4 py-3.5 rounded-full font-medium text-base disabled:opacity-50 shadow-sm w-full"
                     >
-                      <Mic size={16} /> Record Mic
+                      <Mic size={20} /> Record Mic
                     </button>
                     {/* System audio generally isn't supported on mobile, so we might hide it or keep it */}
                     <button 
                       onClick={startSystemAudioRecording}
                       disabled={isProcessing}
-                      className="flex justify-center items-center gap-2 bg-indigo-500 text-white px-4 py-2.5 rounded-full font-medium text-sm disabled:opacity-50 shadow-sm w-full"
+                      className="flex justify-center items-center gap-2 bg-indigo-500 text-white px-4 py-3.5 rounded-full font-medium text-base disabled:opacity-50 shadow-sm w-full"
                     >
-                      <Monitor size={16} /> Record System
+                      <Monitor size={20} /> Record System
                     </button>
                   </>
                 ) : (
-                  <div className="flex flex-col gap-2 w-full">
-                    <div className="flex gap-2 w-full">
+                  <div className="flex flex-col gap-3 w-full">
+                    <div className="flex gap-3 w-full">
                         <button 
                           onClick={togglePause}
-                          className="flex-1 flex justify-center items-center gap-2 bg-amber-500 text-white py-2.5 rounded-full font-medium text-sm shadow-sm"
+                          className="flex-1 flex justify-center items-center gap-2 bg-amber-500 text-white py-3.5 rounded-full font-medium text-base shadow-sm"
                         >
-                          {isPaused ? <Play size={16} className="fill-current" /> : <Pause size={16} className="fill-current" />}
+                          {isPaused ? <Play size={20} className="fill-current" /> : <Pause size={20} className="fill-current" />}
                           {isPaused ? "Resume" : "Pause"}
                         </button>
                         <button 
                           onClick={cancelRecording}
-                          className="flex-1 flex justify-center items-center gap-2 bg-slate-200 text-slate-700 py-2.5 rounded-full font-medium text-sm shadow-sm"
+                          className="flex-1 flex justify-center items-center gap-2 bg-slate-200 text-slate-700 py-3.5 rounded-full font-medium text-base shadow-sm"
                         >
                           Cancel
                         </button>
                     </div>
                     <button 
                       onClick={stopRecording}
-                      className={`flex justify-center items-center gap-2 text-white px-4 py-2.5 rounded-full font-medium text-sm shadow-sm w-full ${!isPaused ? 'bg-red-600 animate-pulse' : 'bg-[#1e293b]'}`}
+                      className={`flex justify-center items-center gap-2 text-white px-4 py-3.5 rounded-full font-medium text-base shadow-sm w-full ${!isPaused ? 'bg-red-600 animate-pulse' : 'bg-[#1e293b]'}`}
                     >
-                      <Square size={16} className="fill-current" /> Stop Recording
+                      <Square size={20} className="fill-current" /> Stop Recording
                     </button>
                   </div>
                 )}
@@ -1249,9 +1249,9 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isProcessing}
-                      className="flex justify-center items-center gap-2 bg-slate-100 text-[#1e293b] px-4 py-2.5 rounded-full font-medium text-sm disabled:opacity-50 shadow-sm border border-slate-200 w-full mt-1"
+                      className="flex justify-center items-center gap-2 bg-slate-100 text-[#1e293b] px-4 py-3.5 rounded-full font-medium text-base disabled:opacity-50 shadow-sm border border-slate-200 w-full mt-2"
                     >
-                      <Upload size={16} /> Upload Audio
+                      <Upload size={20} /> Upload Audio
                     </button>
                   </>
                 )}
