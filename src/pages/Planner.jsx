@@ -229,9 +229,14 @@ export default function Planner() {
                   <Pen size={16} />
                 </button>
                 <button
-                  onClick={() => setIsEraserMode(true)}
-                  className={`p-1.5 rounded-md transition-colors ${isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
-                  title="Eraser"
+                  onPointerDown={() => setIsEraserMode(true)}
+                  onPointerUp={() => setIsEraserMode(false)}
+                  onPointerLeave={() => setIsEraserMode(false)}
+                  onPointerCancel={() => setIsEraserMode(false)}
+                  onContextMenu={(e) => e.preventDefault()}
+                  className={`p-1.5 rounded-md transition-colors select-none ${isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  title="Hold to Erase"
+                  style={{ touchAction: 'none' }}
                 >
                   <Eraser size={16} />
                 </button>
