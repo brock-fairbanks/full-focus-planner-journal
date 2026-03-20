@@ -292,6 +292,13 @@ const GlobalCanvas = forwardRef(({
         });
     }
 
+    if (targetText) {
+        if (targetText.isStrikethrough) {
+            updateTextsState(prev => prev.map(t => t.id === targetText.id ? { ...t, isStrikethrough: false } : t));
+            return; // Skip canvas erasing to preserve highlighters underneath
+        }
+    }
+
     if (targetText && ctxRef.current) {
         const ctx = ctxRef.current;
         
@@ -1101,6 +1108,12 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
         placeholder={isEditing ? "Type here..." : ""}
         readOnly={textObj.isLoading}
       />
+      {textObj.isStrikethrough && (
+        <div className="absolute inset-x-0 pointer-events-none flex flex-col justify-center gap-[3px]" style={{ top: `${(lh || 32) / 2}px`, transform: 'translateY(-50%)', paddingLeft: '4px', paddingRight: '8px' }}>
+           <div className="w-full h-[2px] bg-[#1e293b]"></div>
+           <div className="w-full h-[2px] bg-[#1e293b]"></div>
+        </div>
+      )}
       {isEditing && !textObj.isLoading && (
         <button 
           onPointerDown={(e) => {
