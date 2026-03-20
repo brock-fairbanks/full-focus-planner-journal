@@ -27,6 +27,9 @@ const GlobalCanvas = forwardRef(({
   const lastLocalUpdateTime = useRef(0);
   const textsRef = useRef([]);
   const myRecentSaves = useRef(new Set());
+  const drawingFrameRef = useRef(null);
+  const lastDrawnIndexRef = useRef(0);
+  const pendingRemoteDrawingRef = useRef(null);
 
   const getCanvasSnapshot = () => {
     if (!canvasRef.current) return null;
@@ -301,7 +304,11 @@ const GlobalCanvas = forwardRef(({
           if (records[0].updated_at && records[0].updated_at > lastLocalUpdateTime.current) {
             lastLocalUpdateTime.current = records[0].updated_at;
             localStorage.setItem(`planner_updated_at_${pageKey}`, records[0].updated_at.toString());
-            if (isDrawing.current) return; // Don't overwrite if user is actively drawing
+            if (isDrawing.current) {
+                pendingRemoteDrawingRef.current = records[0].drawing_data;
+                localStorage.setItem(`planner_drawing_${pageKey}`, records[0].drawing_data);
+                return; // Don't overwrite if user is actively drawing
+            }
             if (records[0].drawing_data && canvasRef.current && ctxRef.current) {
                const img = new Image();
                img.crossOrigin = "anonymous";
@@ -333,7 +340,11 @@ const GlobalCanvas = forwardRef(({
             if (event.data.updated_at && !myRecentSaves.current.has(event.data.updated_at) && event.data.updated_at > lastLocalUpdateTime.current) {
                 lastLocalUpdateTime.current = event.data.updated_at;
                 localStorage.setItem(`planner_updated_at_${pageKey}`, event.data.updated_at.toString());
-                if (isDrawing.current) return; // Don't interrupt drawing
+                if (isDrawing.current) {
+                    pendingRemoteDrawingRef.current = event.data.drawing_data;
+                    localStorage.setItem(`planner_drawing_${pageKey}`, event.data.drawing_data);
+                    return; // Don't interrupt drawing
+                }
                 if (event.data.drawing_data && canvasRef.current && ctxRef.current) {
                     const img = new Image();
                     img.crossOrigin = "anonymous";
@@ -373,7 +384,7 @@ const GlobalCanvas = forwardRef(({
           const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
           syncToBackend(dataUrl, updated);
         }
-      }, 1000);
+      }, 400);
       
       return updated;
     });
@@ -714,6 +725,7 @@ const GlobalCanvas = forwardRef(({
     const y = (e.clientY - rect.top) * scaleY;
     
     pointsRef.current = [{x, y}];
+    lastDrawnIndexRef.current = 0;
     
     ctxRef.current.globalCompositeOperation = activeToolRef.current === 'eraser' ? 'destination-out' : 'source-over';
     
@@ -747,11 +759,6 @@ const GlobalCanvas = forwardRef(({
       const y = (ev.clientY - top) * scaleY;
       pointsRef.current.push({x, y});
       
-      const pts = pointsRef.current;
-      
-      const len = pts.length;
-      
-      // Calculate dynamic line width based on pressure
       if (ev.pointerType === 'pen' && ev.pressure !== undefined && ev.pressure > 0) {
          if (activeToolRef.current === 'eraser') {
              ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.5;
@@ -761,23 +768,66 @@ const GlobalCanvas = forwardRef(({
              ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.2;
          }
       }
+    }
 
-      if (len >= 3) {
-        const lastTwo = pts[len - 2];
-        const lastOne = pts[len - 1];
-        
-        // Simple linear drawing for performance during fast writing,
-        // relying on the high polling rate of modern tablets to keep it smooth
+    if (!drawingFrameRef.current) {
+      drawingFrameRef.current = requestAnimationFrame(renderPoints);
+    }
+  };
+
+  const renderPoints = () => {
+    if (!ctxRef.current) return;
+    
+    const pts = pointsRef.current;
+    let i = lastDrawnIndexRef.current;
+    
+    while (i < pts.length - 2) {
+      const p0 = pts[i];
+      const p1 = pts[i + 1];
+      const p2 = pts[i + 2];
+      
+      const midX1 = (p0.x + p1.x) / 2;
+      const midY1 = (p0.y + p1.y) / 2;
+      const midX2 = (p1.x + p2.x) / 2;
+      const midY2 = (p1.y + p2.y) / 2;
+      
+      ctxRef.current.beginPath();
+      if (i === 0) {
+        ctxRef.current.moveTo(p0.x, p0.y);
+        ctxRef.current.lineTo(midX1, midY1);
+      } else {
+        ctxRef.current.moveTo(midX1, midY1);
+      }
+      ctxRef.current.quadraticCurveTo(p1.x, p1.y, midX2, midY2);
+      ctxRef.current.stroke();
+      
+      i++;
+    }
+    
+    lastDrawnIndexRef.current = i;
+
+    if (!isDrawing.current) {
+      if (pts.length > 0) {
         ctxRef.current.beginPath();
-        ctxRef.current.moveTo(lastTwo.x, lastTwo.y);
-        ctxRef.current.lineTo(lastOne.x, lastOne.y);
-        ctxRef.current.stroke();
-      } else if (len === 2) {
-        ctxRef.current.beginPath();
-        ctxRef.current.moveTo(pts[0].x, pts[0].y);
-        ctxRef.current.lineTo(pts[1].x, pts[1].y);
+        if (pts.length === 1) {
+          ctxRef.current.moveTo(pts[0].x, pts[0].y);
+          ctxRef.current.lineTo(pts[0].x + 0.1, pts[0].y + 0.1);
+        } else if (pts.length === 2) {
+          ctxRef.current.moveTo(pts[0].x, pts[0].y);
+          ctxRef.current.lineTo(pts[1].x, pts[1].y);
+        } else {
+          const p1 = pts[pts.length - 2];
+          const p2 = pts[pts.length - 1];
+          const midX2 = (p1.x + p2.x) / 2;
+          const midY2 = (p1.y + p2.y) / 2;
+          ctxRef.current.moveTo(midX2, midY2);
+          ctxRef.current.lineTo(p2.x, p2.y);
+        }
         ctxRef.current.stroke();
       }
+      drawingFrameRef.current = null;
+    } else {
+      drawingFrameRef.current = requestAnimationFrame(renderPoints);
     }
   };
 
@@ -798,6 +848,21 @@ const GlobalCanvas = forwardRef(({
     // Reset composite operation just in case
     if (ctxRef.current) {
         ctxRef.current.globalCompositeOperation = 'source-over';
+    }
+
+    if (pendingRemoteDrawingRef.current) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        if (canvasRef.current && ctxRef.current) {
+          ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
+          const dpr = window.devicePixelRatio || 1;
+          ctxRef.current.drawImage(img, 0, 0, img.width / dpr, img.height / dpr);
+          localStorage.setItem(`planner_drawing_${pageKey}`, pendingRemoteDrawingRef.current);
+          pendingRemoteDrawingRef.current = null;
+        }
+      };
+      img.src = pendingRemoteDrawingRef.current;
     }
 
     if (activeToolRef.current === 'highlighter' && pts.length > 5 && ctxRef.current && canvasRef.current) {
@@ -916,7 +981,7 @@ const GlobalCanvas = forwardRef(({
         syncToBackend(dataUrl, textsRef.current);
       }
       saveTimeout.current = null;
-    }, 1500); 
+    }, 400); 
   };
 
   return (
