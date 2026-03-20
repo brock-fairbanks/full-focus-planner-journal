@@ -629,6 +629,7 @@ const GlobalCanvas = forwardRef(({
           id: Date.now().toString(),
           x: startX,
           y: snappedY,
+          baselineY: snappedY + lineHeight,
           text: '',
           isEditing: true,
           lineHeight,
