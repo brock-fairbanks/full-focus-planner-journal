@@ -6,11 +6,14 @@ import TabBar from "../components/planner/TabBar.jsx";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
 import HeaderBar from "../components/planner/HeaderBar.jsx";
+import { useIsMobile } from "@/hooks/use-mobile.jsx";
+import MeetingSpreadMobile from "../components/planner/templates/MeetingSpreadMobile.jsx";
 
 export default function Planner() {
   const location = useLocation();
   const navigate = useNavigate();
   const canvasRef = useRef(null);
+  const isMobile = useIsMobile();
 
   const getTemplateFromPath = useCallback((path) => {
     const p = path.toLowerCase();
