@@ -749,46 +749,33 @@ const GlobalCanvas = forwardRef(({
       
       const pts = pointsRef.current;
       
-      if (pts.length >= 3) {
-        const lastTwo = pts[pts.length - 2];
-        const lastOne = pts[pts.length - 1];
-        const lastThree = pts[pts.length - 3];
+      const len = pts.length;
+      
+      // Calculate dynamic line width based on pressure
+      if (ev.pointerType === 'pen' && ev.pressure !== undefined && ev.pressure > 0) {
+         if (activeToolRef.current === 'eraser') {
+             ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.5;
+         } else if (activeToolRef.current === 'highlighter') {
+             ctxRef.current.lineWidth = lineWidthRef.current;
+         } else {
+             ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.2;
+         }
+      }
+
+      if (len >= 3) {
+        const lastTwo = pts[len - 2];
+        const lastOne = pts[len - 1];
         
-        const midX1 = (lastThree.x + lastTwo.x) / 2;
-        const midY1 = (lastThree.y + lastTwo.y) / 2;
-        const midX2 = (lastTwo.x + lastOne.x) / 2;
-        const midY2 = (lastTwo.y + lastOne.y) / 2;
-        
+        // Simple linear drawing for performance during fast writing,
+        // relying on the high polling rate of modern tablets to keep it smooth
         ctxRef.current.beginPath();
-        ctxRef.current.moveTo(midX1, midY1);
-        ctxRef.current.quadraticCurveTo(lastTwo.x, lastTwo.y, midX2, midY2);
-        
-        if (ev.pointerType === 'pen' && ev.pressure !== undefined && ev.pressure > 0) {
-           if (activeToolRef.current === 'eraser') {
-               ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.5;
-           } else if (activeToolRef.current === 'highlighter') {
-               ctxRef.current.lineWidth = lineWidthRef.current;
-           } else {
-               ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.2;
-           }
-        }
-        
+        ctxRef.current.moveTo(lastTwo.x, lastTwo.y);
+        ctxRef.current.lineTo(lastOne.x, lastOne.y);
         ctxRef.current.stroke();
-      } else if (pts.length === 2) {
+      } else if (len === 2) {
         ctxRef.current.beginPath();
         ctxRef.current.moveTo(pts[0].x, pts[0].y);
         ctxRef.current.lineTo(pts[1].x, pts[1].y);
-        
-        if (ev.pointerType === 'pen' && ev.pressure !== undefined && ev.pressure > 0) {
-           if (activeToolRef.current === 'eraser') {
-               ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.5;
-           } else if (activeToolRef.current === 'highlighter') {
-               ctxRef.current.lineWidth = lineWidthRef.current;
-           } else {
-               ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.2;
-           }
-        }
-        
         ctxRef.current.stroke();
       }
     }
