@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Plus, Trash2, Save, Check, History, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
@@ -11,9 +12,11 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
     const [lastSaved, setLastSaved] = useState(null);
     const [showHistory, setShowHistory] = useState(false);
     const titleInputRef = useRef(null);
+    const [portalTarget, setPortalTarget] = useState(null);
 
     useEffect(() => {
         loadNotes();
+        setPortalTarget(document.getElementById("topbar-center-portal"));
     }, []);
 
     const loadNotes = async () => {
@@ -127,8 +130,9 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
 
     return (
         <div className="w-full h-full min-h-[800px] relative bg-white" style={getBgStyle()}>
-            {/* Compact Header / Toolbar (Positioned exactly between top-left and top-right tools in Planner.jsx) */}
-            <div className="absolute -top-[42px] left-1/2 -translate-x-1/2 h-[34px] px-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] flex items-center justify-center gap-3 pointer-events-auto z-[60] shadow-sm rounded-lg whitespace-nowrap">
+            {/* Compact Header / Toolbar (Rendered in Portal) */}
+            {portalTarget && createPortal(
+                <div className="h-[34px] px-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] flex items-center justify-center gap-3 pointer-events-auto shadow-sm rounded-lg whitespace-nowrap">
                 
                 {/* History Button */}
                 <button 
@@ -187,7 +191,7 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                         </span>
                     ) : null}
                 </div>
-            </div>
+            </div>, portalTarget)}
 
             {/* History Overlay (Covers everything including GlobalCanvas) */}
             {showHistory && (
