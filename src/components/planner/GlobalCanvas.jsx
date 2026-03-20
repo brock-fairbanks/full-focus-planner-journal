@@ -1035,6 +1035,74 @@ const GlobalCanvas = forwardRef(({
       }
     }
 
+    if (activeToolRef.current === 'pen' && activeTemplate === 'SCRATCHPAD' && pts.length > 5 && ctxRef.current && canvasRef.current) {
+      let pathLength = 0;
+      for (let i = 1; i < pts.length; i++) {
+        pathLength += Math.hypot(pts[i].x - pts[i-1].x, pts[i].y - pts[i-1].y);
+      }
+
+      if (pathLength > 60) {
+        const dsq = (p, p1, p2) => {
+          let x = p1.x, y = p1.y, dx = p2.x - x, dy = p2.y - y;
+          if (dx !== 0 || dy !== 0) {
+            const t = ((p.x - x) * dx + (p.y - y) * dy) / (dx * dx + dy * dy);
+            if (t > 1) { x = p2.x; y = p2.y; }
+            else if (t > 0) { x += dx * t; y += dy * t; }
+          }
+          dx = p.x - x; dy = p.y - y;
+          return dx * dx + dy * dy;
+        };
+
+        const simplify = (points, first, last, sqEpsilon, simplified) => {
+          let maxSqDist = sqEpsilon, index = -1;
+          for (let i = first + 1; i < last; i++) {
+            const sqDist = dsq(points[i], points[first], points[last]);
+            if (sqDist > maxSqDist) { index = i; maxSqDist = sqDist; }
+          }
+          if (index > -1) {
+            if (index - first > 1) simplify(points, first, index, sqEpsilon, simplified);
+            simplified.push(points[index]);
+            if (last - index > 1) simplify(points, index, last, sqEpsilon, simplified);
+          }
+        };
+
+        const simplified = [pts[0]];
+        const epsilon = Math.max(15, pathLength * 0.04);
+        simplify(pts, 0, pts.length - 1, epsilon * epsilon, simplified);
+        simplified.push(pts[pts.length - 1]);
+
+        let simplifiedLength = 0;
+        for (let i = 1; i < simplified.length; i++) {
+          simplifiedLength += Math.hypot(simplified[i].x - simplified[i-1].x, simplified[i].y - simplified[i-1].y);
+        }
+
+        if (simplified.length >= 2 && simplified.length <= 6 && (simplifiedLength / pathLength) > 0.90) {
+          const isClosed = Math.hypot(pts[0].x - pts[pts.length-1].x, pts[0].y - pts[pts.length-1].y) < 40;
+          let finalPoints = [...simplified];
+          if (isClosed && finalPoints.length > 2) {
+            finalPoints[finalPoints.length - 1] = finalPoints[0];
+          }
+
+          if (preStrokeStateRef.current) {
+            putCanvasSnapshot(preStrokeStateRef.current);
+          }
+
+          ctxRef.current.globalCompositeOperation = 'source-over';
+          ctxRef.current.strokeStyle = '#1e293b';
+          ctxRef.current.lineWidth = lineWidthRef.current;
+          ctxRef.current.lineCap = 'round';
+          ctxRef.current.lineJoin = 'round';
+
+          ctxRef.current.beginPath();
+          ctxRef.current.moveTo(finalPoints[0].x, finalPoints[0].y);
+          for (let i = 1; i < finalPoints.length; i++) {
+            ctxRef.current.lineTo(finalPoints[i].x, finalPoints[i].y);
+          }
+          ctxRef.current.stroke();
+        }
+      }
+    }
+
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
       if (canvasRef.current) {
