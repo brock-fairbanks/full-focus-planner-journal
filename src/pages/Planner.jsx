@@ -226,35 +226,70 @@ export default function Planner() {
             {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
               <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] p-1 rounded-lg shadow-sm">
                 <button
-                  onClick={() => setIsEraserMode(false)}
-                  className={`p-1.5 rounded-md transition-colors ${!isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  onClick={() => setActiveTool('pen')}
+                  className={`p-1.5 rounded-md transition-colors ${(activeTool === 'pen' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
                   title="Pen"
                 >
                   <Pen size={16} />
                 </button>
                 <button
+                  onClick={() => setActiveTool('highlighter')}
+                  className={`p-1.5 rounded-md transition-colors ${(activeTool === 'highlighter' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  title="Highlighter"
+                >
+                  <Highlighter size={16} />
+                </button>
+                <button
+                  onClick={() => setActiveTool('eraser')}
                   onPointerDown={() => setIsEraserMode(true)}
                   onPointerUp={() => setIsEraserMode(false)}
                   onPointerLeave={() => setIsEraserMode(false)}
                   onPointerCancel={() => setIsEraserMode(false)}
                   onContextMenu={(e) => e.preventDefault()}
-                  className={`p-1.5 rounded-md transition-colors select-none ${isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
-                  title="Hold to Erase"
+                  className={`p-1.5 rounded-md transition-colors select-none ${(activeTool === 'eraser' || isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  title="Eraser (Tap to select, Hold to quick-erase)"
                   style={{ touchAction: 'none' }}
                 >
                   <Eraser size={16} />
                 </button>
                 <div className="flex items-center ml-1 gap-1 border-l border-slate-200 pl-1">
-                  {[1, 2.2, 4].map(w => (
-                    <button
-                      key={w}
-                      onClick={() => setStrokeWidth(w)}
-                      className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${strokeWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`}
-                      title={`Thickness: ${w}`}
-                    >
-                      <div className="bg-[#1e293b] rounded-full" style={{ width: w + 2, height: w + 2 }}></div>
-                    </button>
-                  ))}
+                  {(() => {
+                    const currentTool = isEraserMode ? 'eraser' : activeTool;
+                    if (currentTool === 'pen') {
+                      return [1, 2.2, 4].map(w => (
+                        <button key={w} onClick={() => setPenWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${penWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Thickness: ${w}`}>
+                          <div className="bg-[#1e293b] rounded-full" style={{ width: w + 2, height: w + 2 }}></div>
+                        </button>
+                      ));
+                    }
+                    if (currentTool === 'highlighter') {
+                      return (
+                        <>
+                          {[12, 16, 24].map(w => (
+                            <button key={w} onClick={() => setHighlighterWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${highlighterWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Thickness: ${w}`}>
+                              <div className="bg-slate-400 rounded-sm" style={{ width: w * 0.8, height: Math.max(2, w * 0.2) }}></div>
+                            </button>
+                          ))}
+                          <div className="w-px h-4 bg-slate-200 mx-1"></div>
+                          {[
+                            { c: 'rgba(253, 224, 71, 0.4)', bg: '#fef08a' },
+                            { c: 'rgba(167, 243, 208, 0.4)', bg: '#a7f3d0' },
+                            { c: 'rgba(251, 207, 232, 0.4)', bg: '#fbcfe8' },
+                            { c: 'rgba(191, 219, 254, 0.4)', bg: '#bfdbfe' }
+                          ].map(item => (
+                            <button key={item.c} onClick={() => setHighlighterColor(item.c)} className={`w-5 h-5 rounded-full border border-slate-200 ${highlighterColor === item.c ? 'ring-2 ring-offset-1 ring-slate-400' : ''}`} style={{ backgroundColor: item.bg }} title="Color" />
+                          ))}
+                        </>
+                      );
+                    }
+                    if (currentTool === 'eraser') {
+                      return [10, 30, 50].map(w => (
+                        <button key={w} onClick={() => setEraserWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${eraserWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Size: ${w}`}>
+                          <div className="border border-slate-400 rounded-full" style={{ width: Math.min(w * 0.4, 20), height: Math.min(w * 0.4, 20) }}></div>
+                        </button>
+                      ));
+                    }
+                  })()}
                 </div>
               </div>
             )}
@@ -268,7 +303,17 @@ export default function Planner() {
           {/* Drawing Layer (z-20) */}
           {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
             <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-auto" style={{ top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px" }}>
-              <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} isEraserMode={isEraserMode} strokeWidth={strokeWidth} />
+              <GlobalCanvas 
+                ref={canvasRef} 
+                pageKey={pageKey} 
+                activeTemplate={activeTemplate} 
+                activeTool={activeTool}
+                isEraserMode={isEraserMode} 
+                penWidth={penWidth}
+                eraserWidth={eraserWidth}
+                highlighterWidth={highlighterWidth}
+                highlighterColor={highlighterColor}
+              />
             </div>
           )}
         </div>

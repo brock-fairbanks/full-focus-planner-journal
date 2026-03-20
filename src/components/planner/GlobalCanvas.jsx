@@ -1,7 +1,19 @@
 import React, { useEffect, useLayoutEffect, useRef, forwardRef, useImperativeHandle, useState } from "react";
 import { base44 } from "@/api/base44Client";
 
-const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTemplate, onClear, isEraserMode = false, strokeWidth = 2.2 }, ref) => {
+const GlobalCanvas = forwardRef(({ 
+  onSave, 
+  savedImageData, 
+  pageKey, 
+  activeTemplate, 
+  onClear, 
+  activeTool = 'pen',
+  isEraserMode = false, 
+  penWidth = 2.2,
+  eraserWidth = 30,
+  highlighterWidth = 16,
+  highlighterColor = 'rgba(253, 224, 71, 0.4)'
+}, ref) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
@@ -241,6 +253,8 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
   const pointsRef = useRef([]);
   const preStrokeStateRef = useRef(null);
   const doubleTapSnapshotRef = useRef(null);
+  const activeToolRef = useRef('pen');
+  const lineWidthRef = useRef(2.2);
 
   const handleDoubleClickAction = (clientX, clientY, pointerType) => {
     const rect = canvasRef.current.getBoundingClientRect();
