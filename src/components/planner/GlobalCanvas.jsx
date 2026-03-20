@@ -40,6 +40,25 @@ const GlobalCanvas = forwardRef(({
     return tempCanvas;
   };
 
+  const getScaledDataUrl = () => {
+    if (!canvasRef.current) return null;
+    const canvas = canvasRef.current;
+    const dpr = window.devicePixelRatio || 1;
+    
+    // If we're already at standard resolution or lower, just return
+    if (dpr <= 1) {
+      return canvas.toDataURL("image/webp", 0.4);
+    }
+    
+    // Otherwise, scale down to logical CSS pixels to drastically reduce base64 size and fit under DB limits
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width / dpr;
+    tempCanvas.height = canvas.height / dpr;
+    const ctx = tempCanvas.getContext('2d');
+    ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+    return tempCanvas.toDataURL("image/webp", 0.4);
+  };
+
   const putCanvasSnapshot = (snapshot) => {
     if (!snapshot || !ctxRef.current || !canvasRef.current) return;
     const ctx = ctxRef.current;
