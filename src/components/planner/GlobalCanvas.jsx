@@ -809,6 +809,33 @@ const GlobalCanvas = forwardRef(({
     if (!ctxRef.current) return;
     
     const pts = pointsRef.current;
+
+    if (activeToolRef.current === 'highlighter') {
+      if (preStrokeStateRef.current) {
+        putCanvasSnapshot(preStrokeStateRef.current);
+      }
+      ctxRef.current.beginPath();
+      if (pts.length > 0) {
+        if (pts.length === 1) {
+          ctxRef.current.moveTo(pts[0].x, pts[0].y);
+          ctxRef.current.lineTo(pts[0].x + 0.1, pts[0].y + 0.1);
+        } else {
+          ctxRef.current.moveTo(pts[0].x, pts[0].y);
+          for (let j = 1; j < pts.length; j++) {
+            ctxRef.current.lineTo(pts[j].x, pts[j].y);
+          }
+        }
+      }
+      ctxRef.current.stroke();
+      
+      if (!isDrawing.current) {
+        drawingFrameRef.current = null;
+      } else {
+        drawingFrameRef.current = requestAnimationFrame(renderPoints);
+      }
+      return;
+    }
+
     let i = lastDrawnIndexRef.current;
     
     while (i < pts.length - 2) {
