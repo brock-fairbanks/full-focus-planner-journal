@@ -1030,67 +1030,6 @@ const GlobalCanvas = forwardRef(({
         ctxRef.current.lineJoin = 'round';
         ctxRef.current.stroke();
       }
-      // Circle detection -> extract text using AI
-      else if (isCircle) {
-        if (preStrokeStateRef.current) {
-          putCanvasSnapshot(preStrokeStateRef.current);
-        }
-        
-        const tempCanvas = document.createElement('canvas');
-        const pad = 10;
-        const cropX = Math.max(0, minX - pad);
-        const cropY = Math.max(0, minY - pad);
-        const cropW = width + pad * 2;
-        const cropH = height + pad * 2;
-        
-        tempCanvas.width = cropW;
-        tempCanvas.height = cropH;
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.fillStyle = '#ffffff';
-        tempCtx.fillRect(0, 0, cropW, cropH);
-        tempCtx.drawImage(canvasRef.current, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
-        
-        const dataUrl = tempCanvas.toDataURL('image/png');
-        ctxRef.current.clearRect(cropX, cropY, cropW, cropH);
-        
-        const loadingId = Date.now().toString();
-        updateTextsState(prev => [...prev, {
-          id: loadingId,
-          x: cropX,
-          y: cropY,
-          text: "Translating...",
-          isEditing: false,
-          lineHeight: 32,
-          width: `${Math.max(200, cropW)}px`,
-          isLoading: true
-        }]);
-
-        (async () => {
-          try {
-            const response = await fetch(dataUrl);
-            const blob = await response.blob();
-            const file = new File([blob], "handwriting.png", { type: "image/png" });
-            
-            const uploadRes = await base44.integrations.Core.UploadFile({ file });
-            
-            const extractedText = await base44.integrations.Core.InvokeLLM({
-              prompt: "Extract the handwritten text from this image. Return ONLY the extracted text, nothing else. Do not use quotes or markdown formatting. Just the raw text. If there's no text, return empty string.",
-              file_urls: [uploadRes.file_url],
-              model: "gemini_3_flash"
-            });
-            
-            updateTextsState(prev => prev.map(t => {
-              if (t.id === loadingId) {
-                return { ...t, text: extractedText.trim() || "", isLoading: false, isEditing: true };
-              }
-              return t;
-            }));
-          } catch (e) {
-            console.error(e);
-            updateTextsState(prev => prev.filter(t => t.id !== loadingId));
-          }
-        })();
-      }
     }
 
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
