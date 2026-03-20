@@ -300,6 +300,7 @@ const GlobalCanvas = forwardRef(({
           syncIdRef.current = records[0].id;
           if (records[0].updated_at && records[0].updated_at > lastLocalUpdateTime.current) {
             lastLocalUpdateTime.current = records[0].updated_at;
+            localStorage.setItem(`planner_updated_at_${pageKey}`, records[0].updated_at.toString());
             if (isDrawing.current) return; // Don't overwrite if user is actively drawing
             if (records[0].drawing_data && canvasRef.current && ctxRef.current) {
                const img = new Image();
