@@ -116,7 +116,7 @@ const GlobalCanvas = forwardRef(({
         if (undoStackRef.current.length > 30) undoStackRef.current.shift();
         ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         updateTextsState([]);
-        const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+        const dataUrl = getScaledDataUrl();
         localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
         if (onSave) onSave(dataUrl);
         syncToBackend(dataUrl, []);
@@ -128,7 +128,7 @@ const GlobalCanvas = forwardRef(({
         const prevState = undoStackRef.current.pop();
         if (canvasRef.current && ctxRef.current) {
           putCanvasSnapshot(prevState);
-          const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+          const dataUrl = getScaledDataUrl();
           localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
           if (onSave) onSave(dataUrl);
           syncToBackend(dataUrl, textsRef.current);
@@ -142,7 +142,7 @@ const GlobalCanvas = forwardRef(({
       if (saveTimeout.current && canvasRef.current) {
         clearTimeout(saveTimeout.current);
         saveTimeout.current = null;
-        const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+        const dataUrl = getScaledDataUrl();
         localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
         if (onSave) onSave(dataUrl);
         syncToBackend(dataUrl, textsRef.current);
@@ -407,7 +407,7 @@ const GlobalCanvas = forwardRef(({
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
       saveTimeout.current = setTimeout(() => {
         if (canvasRef.current) {
-          const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+          const dataUrl = getScaledDataUrl();
           syncToBackend(dataUrl, updated);
         }
       }, 3000);
@@ -465,7 +465,7 @@ const GlobalCanvas = forwardRef(({
         if (saveTimeout.current) clearTimeout(saveTimeout.current);
         saveTimeout.current = setTimeout(() => {
           if (canvasRef.current) {
-            const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+            const dataUrl = getScaledDataUrl();
             localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
             if (onSave) onSave(dataUrl);
             syncToBackend(dataUrl, textsRef.current);
@@ -497,7 +497,7 @@ const GlobalCanvas = forwardRef(({
         if (saveTimeout.current) clearTimeout(saveTimeout.current);
         saveTimeout.current = setTimeout(() => {
           if (canvasRef.current) {
-            const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+            const dataUrl = getScaledDataUrl();
             localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
             if (onSave) onSave(dataUrl);
             syncToBackend(dataUrl, textsRef.current);
@@ -1001,7 +1001,7 @@ const GlobalCanvas = forwardRef(({
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
       if (canvasRef.current) {
-        const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+        const dataUrl = getScaledDataUrl();
         localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
         if (onSave) onSave(dataUrl);
         syncToBackend(dataUrl, textsRef.current);
