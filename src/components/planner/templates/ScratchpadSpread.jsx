@@ -11,6 +11,9 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState(null);
     const [showHistory, setShowHistory] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [editingNoteId, setEditingNoteId] = useState(null);
+    const [editTitleValue, setEditTitleValue] = useState("");
     const titleInputRef = useRef(null);
     const [portalTarget, setPortalTarget] = useState(null);
 
