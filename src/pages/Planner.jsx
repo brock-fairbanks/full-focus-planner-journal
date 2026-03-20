@@ -36,7 +36,6 @@ export default function Planner() {
   const [eraserWidth, setEraserWidth] = useState(30);
   const [highlighterWidth, setHighlighterWidth] = useState(16);
   const [highlighterColor, setHighlighterColor] = useState('rgba(253, 224, 71, 0.8)');
-  const [textSize, setTextSize] = useState(0); // 0 = Auto
   const pointerStartRef = useRef(null);
   const lastPenTimeRef = useRef(0);
 
@@ -305,21 +304,6 @@ export default function Planner() {
                   })()}
                 </div>
                 <div className="flex items-center ml-1 gap-1 border-l border-slate-200 pl-1">
-                  <div className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 transition-colors rounded-sm px-1.5 h-6 mr-1" title="Text Size">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider select-none pointer-events-none">Font</span>
-                    <select 
-                      value={textSize} 
-                      onChange={(e) => setTextSize(Number(e.target.value))}
-                      className="h-full bg-transparent text-xs text-[#1e293b] outline-none cursor-pointer border-none font-medium appearance-none"
-                      style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
-                    >
-                      <option value={0}>Auto</option>
-                      {[12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 64].map(size => (
-                        <option key={size} value={size}>{size}px</option>
-                      ))}
-                    </select>
-                    <svg className="w-3 h-3 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                  </div>
                   <button
                     onClick={() => canvasRef.current?.undo && canvasRef.current.undo()}
                     className="p-1.5 rounded-md transition-colors text-slate-400 hover:bg-slate-100 hover:text-slate-600"
@@ -351,8 +335,6 @@ export default function Planner() {
                 eraserWidth={eraserWidth}
                 highlighterWidth={highlighterWidth}
                 highlighterColor={highlighterColor}
-                globalTextSize={textSize}
-                onTextFocus={(size) => setTextSize(size || 0)}
               />
             </div>
           )}

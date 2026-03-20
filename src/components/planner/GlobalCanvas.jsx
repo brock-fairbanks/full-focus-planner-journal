@@ -1065,6 +1065,12 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
     }
   }, [textObj.isEditing]);
 
+  useEffect(() => {
+    if (!isEditing && textObj.text !== val) {
+      setVal(textObj.text || '');
+    }
+  }, [textObj.text, isEditing, val]);
+
   useLayoutEffect(() => {
     if (isEditing && textareaRef.current) {
       textareaRef.current.focus();
@@ -1094,23 +1100,6 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
       });
     }
   };
-
-  useLayoutEffect(() => {
-    if (!isEditing && textareaRef.current && activeTemplate !== 'IDEAL_WEEK' && textObj.customFontSize) {
-      const currentBaseline = textObj.baselineY || (textObj.y + (textObj.lineHeight || 32));
-      const prevMinHeight = textareaRef.current.style.minHeight;
-      textareaRef.current.style.minHeight = '0px';
-      textareaRef.current.style.height = '1px';
-      const actualHeight = textareaRef.current.scrollHeight;
-      textareaRef.current.style.minHeight = prevMinHeight;
-      textareaRef.current.style.height = `${actualHeight + 2}px`;
-      
-      const newY = currentBaseline - actualHeight;
-      if (Math.abs(newY - textObj.y) > 1) {
-        updateText(textObj.id, { ...textObj, y: newY, baselineY: currentBaseline });
-      }
-    }
-  }, [textObj.customFontSize, isEditing, val]);
 
   const lh = textObj.lineHeight || 32;
 
@@ -1148,12 +1137,12 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
         }}
         className="w-full bg-transparent outline-none resize-none overflow-hidden pr-8"
         style={{
-          lineHeight: textObj.customFontSize ? '1.2' : (activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`),
-          fontSize: textObj.customFontSize ? `${textObj.customFontSize}px` : (activeTemplate === 'IDEAL_WEEK' ? `${idealWeekFontSize}px` : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`),
+          lineHeight: activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`,
+          fontSize: activeTemplate === 'IDEAL_WEEK' ? `${idealWeekFontSize}px` : `${Math.max(18, Math.min(32, Math.round(lh * 0.8)))}px`,
           fontFamily: "'Caveat', cursive",
           color: textObj.isLoading ? '#94a3b8' : '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
-          minHeight: textObj.customFontSize ? '0px' : `${lh}px`,
+          minHeight: `${lh}px`,
           padding: activeTemplate === 'IDEAL_WEEK' ? '4px 4px 4px 8px' : 0,
           margin: 0,
           userSelect: isEditing ? 'auto' : 'none',
