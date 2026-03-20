@@ -957,13 +957,6 @@ const GlobalCanvas = forwardRef(({
       const width = maxX - minX;
       const height = maxY - minY;
 
-      const isCheckmark = xReversals <= 1 && yReversals === 1 && 
-                          (pts[maxYIdx].y - pts[0].y) > 2 && 
-                          (pts[maxYIdx].y - pts[pts.length-1].y) > 5 &&
-                          pts[pts.length-1].x > pts[0].x &&
-                          pts[pts.length-1].y < pts[0].y + 10 && // ends higher or near where it started
-                          width < 100 && height > 10;
-
       // Strike-through detection (mostly horizontal, straight line)
       if (width > 60 && height < 20 && xReversals <= 1) {
         if (preStrokeStateRef.current) {
