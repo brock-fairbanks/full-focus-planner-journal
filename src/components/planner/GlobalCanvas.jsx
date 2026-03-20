@@ -26,6 +26,25 @@ const GlobalCanvas = forwardRef(({
   const textsRef = useRef([]);
   const myRecentSaves = useRef(new Set());
 
+  const getCanvasSnapshot = () => {
+    if (!canvasRef.current) return null;
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvasRef.current.width;
+    tempCanvas.height = canvasRef.current.height;
+    tempCanvas.getContext('2d').drawImage(canvasRef.current, 0, 0);
+    return tempCanvas;
+  };
+
+  const putCanvasSnapshot = (snapshot) => {
+    if (!snapshot || !ctxRef.current || !canvasRef.current) return;
+    const ctx = ctxRef.current;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    ctx.drawImage(snapshot, 0, 0);
+    ctx.restore();
+  };
+
   const syncToBackend = async (dataUrl, currentTexts) => {
     const timestamp = Date.now();
     lastLocalUpdateTime.current = timestamp;
