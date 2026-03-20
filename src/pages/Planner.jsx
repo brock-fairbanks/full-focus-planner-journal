@@ -32,12 +32,28 @@ export default function Planner() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeTool, setActiveTool] = useState("pen"); // 'pen' | 'highlighter' | 'eraser'
   const [isEraserMode, setIsEraserMode] = useState(false); // For quick hold-to-erase
-  const [penWidth, setPenWidth] = useState(2.2);
-  const [eraserWidth, setEraserWidth] = useState(30);
-  const [highlighterWidth, setHighlighterWidth] = useState(16);
-  const [highlighterColor, setHighlighterColor] = useState('rgba(253, 224, 71, 0.8)');
+  const [penWidth, setPenWidth] = useState(() => Number(localStorage.getItem('planner_penWidth')) || 2.2);
+  const [eraserWidth, setEraserWidth] = useState(() => Number(localStorage.getItem('planner_eraserWidth')) || 30);
+  const [highlighterWidth, setHighlighterWidth] = useState(() => Number(localStorage.getItem('planner_highlighterWidth')) || 16);
+  const [highlighterColor, setHighlighterColor] = useState(() => localStorage.getItem('planner_highlighterColor') || 'rgba(253, 224, 71, 0.8)');
   const pointerStartRef = useRef(null);
   const lastPenTimeRef = useRef(0);
+
+  useEffect(() => {
+    localStorage.setItem('planner_penWidth', penWidth.toString());
+  }, [penWidth]);
+
+  useEffect(() => {
+    localStorage.setItem('planner_eraserWidth', eraserWidth.toString());
+  }, [eraserWidth]);
+
+  useEffect(() => {
+    localStorage.setItem('planner_highlighterWidth', highlighterWidth.toString());
+  }, [highlighterWidth]);
+
+  useEffect(() => {
+    localStorage.setItem('planner_highlighterColor', highlighterColor);
+  }, [highlighterColor]);
 
   useEffect(() => {
     setActiveTemplate(getTemplateFromPath(location.pathname));
