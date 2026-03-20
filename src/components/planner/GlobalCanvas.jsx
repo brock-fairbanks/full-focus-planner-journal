@@ -412,12 +412,8 @@ const GlobalCanvas = forwardRef(({
                        const parsed = JSON.parse(recordData.texts_data);
                        let textsArray = Array.isArray(parsed) ? parsed : (parsed.texts || []);
                        if (parsed.canvasWidth && canvasRef.current) {
+                           // Canvas size is now permanently fixed
                            const dpr = window.devicePixelRatio || 1;
-                           const currentLogicalWidth = canvasRef.current.width / dpr;
-                           const offsetX = (currentLogicalWidth - parsed.canvasWidth) / 2;
-                           if (offsetX !== 0) {
-                               textsArray = textsArray.map(t => ({ ...t, x: t.x + offsetX }));
-                           }
                        }
                        setTexts(textsArray);
                        localStorage.setItem(`planner_texts_${pageKey}`, JSON.stringify(textsArray));
