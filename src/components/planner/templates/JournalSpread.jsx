@@ -214,13 +214,13 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
             title="Clear entire page"
           >
             <Trash2 size={16} />
-            <span className="hidden md:inline">Clear Page</span>
+            <span className="inline">Clear Page</span>
           </button>
         </div>
       </div>
 
       {/* Header Info */}
-      <div className="px-8 md:px-12 py-6 flex flex-wrap gap-8 items-center border-b border-[#E2E8F0]">
+      <div className="px-12 py-6 flex flex-wrap gap-8 items-center border-b border-[#E2E8F0]">
         <div className="flex flex-col">
           <span className="text-xs font-bold uppercase text-[#94a3b8] tracking-wider mb-1">Date</span>
           <span className="font-serif text-xl text-[#1e293b]">{format(currentDate, 'EEEE, MM/dd/yyyy')}</span>
