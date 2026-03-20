@@ -260,12 +260,14 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                                 <Plus size={16} /> New Page
                             </button>
                             <div className="w-px h-8 bg-slate-200" />
-                            <button 
-                                onClick={() => setShowHistory(false)}
-                                className="p-2 bg-slate-100 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-full transition-colors"
-                            >
-                                <X size={20} />
-                            </button>
+                            {activeNoteId && (
+                                <button 
+                                    onClick={() => setShowHistory(false)}
+                                    className="p-2 bg-slate-100 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-full transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-8">
