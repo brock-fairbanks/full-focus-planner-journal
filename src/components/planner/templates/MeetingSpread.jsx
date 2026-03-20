@@ -1191,6 +1191,12 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                   <Square size={20} className="fill-current" />
                   Stop Recording
                 </button>
+                <button 
+                  onClick={cancelRecording}
+                  className="flex justify-center items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-3 rounded-full font-medium transition-all shadow-sm w-full sm:w-auto"
+                >
+                  Cancel
+                </button>
               </div>
             )}
             {!isRecording && !transcription && (
