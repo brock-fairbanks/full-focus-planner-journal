@@ -270,7 +270,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
 
     // Smart Line Snapping: Find the nearest line-like element
     const lineElements = Array.from(document.querySelectorAll(
-      '.border-b, .border-b-2, .border-b-4, .border-b-dashed, [style*="gradient"]'
+      '[class*="border-b"], [style*="gradient"], hr'
     )).filter(el => {
        if (el.children.length > 0 && !el.style.backgroundImage) return false;
        if (el.tagName.toLowerCase() === 'button' || el.closest('button')) return false;
@@ -282,19 +282,31 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
 
     for (const el of lineElements) {
       const elRect = el.getBoundingClientRect();
-      if (elRect.width === 0) continue;
+      if (elRect.width === 0 || elRect.height === 0) continue;
+
+      let vDist;
+      if (el.style.backgroundSize) {
+         const match = el.style.backgroundSize.match(/(\d+)px/g);
+         if (match && match.length > 0) {
+             const lh = parseInt(match[match.length - 1]);
+             const relativeY = clientY - elRect.top;
+             const gridY = Math.ceil(Math.max(1, relativeY) / lh) * lh;
+             const absoluteGridY = elRect.top + gridY;
+             vDist = Math.abs(clientY - absoluteGridY);
+         } else {
+             vDist = Math.abs(clientY - elRect.bottom);
+         }
+      } else {
+         vDist = Math.abs(clientY - elRect.bottom);
+      }
 
       let hDist = 0;
       if (clientX < elRect.left) hDist = elRect.left - clientX;
       else if (clientX > elRect.right) hDist = clientX - elRect.right;
 
-      let vDist = 0;
-      if (clientY < elRect.top - 10) vDist = elRect.top - 10 - clientY;
-      else if (clientY > elRect.bottom + 10) vDist = clientY - (elRect.bottom + 10);
+      let dist = vDist * 20 + hDist;
 
-      let dist = vDist * 10 + hDist;
-
-      if (dist < minDistance && dist < 600) {
+      if (dist < minDistance && dist < 1000) {
         minDistance = dist;
         bestLine = el;
       }
@@ -307,7 +319,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
          startX = clientX - rect.left;
          width = `${bestRect.right - clientX - 16}px`;
       } else {
-         startX = bestRect.left - rect.left + 2; 
+         startX = Math.max(0, bestRect.left - rect.left + 2); 
          width = `${bestRect.width - 4}px`;
       }
       
@@ -338,9 +350,9 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
          if (match && match.length > 0) {
              lineHeight = parseInt(match[match.length - 1]);
              const relativeY = clientY - bestRect.top;
-             const gridY = Math.floor(relativeY / lineHeight) * lineHeight;
+             const gridY = Math.ceil(Math.max(1, relativeY) / lineHeight) * lineHeight;
              // Offset to align Caveat font baseline with the grid line
-             snappedY = gridY + bestRect.top - rect.top + (lineHeight === 40 ? 6 : 4); 
+             snappedY = gridY + bestRect.top - rect.top - lineHeight + (lineHeight === 40 ? 6 : 8); 
          }
       }
     }
