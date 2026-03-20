@@ -6,7 +6,6 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import Planner from './pages/Planner.jsx';
 import Onboarding from './pages/Onboarding.jsx';
 import Settings from './pages/Settings.jsx';
-import WakeWordListener from '@/components/planner/WakeWordListener.jsx';
 
 const AuthenticatedApp = () => {
   const { user } = useAuth();
@@ -17,7 +16,6 @@ const AuthenticatedApp = () => {
 
   return (
     <>
-      <WakeWordListener />
       <Routes>
       <Route path="/" element={<Navigate to="/today" replace />} />
       <Route path="/onboarding" element={<Onboarding />} />
