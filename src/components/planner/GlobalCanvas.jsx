@@ -940,7 +940,7 @@ const GlobalCanvas = forwardRef(({
   );
 });
 
-const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
+const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleClick }) => {
   const [isEditing, setIsEditing] = useState(textObj.isEditing);
   const [val, setVal] = useState(textObj.text);
   const textareaRef = useRef(null);
@@ -1009,7 +1009,13 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
         rows={1}
         onChange={handleInput}
         onBlur={handleBlur}
-        onClick={() => { if (!isEditing) setIsEditing(true); }}
+        onClick={(e) => { 
+          if (e.detail === 3) {
+            if (onTripleClick) onTripleClick();
+          } else {
+            if (!isEditing) setIsEditing(true); 
+          }
+        }}
         className="w-full bg-transparent outline-none resize-none overflow-hidden pr-8"
         style={{
           lineHeight: activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`,
