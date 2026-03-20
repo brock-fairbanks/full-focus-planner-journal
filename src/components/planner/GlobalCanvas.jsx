@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, forwardRef, useImperativeHandle, useState } from "react";
 import { base44 } from "@/api/base44Client";
 
-const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTemplate, onClear }, ref) => {
+const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTemplate, onClear, isEraserMode = false, strokeWidth = 2.2 }, ref) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
@@ -412,7 +412,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     preStrokeStateRef.current = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
     
     isDrawing.current = true;
-    isErasingRef.current = e.pointerType === 'pen' && ((e.buttons & 2) !== 0 || (e.buttons & 32) !== 0);
+    isErasingRef.current = isEraserMode || (e.pointerType === 'pen' && ((e.buttons & 2) !== 0 || (e.buttons & 32) !== 0));
 
     const rect = canvasRef.current.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
@@ -428,7 +428,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
     
     ctxRef.current.globalCompositeOperation = isErasingRef.current ? 'destination-out' : 'source-over';
     ctxRef.current.strokeStyle = isErasingRef.current ? 'rgba(0,0,0,1)' : '#1e293b';
-    ctxRef.current.lineWidth = isErasingRef.current ? 30 : 2.2;
+    ctxRef.current.lineWidth = isErasingRef.current ? 30 : strokeWidth;
     ctxRef.current.lineCap = 'round';
     ctxRef.current.lineJoin = 'round';
     ctxRef.current.beginPath();
@@ -466,7 +466,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
            ctxRef.current.lineWidth = isErasingRef.current 
                ? 10 + ev.pressure * 30 
-               : (ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2);
+               : (ev.pressure > 0 ? (strokeWidth * 0.5) + ev.pressure * (strokeWidth * 1.2) : strokeWidth);
         }
         
         ctxRef.current.stroke();
@@ -478,7 +478,7 @@ const GlobalCanvas = forwardRef(({ onSave, savedImageData, pageKey, activeTempla
         if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
            ctxRef.current.lineWidth = isErasingRef.current 
                ? 10 + ev.pressure * 30 
-               : (ev.pressure > 0 ? 1.0 + ev.pressure * 2.5 : 2.2);
+               : (ev.pressure > 0 ? (strokeWidth * 0.5) + ev.pressure * (strokeWidth * 1.2) : strokeWidth);
         }
         
         ctxRef.current.stroke();

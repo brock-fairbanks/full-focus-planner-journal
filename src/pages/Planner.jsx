@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addDays } from "date-fns";
-import { Mic, MessagesSquare } from "lucide-react";
+import { Mic, MessagesSquare, Eraser, Pen } from "lucide-react";
 import TabBar from "../components/planner/TabBar.jsx";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
@@ -30,6 +30,8 @@ export default function Planner() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [journalMode, setJournalMode] = useState("DAILY");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isEraserMode, setIsEraserMode] = useState(false);
+  const [strokeWidth, setStrokeWidth] = useState(2.2);
   const pointerStartRef = useRef(null);
   const lastPenTimeRef = useRef(0);
 
@@ -167,6 +169,36 @@ export default function Planner() {
 
           {/* Tools Sub Header */}
           <div className={`fixed top-16 right-0 h-10 bg-[#FAF9F6] border-b border-[#E2E8F0] flex items-center justify-end px-4 gap-4 z-40 ${activeTemplate === "JOURNAL" ? "left-40 md:left-44" : "left-20"} transition-all duration-300 ease-in-out shadow-sm`}>
+            {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
+              <div className="flex items-center gap-1 border-r border-[#E2E8F0] pr-4">
+                <button
+                  onClick={() => setIsEraserMode(false)}
+                  className={`p-1.5 rounded-md transition-colors ${!isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  title="Pen"
+                >
+                  <Pen size={16} />
+                </button>
+                <button
+                  onClick={() => setIsEraserMode(true)}
+                  className={`p-1.5 rounded-md transition-colors ${isEraserMode ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  title="Eraser"
+                >
+                  <Eraser size={16} />
+                </button>
+                <div className="flex items-center ml-2 gap-1 bg-white border border-slate-200 rounded-md p-0.5">
+                  {[1, 2.2, 4].map(w => (
+                    <button
+                      key={w}
+                      onClick={() => setStrokeWidth(w)}
+                      className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${strokeWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`}
+                      title={`Thickness: ${w}`}
+                    >
+                      <div className="bg-[#1e293b] rounded-full" style={{ width: w + 2, height: w + 2 }}></div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <button 
                 onClick={() => handleTabChange("MEETING")}
                 className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-md transition-colors ${activeTemplate === 'MEETING' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
@@ -227,7 +259,7 @@ export default function Planner() {
           {/* Drawing Layer (z-20) */}
           {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
             <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-auto" style={{ top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px" }}>
-              <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} />
+              <GlobalCanvas ref={canvasRef} pageKey={pageKey} activeTemplate={activeTemplate} isEraserMode={isEraserMode} strokeWidth={strokeWidth} />
             </div>
           )}
         </div>
