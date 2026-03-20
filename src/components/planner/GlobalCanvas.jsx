@@ -863,18 +863,23 @@ const GlobalCanvas = forwardRef(({
             return;
         }
 
-        // Replace with perfectly straight double strike-through lines (if not over text)
+        // Replace with perfectly straight triple strike-through lines (if not over text)
         ctxRef.current.strokeStyle = '#1e293b';
-        ctxRef.current.lineWidth = 2;
+        ctxRef.current.lineWidth = 3;
         
         ctxRef.current.beginPath();
-        ctxRef.current.moveTo(minX, finalY - 2);
-        ctxRef.current.lineTo(maxX, finalY - 2);
+        ctxRef.current.moveTo(minX, finalY - 6);
+        ctxRef.current.lineTo(maxX, finalY - 6);
+        ctxRef.current.stroke();
+
+        ctxRef.current.beginPath();
+        ctxRef.current.moveTo(minX, finalY);
+        ctxRef.current.lineTo(maxX, finalY);
         ctxRef.current.stroke();
         
         ctxRef.current.beginPath();
-        ctxRef.current.moveTo(minX, finalY + 2);
-        ctxRef.current.lineTo(maxX, finalY + 2);
+        ctxRef.current.moveTo(minX, finalY + 6);
+        ctxRef.current.lineTo(maxX, finalY + 6);
         ctxRef.current.stroke();
       }
       // Checkmark detection -> replace with a perfect checkbox with green check
@@ -1110,8 +1115,9 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
       />
       {textObj.isStrikethrough && (
         <div className="absolute inset-x-0 pointer-events-none flex flex-col justify-center gap-[3px]" style={{ top: `${(lh || 32) / 2}px`, transform: 'translateY(-50%)', paddingLeft: '4px', paddingRight: '8px' }}>
-           <div className="w-full h-[2px] bg-[#1e293b]"></div>
-           <div className="w-full h-[2px] bg-[#1e293b]"></div>
+           <div className="w-full h-[3px] bg-[#1e293b] rounded-full"></div>
+           <div className="w-full h-[3px] bg-[#1e293b] rounded-full"></div>
+           <div className="w-full h-[3px] bg-[#1e293b] rounded-full"></div>
         </div>
       )}
       {isEditing && !textObj.isLoading && (
