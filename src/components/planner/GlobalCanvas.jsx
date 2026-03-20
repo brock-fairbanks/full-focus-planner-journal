@@ -1013,38 +1013,6 @@ const GlobalCanvas = forwardRef(({
         ctxRef.current.lineTo(maxX, finalY + 6);
         ctxRef.current.stroke();
       }
-      // Checkmark detection -> replace with a perfect checkbox with green check
-      else if (isCheckmark) {
-        if (preStrokeStateRef.current) {
-          putCanvasSnapshot(preStrokeStateRef.current);
-        }
-        const boxSize = Math.min(24, Math.max(16, width));
-        const boxX = minX;
-        const boxY = minY + (height - boxSize) / 2;
-        
-        ctxRef.current.beginPath();
-        if (ctxRef.current.roundRect) {
-          ctxRef.current.roundRect(boxX, boxY, boxSize, boxSize, 4);
-        } else {
-          ctxRef.current.rect(boxX, boxY, boxSize, boxSize);
-        }
-        ctxRef.current.fillStyle = '#f8fafc';
-        ctxRef.current.fill();
-        ctxRef.current.strokeStyle = '#cbd5e1';
-        ctxRef.current.lineWidth = 2;
-        ctxRef.current.stroke();
-        
-        // Green check
-        ctxRef.current.beginPath();
-        ctxRef.current.moveTo(boxX + boxSize * 0.25, boxY + boxSize * 0.5);
-        ctxRef.current.lineTo(boxX + boxSize * 0.45, boxY + boxSize * 0.7);
-        ctxRef.current.lineTo(boxX + boxSize * 0.75, boxY + boxSize * 0.3);
-        ctxRef.current.strokeStyle = '#22c55e';
-        ctxRef.current.lineWidth = 3;
-        ctxRef.current.lineCap = 'round';
-        ctxRef.current.lineJoin = 'round';
-        ctxRef.current.stroke();
-      }
     }
 
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
