@@ -449,7 +449,11 @@ const GlobalCanvas = forwardRef(({
     preStrokeStateRef.current = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
     
     isDrawing.current = true;
-    isErasingRef.current = isEraserMode || (e.pointerType === 'pen' && ((e.buttons & 2) !== 0 || (e.buttons & 32) !== 0));
+    
+    const isPenEraserButton = (e.pointerType === 'pen' && ((e.buttons & 2) !== 0 || (e.buttons & 32) !== 0));
+    isErasingRef.current = isEraserMode || activeTool === 'eraser' || isPenEraserButton;
+    
+    activeToolRef.current = isErasingRef.current ? 'eraser' : activeTool;
 
     const rect = canvasRef.current.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
@@ -463,9 +467,19 @@ const GlobalCanvas = forwardRef(({
     
     pointsRef.current = [{x, y}];
     
-    ctxRef.current.globalCompositeOperation = isErasingRef.current ? 'destination-out' : 'source-over';
-    ctxRef.current.strokeStyle = isErasingRef.current ? 'rgba(0,0,0,1)' : '#1e293b';
-    ctxRef.current.lineWidth = isErasingRef.current ? 30 : strokeWidth;
+    ctxRef.current.globalCompositeOperation = activeToolRef.current === 'eraser' ? 'destination-out' : 'source-over';
+    
+    let color = '#1e293b';
+    if (activeToolRef.current === 'highlighter') color = highlighterColor;
+    else if (activeToolRef.current === 'eraser') color = 'rgba(0,0,0,1)';
+    ctxRef.current.strokeStyle = color;
+    
+    let baseWidth = penWidth;
+    if (activeToolRef.current === 'eraser') baseWidth = eraserWidth;
+    else if (activeToolRef.current === 'highlighter') baseWidth = highlighterWidth;
+    lineWidthRef.current = baseWidth;
+    
+    ctxRef.current.lineWidth = baseWidth;
     ctxRef.current.lineCap = 'round';
     ctxRef.current.lineJoin = 'round';
     ctxRef.current.beginPath();
@@ -500,10 +514,14 @@ const GlobalCanvas = forwardRef(({
         ctxRef.current.moveTo(midX1, midY1);
         ctxRef.current.quadraticCurveTo(lastTwo.x, lastTwo.y, midX2, midY2);
         
-        if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
-           ctxRef.current.lineWidth = isErasingRef.current 
-               ? 10 + ev.pressure * 30 
-               : (ev.pressure > 0 ? (strokeWidth * 0.5) + ev.pressure * (strokeWidth * 1.2) : strokeWidth);
+        if (ev.pointerType === 'pen' && ev.pressure !== undefined && ev.pressure > 0) {
+           if (activeToolRef.current === 'eraser') {
+               ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.5;
+           } else if (activeToolRef.current === 'highlighter') {
+               ctxRef.current.lineWidth = lineWidthRef.current;
+           } else {
+               ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.2;
+           }
         }
         
         ctxRef.current.stroke();
@@ -512,10 +530,14 @@ const GlobalCanvas = forwardRef(({
         ctxRef.current.moveTo(pts[0].x, pts[0].y);
         ctxRef.current.lineTo(pts[1].x, pts[1].y);
         
-        if (ev.pointerType === 'pen' && ev.pressure !== undefined) {
-           ctxRef.current.lineWidth = isErasingRef.current 
-               ? 10 + ev.pressure * 30 
-               : (ev.pressure > 0 ? (strokeWidth * 0.5) + ev.pressure * (strokeWidth * 1.2) : strokeWidth);
+        if (ev.pointerType === 'pen' && ev.pressure !== undefined && ev.pressure > 0) {
+           if (activeToolRef.current === 'eraser') {
+               ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.5;
+           } else if (activeToolRef.current === 'highlighter') {
+               ctxRef.current.lineWidth = lineWidthRef.current;
+           } else {
+               ctxRef.current.lineWidth = lineWidthRef.current * 0.5 + ev.pressure * lineWidthRef.current * 1.2;
+           }
         }
         
         ctxRef.current.stroke();
@@ -537,7 +559,7 @@ const GlobalCanvas = forwardRef(({
         ctxRef.current.globalCompositeOperation = 'source-over';
     }
 
-    if (!isErasingRef.current && pts.length > 5 && ctxRef.current && canvasRef.current) {
+    if (activeToolRef.current === 'pen' && pts.length > 5 && ctxRef.current && canvasRef.current) {
       let minX = pts[0].x, maxX = pts[0].x;
       let minY = pts[0].y, maxY = pts[0].y;
       let xReversals = 0;
