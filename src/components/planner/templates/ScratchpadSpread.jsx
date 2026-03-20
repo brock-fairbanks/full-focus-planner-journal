@@ -114,22 +114,22 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
     const getBgStyle = () => {
         switch (background) {
             case "lined-narrow":
-                return { backgroundImage: "repeating-linear-gradient(transparent, transparent 31px, #e5e7eb 31px, #e5e7eb 32px)", backgroundSize: "100% 32px", backgroundAttachment: "local" };
+                return { backgroundImage: "repeating-linear-gradient(transparent, transparent 31px, #cbd5e1 31px, #cbd5e1 32px)", backgroundSize: "100% 32px", backgroundAttachment: "local" };
             case "lined-wide":
-                return { backgroundImage: "repeating-linear-gradient(transparent, transparent 47px, #e5e7eb 47px, #e5e7eb 48px)", backgroundSize: "100% 48px", backgroundAttachment: "local" };
+                return { backgroundImage: "repeating-linear-gradient(transparent, transparent 47px, #cbd5e1 47px, #cbd5e1 48px)", backgroundSize: "100% 48px", backgroundAttachment: "local" };
             case "grid-small":
-                return { backgroundImage: "linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px)", backgroundSize: "20px 20px" };
+                return { backgroundImage: "linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px)", backgroundSize: "20px 20px" };
             case "grid-large":
-                return { backgroundImage: "linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px)", backgroundSize: "40px 40px" };
+                return { backgroundImage: "linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px)", backgroundSize: "40px 40px" };
             case "dotted":
-                return { backgroundImage: "radial-gradient(#94a3b8 1.5px, transparent 1.5px)", backgroundSize: "24px 24px" };
+                return { backgroundImage: "radial-gradient(#64748b 1.5px, transparent 1.5px)", backgroundSize: "24px 24px" };
             default:
                 return {};
         }
     };
 
     return (
-        <div className="w-full h-full min-h-[800px] relative bg-white" style={getBgStyle()}>
+        <div className="w-full h-full min-h-[800px] relative bg-white border-2 border-black" style={getBgStyle()}>
             {/* Compact Header / Toolbar (Rendered in Portal) */}
             {portalTarget && createPortal(
                 <div className="h-[34px] px-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] flex items-center justify-center gap-3 pointer-events-auto shadow-sm rounded-lg whitespace-nowrap">
