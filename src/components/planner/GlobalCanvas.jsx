@@ -77,22 +77,33 @@ const GlobalCanvas = forwardRef(({
       myRecentSaves.current.add(timestamp);
       setTimeout(() => { if (myRecentSaves.current) myRecentSaves.current.delete(timestamp); }, 15000);
     }
+    
+    const dpr = window.devicePixelRatio || 1;
+    const currentLogicalWidth = canvasRef.current ? canvasRef.current.width / dpr : window.innerWidth;
+    
+    const textPayload = JSON.stringify({
+        texts: currentTexts,
+        canvasWidth: currentLogicalWidth
+    });
+
     try {
-      // Upload the image to bypass the 200KB database string limit
       let finalDrawingData = dataUrl;
-      try {
-        const uploadRes = await base44.integrations.Core.UploadFile({ file: dataUrl });
-        if (uploadRes && uploadRes.file_url) {
-          finalDrawingData = uploadRes.file_url;
-        }
-      } catch (uploadError) {
-        console.error('Failed to upload image to CDN, falling back to direct string:', uploadError);
+      // Only upload if it's dangerously close to the 200KB entity limit to avoid choking the sync
+      if (dataUrl && dataUrl.length > 180000) {
+          try {
+            const uploadRes = await base44.integrations.Core.UploadFile({ file: dataUrl });
+            if (uploadRes && uploadRes.file_url) {
+              finalDrawingData = uploadRes.file_url;
+            }
+          } catch (uploadError) {
+            console.error('Failed to upload image to CDN:', uploadError);
+          }
       }
 
       if (syncIdRef.current) {
         await base44.entities.PlannerSync.update(syncIdRef.current, {
           drawing_data: finalDrawingData,
-          texts_data: JSON.stringify(currentTexts),
+          texts_data: textPayload,
           updated_at: timestamp
         });
       } else {
@@ -101,14 +112,14 @@ const GlobalCanvas = forwardRef(({
           syncIdRef.current = records[0].id;
           await base44.entities.PlannerSync.update(syncIdRef.current, {
             drawing_data: finalDrawingData,
-            texts_data: JSON.stringify(currentTexts),
+            texts_data: textPayload,
             updated_at: timestamp
           });
         } else {
           const res = await base44.entities.PlannerSync.create({
             page_key: pageKey,
             drawing_data: finalDrawingData,
-            texts_data: JSON.stringify(currentTexts),
+            texts_data: textPayload,
             updated_at: timestamp
           });
           syncIdRef.current = res.id;
@@ -199,8 +210,8 @@ const GlobalCanvas = forwardRef(({
           if (canvasRef.current) {
             const dpr = window.devicePixelRatio || 1;
             const logicalWidth = canvasRef.current.width / dpr;
-            const logicalHeight = canvasRef.current.height / dpr;
-            ctx.drawImage(img, 0, 0, logicalWidth, logicalHeight);
+            const offsetX = (logicalWidth - img.width) / 2;
+            ctx.drawImage(img, offsetX, 0, img.width, img.height);
           }
         };
         img.src = localImageData;
@@ -235,6 +246,8 @@ const GlobalCanvas = forwardRef(({
       layoutAnchorRef.current = { x: currentAnchorX, y: currentAnchorY };
 
       const dataUrl = canvas.toDataURL("image/png");
+      const oldLogicalWidth = canvas.width / dpr;
+      const oldLogicalHeight = canvas.height / dpr;
       
       canvas.width = newWidth * dpr;
       canvas.height = newHeight * dpr;
@@ -248,10 +261,7 @@ const GlobalCanvas = forwardRef(({
       const img = new Image();
       img.onload = () => {
         if (canvasRef.current) {
-          const dpr = window.devicePixelRatio || 1;
-          const logicalWidth = canvasRef.current.width / dpr;
-          const logicalHeight = canvasRef.current.height / dpr;
-          ctx.drawImage(img, shiftX, shiftY, logicalWidth, logicalHeight);
+          ctx.drawImage(img, shiftX, shiftY, oldLogicalWidth, oldLogicalHeight);
           
           if (shiftX !== 0 || shiftY !== 0) {
               const newDataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
@@ -347,16 +357,27 @@ const GlobalCanvas = forwardRef(({
                    ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
                    const dpr = window.devicePixelRatio || 1;
                    const logicalWidth = canvasRef.current.width / dpr;
-                   const logicalHeight = canvasRef.current.height / dpr;
-                   ctxRef.current.drawImage(img, 0, 0, logicalWidth, logicalHeight);
+                   const offsetX = (logicalWidth - img.width) / 2;
+                   ctxRef.current.drawImage(img, offsetX, 0, img.width, img.height);
                    localStorage.setItem(`planner_drawing_${pageKey}`, records[0].drawing_data);
                };
                img.src = records[0].drawing_data;
             }
             if (records[0].texts_data) {
-               const parsedTexts = JSON.parse(records[0].texts_data);
-               setTexts(parsedTexts);
-               localStorage.setItem(`planner_texts_${pageKey}`, records[0].texts_data);
+               try {
+                   const parsed = JSON.parse(records[0].texts_data);
+                   let textsArray = Array.isArray(parsed) ? parsed : (parsed.texts || []);
+                   if (parsed.canvasWidth && canvasRef.current) {
+                       const dpr = window.devicePixelRatio || 1;
+                       const currentLogicalWidth = canvasRef.current.width / dpr;
+                       const offsetX = (currentLogicalWidth - parsed.canvasWidth) / 2;
+                       if (offsetX !== 0) {
+                           textsArray = textsArray.map(t => ({ ...t, x: t.x + offsetX }));
+                       }
+                   }
+                   setTexts(textsArray);
+                   localStorage.setItem(`planner_texts_${pageKey}`, JSON.stringify(textsArray));
+               } catch(e) {}
             }
           }
         }
@@ -390,16 +411,27 @@ const GlobalCanvas = forwardRef(({
                         ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
                         const dpr = window.devicePixelRatio || 1;
                         const logicalWidth = canvasRef.current.width / dpr;
-                        const logicalHeight = canvasRef.current.height / dpr;
-                        ctxRef.current.drawImage(img, 0, 0, logicalWidth, logicalHeight);
+                        const offsetX = (logicalWidth - img.width) / 2;
+                        ctxRef.current.drawImage(img, offsetX, 0, img.width, img.height);
                         localStorage.setItem(`planner_drawing_${pageKey}`, recordData.drawing_data);
                     };
                     img.src = recordData.drawing_data;
                 }
                 if (recordData.texts_data) {
-                    const parsedTexts = JSON.parse(recordData.texts_data);
-                    setTexts(parsedTexts);
-                    localStorage.setItem(`planner_texts_${pageKey}`, recordData.texts_data);
+                   try {
+                       const parsed = JSON.parse(recordData.texts_data);
+                       let textsArray = Array.isArray(parsed) ? parsed : (parsed.texts || []);
+                       if (parsed.canvasWidth && canvasRef.current) {
+                           const dpr = window.devicePixelRatio || 1;
+                           const currentLogicalWidth = canvasRef.current.width / dpr;
+                           const offsetX = (currentLogicalWidth - parsed.canvasWidth) / 2;
+                           if (offsetX !== 0) {
+                               textsArray = textsArray.map(t => ({ ...t, x: t.x + offsetX }));
+                           }
+                       }
+                       setTexts(textsArray);
+                       localStorage.setItem(`planner_texts_${pageKey}`, JSON.stringify(textsArray));
+                   } catch(e) {}
                 }
             }
         }
@@ -897,8 +929,8 @@ const GlobalCanvas = forwardRef(({
           ctxRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
           const dpr = window.devicePixelRatio || 1;
           const logicalWidth = canvasRef.current.width / dpr;
-          const logicalHeight = canvasRef.current.height / dpr;
-          ctxRef.current.drawImage(img, 0, 0, logicalWidth, logicalHeight);
+          const offsetX = (logicalWidth - img.width) / 2;
+          ctxRef.current.drawImage(img, offsetX, 0, img.width, img.height);
           localStorage.setItem(`planner_drawing_${pageKey}`, pendingRemoteDrawingRef.current);
           pendingRemoteDrawingRef.current = null;
         }
