@@ -101,6 +101,32 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
         }
     };
 
+    const handleRenameSubmit = async (e, id) => {
+        if (e.type === 'keydown' && e.key !== 'Enter') return;
+        try {
+            const updated = await base44.entities.ScratchpadNote.update(id, {
+                title: editTitleValue,
+                updated_at: Date.now()
+            });
+            setNotes(prev => prev.map(n => n.id === id ? updated : n));
+            if (activeNoteId === id) setTitle(editTitleValue);
+            setEditingNoteId(null);
+        } catch (error) {
+            console.error(error);
+            setEditingNoteId(null);
+        }
+    };
+
+    const startRenaming = (e, note) => {
+        e.stopPropagation();
+        setEditingNoteId(note.id);
+        setEditTitleValue(note.title);
+    };
+
+    const filteredNotes = notes.filter(n => 
+        (n.title || "Untitled Note").toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     // Auto-save when typing/changing backgrounds
     useEffect(() => {
         const timer = setTimeout(() => {
