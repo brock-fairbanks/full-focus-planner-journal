@@ -60,8 +60,15 @@ export default function Planner() {
   }, [highlighterColor]);
 
   useEffect(() => {
-    setActiveTemplate(getTemplateFromPath(location.pathname));
-  }, [location.pathname, getTemplateFromPath]);
+    if (isSmallPhone) {
+      if (location.pathname !== "/meeting") {
+        navigate("/meeting", { replace: true });
+      }
+      setActiveTemplate("MEETING");
+    } else {
+      setActiveTemplate(getTemplateFromPath(location.pathname));
+    }
+  }, [location.pathname, getTemplateFromPath, isSmallPhone, navigate]);
 
   useEffect(() => {
     const isYearEnd = selectedDate.getMonth() === 11 && selectedDate.getDate() >= 25;
@@ -179,7 +186,7 @@ export default function Planner() {
       onPointerCancel={() => { pointerStartRef.current = null; }}
     >
       {/* Sidebar - Highest Z-index */}
-      {!isFullscreen && (
+      {!isFullscreen && !isSmallPhone && (
         <>
           <TabBar 
             activeTemplate={activeTemplate} 
@@ -222,13 +229,14 @@ export default function Planner() {
       {/* Content Area */}
       <div 
         className={`fixed ${
-          isFullscreen 
+          isFullscreen || isSmallPhone
             ? "left-0 top-0" 
             : (activeTemplate === "JOURNAL" ? "left-40 md:left-44 top-[104px]" : "left-20 top-[104px]")
         } right-0 bottom-0 ${activeTemplate === 'SCRATCHPAD' ? 'bg-[#E5E0D8]' : 'bg-[#FAF9F6]'} overflow-y-auto overflow-x-auto transition-all duration-300 ease-in-out`}
       >
-        <div className="relative min-h-full w-full flex flex-col min-w-[1024px]">
+        <div className={`relative min-h-full w-full flex flex-col ${isSmallPhone ? 'min-w-0' : 'min-w-[1024px]'}`}>
           {/* Fullscreen Toggle & Tools */}
+          {!isSmallPhone && (
           <div className="w-full flex justify-between items-center p-2 shrink-0 z-30 pointer-events-auto sticky top-0 left-0">
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
@@ -348,6 +356,7 @@ export default function Planner() {
               </div>
             )}
           </div>
+          )}
 
           {/* Template Layer */}
           <div className={`flex-1 w-full pointer-events-auto mx-auto relative ${activeTemplate === 'SCRATCHPAD' ? 'max-w-[95%]' : 'max-w-5xl'}`}>
