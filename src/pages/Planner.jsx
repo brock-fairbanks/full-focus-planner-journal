@@ -333,7 +333,7 @@ export default function Planner() {
           </div>
 
           {/* Template Layer */}
-          <div className="flex-1 w-full pointer-events-auto">
+          <div className="flex-1 w-full pointer-events-auto max-w-5xl mx-auto relative">
             <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} journalMode={journalMode} />
           </div>
           
