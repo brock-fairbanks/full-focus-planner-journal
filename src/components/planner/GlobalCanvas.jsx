@@ -493,9 +493,19 @@ const GlobalCanvas = forwardRef(({
     const isSameSpot = dx < 40 && dy < 40;
 
     if (!isPen && isSameSpot && now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      handleDoubleClickAction(e.clientX, e.clientY, e.pointerType);
-      lastTapRef.current = 0;
-      return;
+      tapCountRef.current += 1;
+      if (tapCountRef.current === 3) {
+         handleTripleClickAction(e.clientX, e.clientY);
+         tapCountRef.current = 0;
+         lastTapRef.current = 0;
+         return;
+      } else if (tapCountRef.current === 2) {
+         handleDoubleClickAction(e.clientX, e.clientY, e.pointerType);
+         lastTapRef.current = now;
+         return;
+      }
+    } else {
+      tapCountRef.current = 1;
     }
     
     lastTapRef.current = now;
