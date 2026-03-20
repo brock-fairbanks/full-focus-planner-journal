@@ -1208,7 +1208,7 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
           fontFamily: "'Caveat', cursive",
           color: textObj.isLoading ? '#94a3b8' : '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
-          minHeight: `${lh}px`,
+          minHeight: textObj.customFontSize ? '0px' : `${lh}px`,
           padding: activeTemplate === 'IDEAL_WEEK' ? '4px 4px 4px 8px' : 0,
           margin: 0,
           userSelect: isEditing ? 'auto' : 'none',
