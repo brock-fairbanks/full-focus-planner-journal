@@ -917,10 +917,28 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             controls 
             src={audioUrl.url} 
             className="h-10 w-full md:flex-1 max-w-xl" 
-            onLoadedData={(e) => { e.target.playbackRate = playbackSpeed; }}
+            onLoadedData={(e) => { 
+              e.target.playbackRate = playbackSpeed; 
+              e.target.preservesPitch = preservePitch;
+              if ('webkitPreservesPitch' in e.target) e.target.webkitPreservesPitch = preservePitch;
+            }}
             onRateChange={(e) => { if (e.target.playbackRate !== playbackSpeed) setPlaybackSpeed(e.target.playbackRate); }}
           />
           <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+            <button
+              onClick={() => {
+                const newVal = !preservePitch;
+                setPreservePitch(newVal);
+                if (mainAudioRef.current) {
+                  mainAudioRef.current.preservesPitch = newVal;
+                  if ('webkitPreservesPitch' in mainAudioRef.current) mainAudioRef.current.webkitPreservesPitch = newVal;
+                }
+              }}
+              className={`text-xs px-2 py-2 rounded-lg font-medium transition-colors border ${preservePitch ? 'bg-[#1e293b] text-white border-[#1e293b]' : 'bg-white text-slate-600 border-slate-300'}`}
+              title="Toggle Pitch Preservation"
+            >
+              Pitch: {preservePitch ? 'On' : 'Off'}
+            </button>
             <select
               value={playbackSpeed}
               onChange={(e) => {
