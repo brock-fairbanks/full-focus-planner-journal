@@ -483,7 +483,7 @@ const GlobalCanvas = forwardRef(({
     }, 250);
   };
 
-  const lastTapPosRef = useRef({ x: 0, y: 0 });
+  const lastTapPosRef = useRef({ x: 0, y: 0 }); // Tracks last tap position to detect double/triple taps
 
   const startDrawing = (e) => {
     if (e.pointerType !== 'touch') {
