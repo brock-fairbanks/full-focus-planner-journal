@@ -911,8 +911,32 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               <span className="text-sm font-bold text-[#1e293b] truncate">Recording Audio</span>
             </div>
           </div>
-          <audio controls src={audioUrl.url} className="h-10 w-full md:flex-1 max-w-xl" />
+          <audio 
+            ref={mainAudioRef}
+            controls 
+            src={audioUrl.url} 
+            className="h-10 w-full md:flex-1 max-w-xl" 
+            onLoadedData={(e) => { e.target.playbackRate = playbackSpeed; }}
+            onRateChange={(e) => { if (e.target.playbackRate !== playbackSpeed) setPlaybackSpeed(e.target.playbackRate); }}
+          />
           <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+            <select
+              value={playbackSpeed}
+              onChange={(e) => {
+                const speed = parseFloat(e.target.value);
+                setPlaybackSpeed(speed);
+                if (mainAudioRef.current) mainAudioRef.current.playbackRate = speed;
+              }}
+              className="bg-slate-100 hover:bg-slate-200 border border-transparent text-[#1e293b] text-sm rounded-lg px-2 py-2 focus:outline-none transition-colors font-medium cursor-pointer flex-shrink-0"
+              title="Playback Speed"
+            >
+              <option value="0.5">0.5x</option>
+              <option value="0.75">0.75x</option>
+              <option value="1">1x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2x</option>
+            </select>
             <button 
               onClick={async (e) => {
                 e.preventDefault();
