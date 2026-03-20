@@ -198,9 +198,9 @@ export default function Planner() {
             : (activeTemplate === "JOURNAL" ? "left-40 md:left-44 top-[104px]" : "left-20 top-[104px]")
         } right-0 bottom-0 bg-[#FAF9F6] overflow-y-auto overflow-x-auto transition-all duration-300 ease-in-out`}
       >
-        <div className="relative min-h-full w-full flex flex-col">
+        <div className="relative min-h-full w-full flex flex-col md:min-w-[1024px]">
           {/* Fullscreen Toggle & Tools */}
-          <div className="w-full flex justify-between items-start p-2 shrink-0 z-30 pointer-events-auto">
+          <div className="w-full flex justify-between items-start p-2 shrink-0 z-30 pointer-events-auto sticky top-0 left-0">
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
               className="p-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] rounded-md shadow-sm text-[#94a3b8] hover:text-[#1e293b] transition-colors"
