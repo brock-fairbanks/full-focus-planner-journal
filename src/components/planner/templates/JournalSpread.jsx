@@ -240,7 +240,7 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 p-6 md:p-10 flex justify-center">
+      <div className="flex-1 p-10 flex justify-center">
         <div className="w-full max-w-4xl h-full pb-32">
           {layoutMode === "DAILY" && activeSubSection === "The Story" && renderSection("The Story", ["What happened today?"])}
           {layoutMode === "DAILY" && activeSubSection === "Processing" && renderSection("Processing", ["What were my wins?", "What were my losses/lessons?"])}
