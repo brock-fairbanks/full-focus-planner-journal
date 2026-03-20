@@ -256,8 +256,13 @@ const GlobalCanvas = forwardRef(({
   const doubleTapSnapshotRef = useRef(null);
   const activeToolRef = useRef('pen');
   const lineWidthRef = useRef(2.2);
+  const pendingDoubleClickRef = useRef(null);
 
   const handleTripleClickAction = (clientX, clientY, textObj = null) => {
+    if (pendingDoubleClickRef.current) {
+        clearTimeout(pendingDoubleClickRef.current);
+        pendingDoubleClickRef.current = null;
+    }
     let targetText = textObj;
     if (!targetText && canvasRef.current) {
         const rect = canvasRef.current.getBoundingClientRect();
