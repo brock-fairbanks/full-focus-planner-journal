@@ -958,7 +958,10 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate }) => {
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
           minHeight: `${lh}px`,
           padding: activeTemplate === 'IDEAL_WEEK' ? '4px 4px 4px 8px' : 0,
-          margin: 0
+          margin: 0,
+          userSelect: isEditing ? 'auto' : 'none',
+          WebkitUserSelect: isEditing ? 'auto' : 'none',
+          pointerEvents: isEditing ? 'auto' : 'none'
         }}
         placeholder={isEditing ? "Type here..." : ""}
         readOnly={textObj.isLoading}
