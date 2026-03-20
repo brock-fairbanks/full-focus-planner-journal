@@ -21,6 +21,7 @@ const GlobalCanvas = forwardRef(({
   const saveTimeout = useRef(null);
   const canvasScaleRef = useRef(null);
   const syncIdRef = useRef(null);
+  const undoStackRef = useRef([]);
   const lastLocalUpdateTime = useRef(Date.now());
   const textsRef = useRef([]);
 
@@ -61,6 +62,8 @@ const GlobalCanvas = forwardRef(({
   useImperativeHandle(ref, () => ({
     clear: () => {
       if (canvasRef.current && ctxRef.current) {
+        undoStackRef.current.push(ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height));
+        if (undoStackRef.current.length > 30) undoStackRef.current.shift();
         ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         updateTextsState([]);
         const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
@@ -68,6 +71,18 @@ const GlobalCanvas = forwardRef(({
         if (onSave) onSave(dataUrl);
         syncToBackend(dataUrl, []);
         onClear?.();
+      }
+    },
+    undo: () => {
+      if (undoStackRef.current.length > 0) {
+        const prevState = undoStackRef.current.pop();
+        if (canvasRef.current && ctxRef.current) {
+          ctxRef.current.putImageData(prevState, 0, 0);
+          const dataUrl = canvasRef.current.toDataURL("image/webp", 0.5);
+          localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
+          if (onSave) onSave(dataUrl);
+          syncToBackend(dataUrl, textsRef.current);
+        }
       }
     }
   }));
@@ -279,6 +294,10 @@ const GlobalCanvas = forwardRef(({
 
     if (targetText && ctxRef.current) {
         const ctx = ctxRef.current;
+        
+        undoStackRef.current.push(ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height));
+        if (undoStackRef.current.length > 30) undoStackRef.current.shift();
+
         ctx.save();
         ctx.globalCompositeOperation = 'destination-out';
         ctx.lineWidth = 15;
@@ -636,6 +655,10 @@ const GlobalCanvas = forwardRef(({
     isDrawing.current = false;
     
     const pts = pointsRef.current;
+    if (pts.length > 1 && preStrokeStateRef.current) {
+        undoStackRef.current.push(preStrokeStateRef.current);
+        if (undoStackRef.current.length > 30) undoStackRef.current.shift();
+    }
     
     // Reset composite operation just in case
     if (ctxRef.current) {

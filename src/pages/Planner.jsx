@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addDays } from "date-fns";
-import { Mic, MessagesSquare, Eraser, Pen, Highlighter } from "lucide-react";
+import { Mic, MessagesSquare, Eraser, Pen, Highlighter, Undo } from "lucide-react";
 import TabBar from "../components/planner/TabBar.jsx";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
@@ -290,6 +290,15 @@ export default function Planner() {
                       ));
                     }
                   })()}
+                </div>
+                <div className="flex items-center ml-1 gap-1 border-l border-slate-200 pl-1">
+                  <button
+                    onClick={() => canvasRef.current?.undo && canvasRef.current.undo()}
+                    className="p-1.5 rounded-md transition-colors text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                    title="Undo"
+                  >
+                    <Undo size={16} />
+                  </button>
                 </div>
               </div>
             )}
