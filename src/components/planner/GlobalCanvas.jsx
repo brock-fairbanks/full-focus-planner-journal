@@ -595,6 +595,7 @@ const GlobalCanvas = forwardRef(({
   };
 
   const draw = (e) => {
+    e.stopPropagation();
     if (!isDrawing.current || !ctxRef.current || !canvasScaleRef.current) return;
     const { left, top, scaleX, scaleY } = canvasScaleRef.current;
     
@@ -654,6 +655,7 @@ const GlobalCanvas = forwardRef(({
   };
 
   const endDrawing = (e) => {
+    e.stopPropagation();
     if (!isDrawing.current) return;
     if (e && e.pointerId) {
         try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
