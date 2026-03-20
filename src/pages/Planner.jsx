@@ -347,14 +347,14 @@ export default function Planner() {
           </div>
 
           {/* Template Layer */}
-          <div className="flex-1 w-full pointer-events-auto max-w-5xl mx-auto relative">
+          <div className={`flex-1 w-full pointer-events-auto mx-auto relative ${activeTemplate === 'SCRATCHPAD' ? 'max-w-[95%]' : 'max-w-5xl'}`}>
             <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} journalMode={journalMode} />
           </div>
           
           {/* Drawing Layer (z-20) */}
           {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
             <div 
-              className={`absolute bottom-0 z-20 pointer-events-auto max-w-5xl mx-auto inset-x-0 w-full`} 
+              className={`absolute bottom-0 z-20 pointer-events-auto mx-auto inset-x-0 w-full ${activeTemplate === 'SCRATCHPAD' ? 'max-w-[95%]' : 'max-w-5xl'}`} 
               style={{ 
                 top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px",
               }}
