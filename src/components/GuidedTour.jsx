@@ -191,7 +191,7 @@ export default function GuidedTour() {
                 <Sparkles className="text-[#F97316]" size={24} />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-[#1e293b] mb-1">AI Guide</h3>
+                <h3 className="font-bold text-lg text-[#1e293b] mb-1">Planner/Journal Tour</h3>
                 <p className="text-sm text-slate-600 leading-relaxed font-medium">
                   {TOUR_STEPS[currentStep].text}
                 </p>
