@@ -439,7 +439,7 @@ const GlobalCanvas = forwardRef(({
         targetText = textsRef.current.find(t => {
            const tWidth = parseInt(t.width) || 200;
            const lines = t.text ? t.text.split('\n').length : 1;
-           const tHeight = (t.lineHeight || 32) * lines;
+           const tHeight = (t.lineHeight || 40) * lines;
            return x >= t.x - 20 && x <= t.x + tWidth + 20 && y >= t.y - 20 && y <= t.y + tHeight + 20;
         });
     }
