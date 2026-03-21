@@ -46,6 +46,7 @@ const ICONS_MAP = {
 
 export default function TabBar({ activeTemplate, onTemplateChange, journalMode, onJournalModeChange }) {
   const { user } = useAuth();
+  const lastPointerRef = React.useRef('mouse');
   
   const firstName = user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || "User";
 
