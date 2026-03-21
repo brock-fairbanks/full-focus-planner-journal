@@ -1163,6 +1163,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
             {!isRecording ? (
               <>
                 <button 
+                  id="tour-record-mic"
                   onClick={startRecording}
                   disabled={isProcessing}
                   title="Record audio from your computer's microphone"
@@ -1172,6 +1173,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                   Record Mic
                 </button>
                 <button 
+                  id="tour-record-system"
                   onClick={startSystemAudioRecording}
                   disabled={isProcessing}
                   title="Record audio directly from your computer speakers or a specific browser tab"
