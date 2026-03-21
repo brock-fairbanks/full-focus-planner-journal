@@ -152,7 +152,13 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
   }, [isPaused, isRecording]);
   const [savedNotes, setSavedNotes] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
-  const [currentNoteId, setCurrentNoteId] = useState(null);
+  const [currentNoteIdState, setCurrentNoteIdState] = useState(null);
+  const currentNoteIdRef = useRef(null);
+  const setCurrentNoteId = (id) => {
+    setCurrentNoteIdState(id);
+    currentNoteIdRef.current = id;
+  };
+  const currentNoteId = currentNoteIdState;
   const [driveTextFileId, setDriveTextFileId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [playingSection, setPlayingSection] = useState(null);
@@ -252,9 +258,9 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
       if (newSummary !== null) updateData.summary = currentSumm;
       if (newAudioUrl !== null) updateData.audio_url = newAudioUrl;
       
-      if (currentNoteId) {
-        await base44.entities.MeetingNote.update(currentNoteId, updateData);
-        setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, ...updateData } : n));
+      if (currentNoteIdRef.current) {
+        await base44.entities.MeetingNote.update(currentNoteIdRef.current, updateData);
+        setSavedNotes(prev => prev.map(n => n.id === currentNoteIdRef.current ? { ...n, ...updateData } : n));
       } else {
         const defaultTitle = `${type === 'lecture' ? 'Lecture' : 'Meeting'} ${format(new Date(), "MM/dd/yyyy h:mm a")}`;
         const finalTitle = titleRef.current || defaultTitle;
@@ -305,10 +311,10 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
   };
 
   const handleTitleBlur = async () => {
-    if (currentNoteId && title) {
+    if (currentNoteIdRef.current && title) {
       try {
-        await base44.entities.MeetingNote.update(currentNoteId, { title });
-        setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, title } : n));
+        await base44.entities.MeetingNote.update(currentNoteIdRef.current, { title });
+        setSavedNotes(prev => prev.map(n => n.id === currentNoteIdRef.current ? { ...n, title } : n));
       } catch (err) {
         console.error("Failed to update title", err);
       }
@@ -338,7 +344,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
     try {
       await base44.entities.MeetingNote.delete(id);
       setSavedNotes(prev => prev.filter(n => n.id !== id));
-      if (currentNoteId === id) {
+      if (currentNoteIdRef.current === id) {
         startNew();
       }
     } catch (err) {
@@ -784,9 +790,9 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
         const userInput = window.prompt("Please name this recording before saving:", defaultName);
         if (userInput !== null && userInput.trim() !== "") {
           setTitle(userInput.trim());
-          if (currentNoteId) {
-            base44.entities.MeetingNote.update(currentNoteId, { title: userInput.trim() }).catch(console.error);
-            setSavedNotes(prev => prev.map(n => n.id === currentNoteId ? { ...n, title: userInput.trim() } : n));
+          if (currentNoteIdRef.current) {
+            base44.entities.MeetingNote.update(currentNoteIdRef.current, { title: userInput.trim() }).catch(console.error);
+            setSavedNotes(prev => prev.map(n => n.id === currentNoteIdRef.current ? { ...n, title: userInput.trim() } : n));
           }
         }
       }
