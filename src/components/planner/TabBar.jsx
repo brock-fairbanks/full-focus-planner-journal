@@ -150,8 +150,12 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
 
       {/* Secondary Navigation for Journal Modes */}
       {activeTemplate === "JOURNAL" && (
-        <div className="fixed left-20 top-16 bottom-0 w-20 md:w-24 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-white border-r border-[#E2E8F0] shadow-sm gap-4">
+        <div 
+          className="fixed left-20 top-16 bottom-0 w-20 md:w-24 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-white border-r border-[#E2E8F0] shadow-sm gap-4"
+          onPointerDown={(e) => { lastPointerRef.current = e.pointerType; }}
+        >
           <button
+            onClick={() => { if (lastPointerRef.current === 'mouse') onJournalModeChange("DAILY"); }}
             onDoubleClick={() => onJournalModeChange("DAILY")}
             className={`flex flex-col items-center justify-center w-16 md:w-20 h-20 rounded-xl transition-all duration-200 gap-2 select-none ${
               journalMode === "DAILY" 
