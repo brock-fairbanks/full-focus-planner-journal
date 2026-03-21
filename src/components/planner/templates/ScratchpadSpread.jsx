@@ -161,7 +161,7 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
         <div className="w-full h-full min-h-[800px] relative bg-white shadow-xl shadow-black/5" style={getBgStyle()}>
             {/* Compact Header / Toolbar (Rendered in Portal) */}
             {portalTarget && createPortal(
-                <div className="h-[34px] px-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] flex items-center justify-center gap-3 pointer-events-auto shadow-sm rounded-lg whitespace-nowrap">
+                <div id="tour-scratchpad-tools" className="h-[34px] px-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] flex items-center justify-center gap-3 pointer-events-auto shadow-sm rounded-lg whitespace-nowrap">
                 
                 {/* Clear Button */}
                 <button 
