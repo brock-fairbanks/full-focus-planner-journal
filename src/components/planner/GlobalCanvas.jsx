@@ -690,6 +690,11 @@ const GlobalCanvas = forwardRef(({
   const lastTapPosRef = useRef({ x: 0, y: 0 }); // Tracks last tap position to detect double/triple taps
 
   const startDrawing = (e) => {
+    if (document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT')) {
+        document.activeElement.blur();
+        return;
+    }
+
     const isPenOrMouse = e.pointerType === 'pen' || e.pointerType === 'mouse';
     if (isPenOrMouse) {
         e.stopPropagation();
