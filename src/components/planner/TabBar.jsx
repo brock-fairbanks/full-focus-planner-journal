@@ -128,6 +128,8 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
         <div className="w-full flex flex-col items-center justify-center pt-2 pb-2 mt-auto border-t border-[#3e2d1d]/50 shrink-0">
           <a
             href="/settings"
+            onClick={(e) => { if (lastPointerRef.current !== 'mouse') e.preventDefault(); }}
+            onDoubleClick={() => window.location.href = "/settings"}
             className="flex flex-col items-center justify-center w-full h-14 transition-all duration-200 gap-1.5 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
             title="Settings"
           >
@@ -135,6 +137,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
             <span className="text-[10px] md:text-xs font-semibold tracking-wide uppercase">Settings</span>
           </a>
           <button
+            onClick={() => { if (lastPointerRef.current === 'mouse') base44.auth.logout(); }}
             onDoubleClick={() => base44.auth.logout()}
             className="flex flex-col items-center justify-center w-full h-14 transition-all duration-200 gap-1.5 text-[#8B7355] hover:text-[#f5deb3] hover:bg-white/5"
             title="Logout"
