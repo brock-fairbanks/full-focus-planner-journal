@@ -7,8 +7,13 @@ import { Button } from '@/components/ui/button';
 const TOUR_STEPS = [
   { 
     path: '/today', 
+    selector: null,
+    text: "Welcome to your new Planner & Journal! I'll be your guide to show you around the interface and get you started." 
+  },
+  { 
+    path: '/today', 
     selector: '#tour-sidebar',
-    text: "Welcome to Planner! This is your main navigation sidebar. From here you can access all your different planning views." 
+    text: "This is your main navigation sidebar. From here you can access all your different planning views." 
   },
   { 
     path: '/today', 
