@@ -52,45 +52,14 @@ export default function GuidedTour() {
   const navigate = useNavigate();
   const isTourActive = new URLSearchParams(location.search).get('tour') === 'true';
   const [currentStep, setCurrentStep] = useState(0);
-  const [spotlightStyle, setSpotlightStyle] = useState(null);
-
-  const updateSpotlight = () => {
-    if (!isTourActive) return;
-    const step = TOUR_STEPS[currentStep];
-    if (step.selector) {
-      const el = document.querySelector(step.selector);
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        setSpotlightStyle({
-          top: rect.top - 8,
-          left: rect.left - 8,
-          width: rect.width + 16,
-          height: rect.height + 16,
-          borderRadius: '12px'
-        });
-        return;
-      }
-    }
-    setSpotlightStyle(null);
-  };
 
   useEffect(() => {
     if (isTourActive) {
       if (location.pathname !== TOUR_STEPS[currentStep].path) {
         navigate(`${TOUR_STEPS[currentStep].path}?tour=true`, { replace: true });
-      } else {
-        const timeoutId = setTimeout(updateSpotlight, 300);
-        return () => clearTimeout(timeoutId);
       }
-    } else {
-      setSpotlightStyle(null);
     }
   }, [isTourActive, currentStep, location.pathname, navigate]);
-
-  useEffect(() => {
-    window.addEventListener('resize', updateSpotlight);
-    return () => window.removeEventListener('resize', updateSpotlight);
-  }, [isTourActive, currentStep]);
 
   if (!isTourActive) return null;
 
@@ -104,31 +73,11 @@ export default function GuidedTour() {
 
   const endTour = () => {
     setCurrentStep(0);
-    setSpotlightStyle(null);
     navigate(location.pathname, { replace: true });
   };
 
   return (
     <>
-      <AnimatePresence>
-        {isTourActive && spotlightStyle && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed z-[9998] pointer-events-none transition-all duration-500"
-            style={{
-              top: spotlightStyle.top,
-              left: spotlightStyle.left,
-              width: spotlightStyle.width,
-              height: spotlightStyle.height,
-              borderRadius: spotlightStyle.borderRadius,
-              boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)',
-            }}
-          />
-        )}
-      </AnimatePresence>
-
       <div className="fixed bottom-8 right-8 z-[9999] w-80 md:w-96 pointer-events-auto">
         <AnimatePresence mode="wait">
           <motion.div
