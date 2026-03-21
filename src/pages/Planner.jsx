@@ -367,6 +367,7 @@ export default function Planner() {
           {/* Drawing Layer (z-20) */}
           {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
             <div 
+              id="tour-canvas"
               className={`absolute bottom-0 z-20 pointer-events-auto mx-auto inset-x-0 w-full ${activeTemplate === 'SCRATCHPAD' ? 'max-w-[95%]' : 'max-w-5xl'}`} 
               style={{ 
                 top: (activeTemplate === "DAILY" || activeTemplate === "JOURNAL") ? "72px" : "0px",
