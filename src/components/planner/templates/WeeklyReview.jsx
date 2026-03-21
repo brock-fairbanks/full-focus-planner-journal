@@ -47,8 +47,8 @@ export default function WeeklyReview({ date, onClearCanvas }) {
           <div
             className="flex-1 mt-2"
             style={{
-              backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 30px, #cbd5e1 32px)`,
-              backgroundSize: "100% 32px",
+              backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 38px, #cbd5e1 40px)`,
+              backgroundSize: "100% 40px",
               backgroundPosition: "0 0",
             }}
           />
