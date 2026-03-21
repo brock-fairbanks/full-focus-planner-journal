@@ -27,7 +27,9 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
             <p className="text-xs font-bold uppercase mb-2" style={{ color: "#94a3b8" }}>
               Goal {i + 1}
             </p>
-            <div className="border-b-2" style={{ borderColor: "#cbd5e1", height: "24px" }} />
+            <div className="flex items-end" style={{ height: "40px" }}>
+              <div className="flex-1 border-b-[2px]" style={{ borderColor: "#cbd5e1", height: "100%" }} />
+            </div>
           </div>
 
           {/* Key Motivations */}
