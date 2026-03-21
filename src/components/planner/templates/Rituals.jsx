@@ -22,9 +22,9 @@ export default function Rituals({ date, onClearCanvas }) {
         </div>
 
         {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="mb-4 flex items-baseline gap-3">
-            <input type="checkbox" disabled className="w-4 h-4 shrink-0" />
-            <div className="flex-1 border-b-2" style={{ borderColor: "#cbd5e1", height: "24px" }} />
+          <div key={i} className="flex items-end gap-3" style={{ height: "40px" }}>
+            <input type="checkbox" disabled className="w-4 h-4 shrink-0 mb-1.5" />
+            <div className="flex-1 border-b-[2px]" style={{ borderColor: "#cbd5e1", height: "100%" }} />
           </div>
         ))}
       </div>
@@ -39,9 +39,9 @@ export default function Rituals({ date, onClearCanvas }) {
         </div>
 
         {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="mb-4 flex items-baseline gap-3">
-            <input type="checkbox" disabled className="w-4 h-4 shrink-0" />
-            <div className="flex-1 border-b-2" style={{ borderColor: "#cbd5e1", height: "24px" }} />
+          <div key={i} className="flex items-end gap-3" style={{ height: "40px" }}>
+            <input type="checkbox" disabled className="w-4 h-4 shrink-0 mb-1.5" />
+            <div className="flex-1 border-b-[2px]" style={{ borderColor: "#cbd5e1", height: "100%" }} />
           </div>
         ))}
       </div>
