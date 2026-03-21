@@ -124,9 +124,9 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
                 Other Tasks
               </h2>
               {Array.from({ length: 20 }).map((_, i) => (
-                <div key={i} className="flex items-end gap-6 mb-10">
-                  <div className="w-8 h-8 rounded-full border-[4px] shrink-0 mb-1" style={{ borderColor: "#cbd5e1" }} />
-                  <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1" }} />
+                <div key={i} className="flex items-end gap-6 mb-6" style={{ height: "40px" }}>
+                  <div className="w-8 h-8 rounded-full border-[3px] shrink-0 mb-1" style={{ borderColor: "#cbd5e1" }} />
+                  <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1", height: "100%" }} />
                 </div>
               ))}
             </div>
