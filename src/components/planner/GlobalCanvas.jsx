@@ -1239,14 +1239,14 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
         className="w-full bg-transparent outline-none resize-none overflow-hidden pr-8"
         style={{
           lineHeight: activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`,
-          fontSize: activeTemplate === 'IDEAL_WEEK' ? `${idealWeekFontSize}px` : `${Math.max(24, Math.min(48, Math.round(lh * 1.25)))}px`,
+          fontSize: activeTemplate === 'IDEAL_WEEK' ? `${idealWeekFontSize}px` : `${Math.max(20, Math.min(42, Math.round(lh * 1.1)))}px`,
           fontFamily: "'Caveat', cursive",
           color: textObj.isLoading ? '#94a3b8' : '#1e293b',
           border: isEditing ? '1px dashed #94a3b8' : '1px solid transparent',
           minHeight: `${lh}px`,
           padding: activeTemplate === 'IDEAL_WEEK' ? '4px 4px 4px 8px' : 0,
           margin: 0,
-          marginTop: activeTemplate === 'IDEAL_WEEK' ? 0 : '-4px', // Adjust vertical alignment to sit on lines better
+          marginTop: activeTemplate === 'IDEAL_WEEK' ? 0 : '-2px', // Adjust vertical alignment to sit on lines better
           userSelect: isEditing ? 'auto' : 'none',
           WebkitUserSelect: isEditing ? 'auto' : 'none',
           pointerEvents: isEditing ? 'auto' : 'none'
