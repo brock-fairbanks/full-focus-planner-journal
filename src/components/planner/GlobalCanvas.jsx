@@ -984,7 +984,7 @@ const GlobalCanvas = forwardRef(({
             if (textsRef.current && textsRef.current.length > 0) {
                 let minDist = 24;
                 for (const t of textsRef.current) {
-                    const textCenterY = t.y + (t.lineHeight || 32) / 2;
+                    const textCenterY = t.y + (t.lineHeight || 40) / 2;
                     const tWidth = parseInt(t.width) || 200;
                     if (Math.abs(finalY - textCenterY) < minDist && startX < t.x + tWidth && endX > t.x) {
                         minDist = Math.abs(finalY - textCenterY);
