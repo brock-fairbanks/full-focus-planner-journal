@@ -1163,7 +1163,7 @@ const GlobalCanvas = forwardRef(({
   );
 });
 
-const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleClick, onFocus }) => {
+const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleClick, onFocus, onTab }) => {
   const [isEditing, setIsEditing] = useState(textObj.isEditing);
   const [val, setVal] = useState(textObj.text);
   const textareaRef = useRef(null);
