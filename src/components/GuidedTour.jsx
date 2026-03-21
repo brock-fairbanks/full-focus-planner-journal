@@ -79,6 +79,11 @@ const TOUR_STEPS = [
     path: '/scratchpad', 
     selector: '#tour-scratchpad-tools',
     text: "Need a quick place to jot things down? The Scratchpad gives you infinite digital paper. Try changing the background pattern!" 
+  },
+  {
+    path: '/settings',
+    selector: '#tour-settings-integrations',
+    text: "Lastly, here is your Settings page! Make sure to connect your Google Drive so your meeting recordings and transcriptions can be safely backed up and synced across all your devices."
   }
 ];
 
