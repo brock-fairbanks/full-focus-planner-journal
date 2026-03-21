@@ -240,6 +240,7 @@ export default function Planner() {
           {!isSmallPhone && (
           <div className="w-full flex justify-between items-center p-2 shrink-0 z-30 pointer-events-auto sticky top-0 left-0">
             <button
+              id="tour-fullscreen-btn"
               onClick={() => setIsFullscreen(!isFullscreen)}
               className="p-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] rounded-md shadow-sm text-[#94a3b8] hover:text-[#1e293b] transition-colors"
               title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
