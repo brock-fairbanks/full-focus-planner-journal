@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Calendar, Target, Moon, TrendingUp, BookOpen, Sun, Coffee, CalendarDays, LogOut, Mic, Settings, MessagesSquare } from "lucide-react";
 import { Reorder } from "framer-motion";
 import { useAuth } from "@/lib/AuthContext";
