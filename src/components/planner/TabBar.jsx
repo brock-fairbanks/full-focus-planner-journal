@@ -75,6 +75,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
       <div 
         className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-4 pb-2 pointer-events-auto z-40 overflow-hidden border-r border-black/20" 
         style={{background: "#1A120B"}}
+        onPointerDown={(e) => { lastPointerRef.current = e.pointerType; }}
       >
         <div className="w-full flex flex-col items-center justify-center pb-4 mb-2 border-b border-[#3e2d1d]/50 shrink-0 mt-2">
           <span 
