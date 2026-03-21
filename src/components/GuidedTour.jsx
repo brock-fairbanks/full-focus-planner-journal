@@ -165,7 +165,7 @@ export default function GuidedTour() {
               width: spotlightStyle.width,
               height: spotlightStyle.height,
               borderRadius: spotlightStyle.borderRadius,
-              boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)',
+              boxShadow: '0 0 0 3px #10b981, 0 0 20px 4px rgba(16, 185, 129, 0.8), 0 0 0 9999px rgba(0,0,0,0.5)',
             }}
           />
         )}
