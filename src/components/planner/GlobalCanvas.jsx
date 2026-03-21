@@ -518,7 +518,7 @@ const GlobalCanvas = forwardRef(({
       
       const rect = canvasRef.current.getBoundingClientRect();
       const clickY = clientY - rect.top;
-    let snappedY = Math.round((clickY - 16) / 32) * 32;
+    let snappedY = Math.round((clickY - 16) / 40) * 40;
 
     let startX = clientX - rect.left;
     let lineHeight = 40;
