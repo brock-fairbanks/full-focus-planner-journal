@@ -954,7 +954,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
   return (
     <div className="relative w-full min-h-full p-4 md:p-8 flex flex-col items-center bg-[#FAF9F6] pb-32">
-      <div className="flex flex-col sm:flex-row justify-between items-center w-full max-w-5xl mb-2 relative z-30 pointer-events-auto gap-4">
+      <div id="tour-meeting-tools" className="flex flex-col sm:flex-row justify-between items-center w-full max-w-5xl mb-2 relative z-30 pointer-events-auto gap-4">
         <input
           type="text"
           value={title}
