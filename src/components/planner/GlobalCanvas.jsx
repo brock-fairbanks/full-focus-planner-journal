@@ -616,6 +616,8 @@ const GlobalCanvas = forwardRef(({
              const targetY = Math.max(lineHeight, gridY);
              snappedY = targetY + bestRect.top - rect.top - lineHeight + (lineHeight === 40 ? 0 : 8); 
          }
+         startX = Math.max(0, bestRect.left - rect.left + 8);
+         width = `${Math.max(50, bestRect.width - 16)}px`;
       }
     }
 
