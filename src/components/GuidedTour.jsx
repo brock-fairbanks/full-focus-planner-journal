@@ -53,7 +53,7 @@ const TOUR_STEPS = [
   { 
     path: '/today', 
     selector: '#tour-fullscreen-btn',
-    text: "Need more space to focus? Click this Fullscreen button to hide the sidebars and maximize your canvas area." 
+    text: "Need more space to focus? Click this Fullscreen button to hide the header and sidebar and maximize your canvas area." 
   },
   { 
     path: '/today', 
