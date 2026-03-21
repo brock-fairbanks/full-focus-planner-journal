@@ -999,7 +999,7 @@ const GlobalCanvas = forwardRef(({
                             targetY = elRect.top + gridY;
                         }
                     } else if (el.className && typeof el.className === 'string' && el.className.includes('border-b')) {
-                        targetY = elRect.bottom - 16; 
+                        targetY = elRect.bottom - 20; 
                     }
 
                     if (targetY !== null && Math.abs(clientY - targetY) < minDistance) {
