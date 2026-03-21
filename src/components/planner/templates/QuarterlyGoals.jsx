@@ -55,7 +55,7 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
             </p>
             {[1, 2, 3].map((n) => (
               <div key={n} className="flex items-end gap-3" style={{ height: "40px" }}>
-                <div className="w-5 h-5 border-2 rounded mb-1.5" style={{ borderColor: "#cbd5e1" }} />
+                <div className="w-5 h-5 border-[3px] rounded mb-1.5" style={{ borderColor: "#cbd5e1" }} />
                 <div className="flex-1 border-b-[2px]" style={{ borderColor: "#cbd5e1", height: "100%" }} />
               </div>
             ))}
