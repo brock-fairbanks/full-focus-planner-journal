@@ -8,12 +8,52 @@ const TOUR_STEPS = [
   { 
     path: '/today', 
     selector: '#tour-sidebar',
-    text: "Welcome to Planner! This is your main navigation. From here you can access your daily, weekly, and monthly views." 
+    text: "Welcome to Planner! This is your main navigation sidebar. From here you can access all your different planning views." 
+  },
+  { 
+    path: '/today', 
+    selector: '#tour-sidebar',
+    text: "Important: To switch tabs on a desktop mouse, single-click. If you're using a tablet, stylus, or touch screen, double-tap the tab!" 
+  },
+  { 
+    path: '/today', 
+    selector: '#tour-sidebar',
+    text: "The 'Today' tab is your daily canvas for time-blocking your day, managing tasks, and writing your Big 3 priorities." 
+  },
+  { 
+    path: '/journal', 
+    selector: '#tour-sidebar',
+    text: "The 'Journal' tab provides structured reflections. You can switch between Daily, Weekend, and Annual journaling modes here." 
+  },
+  { 
+    path: '/ideal-week', 
+    selector: '#tour-sidebar',
+    text: "The 'Ideal Week' tab lets you design your perfect weekly routine from Monday to Sunday." 
+  },
+  { 
+    path: '/goals', 
+    selector: '#tour-sidebar',
+    text: "The 'Goals' tab helps you track your quarterly objectives, key motivations, and actionable next steps." 
+  },
+  { 
+    path: '/rituals', 
+    selector: '#tour-sidebar',
+    text: "The 'Rituals' tab holds your morning startup and evening shutdown checklists to keep your habits on track." 
+  },
+  { 
+    path: '/weekly-review', 
+    selector: '#tour-sidebar',
+    text: "The 'Weekly' tab is your space for your weekly review—recording wins, lessons, and top priorities for the coming week." 
   },
   { 
     path: '/today', 
     selector: '#tour-date-navigator',
-    text: "Here is your date navigator. Swipe left/right or click the arrows to move between days." 
+    text: "Here is your date navigator. Swipe left/right on touch screens or click the arrows to move between days." 
+  },
+  { 
+    path: '/today', 
+    selector: '#tour-fullscreen-btn',
+    text: "Need more space to focus? Click this Fullscreen button to hide the sidebars and maximize your canvas area." 
   },
   { 
     path: '/today', 
@@ -26,19 +66,9 @@ const TOUR_STEPS = [
     text: "This is your Daily canvas. Try drawing something, or double-tap anywhere to type! Pro tip: While typing, press the Tab key to easily move to the next line." 
   },
   { 
-    path: '/goals', 
-    selector: '#tour-goals-grid',
-    text: "Here is your Quarterly Goals view. Try adding a new goal for this quarter to see how it works!" 
-  },
-  { 
     path: '/meeting', 
     selector: '#tour-meeting-tools',
     text: "The Meeting spread! Record your meetings and let AI transcribe them. Try hitting the microphone button to test it out." 
-  },
-  { 
-    path: '/journal', 
-    selector: '#tour-journal-modes',
-    text: "Reflect on your day in the Journal. Notice the secondary tabs here for Daily, Weekend, and Annual reflections." 
   },
   { 
     path: '/scratchpad', 
