@@ -648,7 +648,7 @@ const GlobalCanvas = forwardRef(({
       const clickedTextIndex = prev.findIndex(t => {
         const tWidth = parseInt(t.width) || 200;
         const lines = t.text ? t.text.split('\n').length : 1;
-        const tHeight = (t.lineHeight || 32) * lines;
+        const tHeight = (t.lineHeight || 40) * lines;
         return currentClickX >= t.x && currentClickX <= t.x + tWidth && currentClickY >= t.y && currentClickY <= t.y + tHeight + 10;
       });
 
