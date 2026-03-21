@@ -1252,6 +1252,15 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
             if (!isEditing) setIsEditing(true); 
           }
         }}
+        onKeyDown={(e) => {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            if (textareaRef.current) {
+              textareaRef.current.blur();
+            }
+            if (onTab) onTab();
+          }
+        }}
         className="w-full bg-transparent outline-none resize-none overflow-hidden pr-8"
         style={{
           lineHeight: activeTemplate === 'IDEAL_WEEK' ? '1.2' : `${lh}px`,
