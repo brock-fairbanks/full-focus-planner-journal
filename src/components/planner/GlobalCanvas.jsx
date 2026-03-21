@@ -874,8 +874,11 @@ const GlobalCanvas = forwardRef(({
       if (pts.length > 0) {
         ctxRef.current.beginPath();
         if (pts.length === 1) {
-          ctxRef.current.moveTo(pts[0].x, pts[0].y);
-          ctxRef.current.lineTo(pts[0].x + 0.1, pts[0].y + 0.1);
+          // Only draw dots for pen/touch, prevent accidental dots when clicking with mouse
+          if (!e || e.pointerType !== 'mouse') {
+            ctxRef.current.moveTo(pts[0].x, pts[0].y);
+            ctxRef.current.lineTo(pts[0].x + 0.1, pts[0].y + 0.1);
+          }
         } else if (pts.length === 2) {
           ctxRef.current.moveTo(pts[0].x, pts[0].y);
           ctxRef.current.lineTo(pts[1].x, pts[1].y);
