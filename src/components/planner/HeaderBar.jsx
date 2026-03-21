@@ -30,7 +30,7 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
       </div>
 
       {/* Center: Date with Navigation */}
-      <div className="flex items-center justify-center gap-2 md:gap-4 shrink-0 px-4">
+      <div id="tour-date-navigator" className="flex items-center justify-center gap-2 md:gap-4 shrink-0 px-4">
         <button 
           onClick={() => onDateChange(addDays(selectedDate, -1))}
           className="p-2 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center hover:opacity-80 shrink-0"
