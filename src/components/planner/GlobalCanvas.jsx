@@ -1194,7 +1194,7 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
       deleteText(textObj.id);
     } else {
       setIsEditing(false);
-      const currentBaseline = textObj.baselineY || (textObj.y + (textObj.lineHeight || 32));
+      const currentBaseline = textObj.baselineY || (textObj.y + (textObj.lineHeight || 40));
       updateText(textObj.id, { 
         ...textObj, 
         text: val, 
