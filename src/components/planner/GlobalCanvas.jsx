@@ -599,8 +599,8 @@ const GlobalCanvas = forwardRef(({
          startX = clientX - rect.left;
          width = `${bestRect.right - clientX - 16}px`;
       } else {
-         startX = Math.max(0, bestRect.left - rect.left + 2); 
-         width = `${bestRect.width - 4}px`;
+         startX = Math.max(0, bestRect.left - rect.left + 8); 
+         width = `${Math.max(50, bestRect.width - 16)}px`;
       }
       
       if (bestLine.className && typeof bestLine.className === 'string' && bestLine.className.includes('border')) {
