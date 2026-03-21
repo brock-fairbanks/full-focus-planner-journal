@@ -1209,6 +1209,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
                 {!isRecording ? (
                   <>
                     <button 
+                      id="tour-record-mic"
                       onClick={startRecording}
                       disabled={isProcessing}
                       className="flex justify-center items-center gap-2 bg-red-500 text-white px-4 py-3.5 rounded-full font-medium text-base disabled:opacity-50 shadow-sm w-full"
