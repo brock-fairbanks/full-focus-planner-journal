@@ -210,41 +210,66 @@ export default function Onboarding() {
 
         {step === 4 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-            <h2 className="text-xl font-bold text-[#1e293b] mb-2">4. App Tutorial</h2>
-            <p className="text-sm text-[#64748b] mb-4">Let our AI guide take you on a quick tour of the app's best features.</p>
+            <h2 className="text-xl font-bold text-[#1e293b] mb-2">4. Welcome & Quick Guide</h2>
+            <p className="text-sm text-[#64748b] mb-4">A quick overview of how to get the best experience.</p>
             
-            <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
-              <Sparkles className="w-12 h-12 text-[#F97316] mx-auto mb-4" />
-              <h3 className="font-bold text-[#1e293b] mb-2">Ready for the tour?</h3>
-              <p className="text-sm text-slate-600 mb-6">We'll navigate through the app together and show you how to use the Daily Planner, take Meeting Notes, and more.</p>
-              
-              <Button 
-                onClick={async () => {
-                  setLoading(true);
-                  try {
-                    await base44.auth.updateMe({
-                      full_name: fullName,
-                      cell_number: cellNumber,
-                      business_number: businessNumber,
-                      onboarding_completed: true 
-                    });
-                    // Save locations if not saved yet
-                    for (const loc of locations) {
-                      await base44.entities.Location.create({ name: loc.name, address: loc.address });
+            <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl text-left space-y-4 text-sm text-slate-700 overflow-y-auto max-h-[50vh]">
+              <div>
+                <h3 className="flex items-center gap-2 font-bold text-[#1e293b] mb-1">
+                  <Sparkles className="w-4 h-4 text-[#F97316]" /> Install the App (PWA)
+                </h3>
+                <p>For the best full-screen experience, install this app to your device. Look for the <strong>"Add to Home Screen"</strong> or <strong>"Install"</strong> option in your browser menu right now!</p>
+              </div>
+
+              <div>
+                <h3 className="flex items-center gap-2 font-bold text-[#1e293b] mb-1">
+                  <Sparkles className="w-4 h-4 text-[#F97316]" /> Best Devices
+                </h3>
+                <p>This planner is designed to work seamlessly with a <strong>tablet and an active pen/stylus</strong>. You can write naturally on the screen just like a real notebook.</p>
+              </div>
+
+              <div>
+                <h3 className="flex items-center gap-2 font-bold text-[#1e293b] mb-1">
+                  <Sparkles className="w-4 h-4 text-[#F97316]" /> Navigation
+                </h3>
+                <p><strong>Double-Tap to Navigate:</strong> On touch screens, you must double-click/double-tap tabs on the sidebar to switch pages. This prevents accidental page switching while you are writing.</p>
+              </div>
+
+              <div>
+                <h3 className="flex items-center gap-2 font-bold text-[#1e293b] mb-1">
+                  <Sparkles className="w-4 h-4 text-[#F97316]" /> Phones & Small Screens
+                </h3>
+                <p>If you are using a smartphone, only the <strong>Meetings</strong> page is available. You can use it to record meetings, lectures, or dialogue on the go.</p>
+              </div>
+
+              <div className="pt-2">
+                <Button 
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      await base44.auth.updateMe({
+                        full_name: fullName,
+                        cell_number: cellNumber,
+                        business_number: businessNumber,
+                        onboarding_completed: true 
+                      });
+                      for (const loc of locations) {
+                        await base44.entities.Location.create({ name: loc.name, address: loc.address });
+                      }
+                      window.location.href = '/today?tour=true';
+                    } catch (e) {
+                      console.error(e);
+                      alert("Failed to complete setup.");
+                      setLoading(false);
                     }
-                    window.location.href = '/today?tour=true';
-                  } catch (e) {
-                    console.error(e);
-                    alert("Failed to complete setup.");
-                    setLoading(false);
-                  }
-                }}
-                className="w-full bg-[#1e293b] text-white hover:bg-[#0f172a]"
-                disabled={loading}
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                Complete Setup & Start Tour
-              </Button>
+                  }}
+                  className="w-full bg-[#1e293b] text-white hover:bg-[#0f172a]"
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                  Complete Setup & Start Tour
+                </Button>
+              </div>
             </div>
 
             <div className="flex gap-3 mt-4">
