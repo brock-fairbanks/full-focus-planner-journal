@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapPin, Plus, Trash2, ArrowRight, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
-import TutorialChat from '../components/TutorialChat';
+import { Sparkles } from 'lucide-react';
 
 export default function Onboarding() {
   const { user } = useAuth();
@@ -211,17 +211,48 @@ export default function Onboarding() {
         {step === 4 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
             <h2 className="text-xl font-bold text-[#1e293b] mb-2">4. App Tutorial</h2>
-            <p className="text-sm text-[#64748b] mb-4">Chat with your personalized agent to learn the ropes.</p>
+            <p className="text-sm text-[#64748b] mb-4">Let our AI guide take you on a quick tour of the app's best features.</p>
             
-            <TutorialChat />
-            
-            <div className="flex gap-3 mt-8">
+            <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
+              <Sparkles className="w-12 h-12 text-[#F97316] mx-auto mb-4" />
+              <h3 className="font-bold text-[#1e293b] mb-2">Ready for the tour?</h3>
+              <p className="text-sm text-slate-600 mb-6">We'll navigate through the app together and show you how to use the Daily Planner, take Meeting Notes, and more.</p>
+              
+              <Button 
+                onClick={async () => {
+                  setLoading(true);
+                  try {
+                    await base44.auth.updateMe({
+                      full_name: fullName,
+                      cell_number: cellNumber,
+                      business_number: businessNumber,
+                      onboarding_completed: true 
+                    });
+                    // Save locations if not saved yet
+                    for (const loc of locations) {
+                      await base44.entities.Location.create({ name: loc.name, address: loc.address });
+                    }
+                    window.location.href = '/today?tour=true';
+                  } catch (e) {
+                    console.error(e);
+                    alert("Failed to complete setup.");
+                    setLoading(false);
+                  }
+                }}
+                className="w-full bg-[#1e293b] text-white hover:bg-[#0f172a]"
+                disabled={loading}
+              >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Complete Setup & Start Tour
+              </Button>
+            </div>
+
+            <div className="flex gap-3 mt-4">
               <Button onClick={handleBack} variant="outline" className="flex-1" disabled={loading}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back
               </Button>
-              <Button onClick={handleComplete} className="flex-1 bg-[#F97316] hover:bg-[#ea580c] text-white" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
-                Complete Setup
+              <Button onClick={handleComplete} variant="ghost" className="flex-1 text-slate-500" disabled={loading}>
+                Skip Tour
               </Button>
             </div>
           </div>
