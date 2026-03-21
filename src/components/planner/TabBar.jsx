@@ -152,6 +152,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
       {/* Secondary Navigation for Journal Modes */}
       {activeTemplate === "JOURNAL" && (
         <div 
+          id="tour-journal-modes"
           className="fixed left-20 top-16 bottom-0 w-20 md:w-24 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-white border-r border-[#E2E8F0] shadow-sm gap-4"
           onPointerDown={(e) => { lastPointerRef.current = e.pointerType; }}
         >
