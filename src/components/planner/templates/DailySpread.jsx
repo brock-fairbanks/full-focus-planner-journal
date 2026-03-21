@@ -102,16 +102,16 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
                 Schedule
               </h3>
               {HOURS.map((hour) => (
-                <div key={hour} className="mb-8">
-                  <div className="flex gap-6 items-end">
-                    <span className="text-xl font-bold w-20 text-right leading-none" style={{ color: "#94a3b8" }}>
+                <div key={hour}>
+                  <div className="flex gap-6 items-end" style={{ height: "40px" }}>
+                    <span className="text-xl font-bold w-20 text-right leading-none pb-1" style={{ color: "#94a3b8" }}>
                       {hour === 12 ? 12 : hour > 12 ? hour - 12 : hour}{hour >= 12 ? "PM" : "AM"}
                     </span>
-                    <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1" }} />
+                    <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1", height: "100%" }} />
                   </div>
-                  <div className="flex gap-6 items-end mt-8">
-                    <span className="w-20 text-right text-sm text-slate-300 pr-1 leading-none">:30</span>
-                    <div className="flex-1 border-b-2 border-dashed" style={{ borderColor: "#cbd5e1" }} />
+                  <div className="flex gap-6 items-end" style={{ height: "40px" }}>
+                    <span className="w-20 text-right text-sm text-slate-300 pr-1 leading-none pb-1">:30</span>
+                    <div className="flex-1 border-b-2 border-dashed" style={{ borderColor: "#cbd5e1", height: "100%" }} />
                   </div>
                 </div>
               ))}
