@@ -457,7 +457,7 @@ const GlobalCanvas = forwardRef(({
         ctx.beginPath();
         const lines = targetText.text ? targetText.text.split('\n').length : 1;
         for (let i = 0; i < lines; i++) {
-           const lineY = targetText.y + (targetText.lineHeight || 32) * (i + 0.5);
+           const lineY = targetText.y + (targetText.lineHeight || 40) * (i + 0.5);
            ctx.moveTo(targetText.x - 10, lineY);
            ctx.lineTo(targetText.x + parseInt(targetText.width || 200) + 10, lineY);
         }
