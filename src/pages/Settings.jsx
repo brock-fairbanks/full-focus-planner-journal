@@ -167,7 +167,7 @@ export default function Settings() {
           </div>
 
           {/* Integrations Section */}
-          <div className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-6">
+          <div id="tour-settings-integrations" className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-6">
             <h2 className="text-xl font-bold text-[#1e293b] mb-4">Integrations</h2>
             <div className="p-4 border border-[#E2E8F0] rounded-xl flex items-center justify-between max-w-md">
               <div className="flex items-center gap-3">
