@@ -35,9 +35,15 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
             <p className="text-xs font-bold uppercase mb-2" style={{ color: "#94a3b8" }}>
               Motivations
             </p>
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="border-b-2 mb-2" style={{ borderColor: "#cbd5e1", height: "20px" }} />
-            ))}
+            <div 
+              className="w-full"
+              style={{
+                height: "120px", // 3 lines of 40px
+                backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 38px, #cbd5e1 40px)`,
+                backgroundSize: "100% 40px",
+                backgroundPosition: "0 0",
+              }}
+            />
           </div>
 
           {/* Next Steps */}
@@ -45,10 +51,10 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
             <p className="text-xs font-bold uppercase mb-2" style={{ color: "#94a3b8" }}>
               Next Steps
             </p>
-            {[1, 2].map((n) => (
-              <div key={n} className="flex items-center gap-2 mb-2">
-                <input type="checkbox" className="w-4 h-4" disabled />
-                <div className="flex-1 border-b-2" style={{ borderColor: "#cbd5e1", height: "18px" }} />
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="flex items-end gap-3" style={{ height: "40px" }}>
+                <div className="w-5 h-5 border-2 rounded mb-1.5" style={{ borderColor: "#cbd5e1" }} />
+                <div className="flex-1 border-b-[2px]" style={{ borderColor: "#cbd5e1", height: "100%" }} />
               </div>
             ))}
           </div>
