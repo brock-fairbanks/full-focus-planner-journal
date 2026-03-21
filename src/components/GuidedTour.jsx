@@ -77,7 +77,7 @@ export default function GuidedTour() {
           
           <div className="flex justify-end mt-5">
             <Button onClick={nextStep} className="bg-[#1e293b] hover:bg-[#0f172a] text-white shadow-md rounded-full px-6">
-              {currentStep === TOUR_STEPS.length - 1 ? 'Finish Tour' : 'Next'} <ChevronRight size={16} className="ml-1" />
+              {currentStep === TOUR_STEPS.length - 1 ? 'Finish Tour' : 'I tried it! Next'} <ChevronRight size={16} className="ml-1" />
             </Button>
           </div>
         </motion.div>
