@@ -604,31 +604,9 @@ const GlobalCanvas = forwardRef(({
       }
       
       if (bestLine.className && typeof bestLine.className === 'string' && bestLine.className.includes('border')) {
-        // Find line height by looking for adjacent lines
-        const siblingLines = lineElements.filter(el => {
-           if (el === bestLine) return false;
-           const r = el.getBoundingClientRect();
-           return Math.abs(r.left - bestRect.left) < 20;
-        });
-        
-        if (siblingLines.length > 0) {
-           siblingLines.sort((a, b) => a.getBoundingClientRect().bottom - b.getBoundingClientRect().bottom);
-           const linesAbove = siblingLines.filter(el => el.getBoundingClientRect().bottom < bestRect.bottom - 5);
-           if (linesAbove.length > 0) {
-               const prevRect = linesAbove[linesAbove.length - 1].getBoundingClientRect();
-               lineHeight = bestRect.bottom - prevRect.bottom;
-           } else {
-               const linesBelow = siblingLines.filter(el => el.getBoundingClientRect().bottom > bestRect.bottom + 5);
-               if (linesBelow.length > 0) {
-                   lineHeight = linesBelow[0].getBoundingClientRect().bottom - bestRect.bottom;
-               }
-           }
-        }
-        
-        if (lineHeight < 20 || lineHeight > 100) lineHeight = 40;
-        
-        // Align text box to fit within the cell
-        snappedY = (bestRect.bottom - rect.top) - lineHeight + (lineHeight === 40 ? 0 : 8); 
+        lineHeight = 40;
+        // Align text box to fit exactly above the line
+        snappedY = (bestRect.bottom - rect.top) - 40; 
       } else if (bestLine.style.backgroundSize) {
          const match = bestLine.style.backgroundSize.match(/(\d+)px/g);
          if (match && match.length > 0) {
