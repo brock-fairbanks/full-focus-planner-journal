@@ -1204,7 +1204,7 @@ const TextItem = ({ textObj, updateText, deleteText, activeTemplate, onTripleCli
     }
   };
 
-  const lh = textObj.lineHeight || 32;
+  const lh = textObj.lineHeight || 40;
 
   const charsPerLine = textObj.width ? Math.max(12, parseInt(textObj.width) / 7) : 15;
   const estimatedLines = activeTemplate === 'IDEAL_WEEK' 
