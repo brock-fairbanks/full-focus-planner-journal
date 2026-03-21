@@ -101,6 +101,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                   dragConstraints={{ top: 0, bottom: 0 }}
                 >
                   <button
+                    onClick={() => { if (lastPointerRef.current === 'mouse') onTemplateChange(tab.id); }}
                     onDoubleClick={() => onTemplateChange(tab.id)}
                     className="relative flex flex-col items-center justify-center w-full flex-1 min-h-0 transition-all duration-200 gap-1.5 select-none py-2"
                     title={tab.label}
