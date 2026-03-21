@@ -80,16 +80,16 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
                 Daily Big 3
               </h2>
               {[1, 2, 3].map((n) => (
-                <div key={n} className="mb-14">
-                  <div className="flex items-end gap-6 mb-10">
-                    <span className="text-4xl font-bold w-10 text-right leading-none" style={{ color: "#f59e0b" }}>
+                <div key={n} className="mb-10">
+                  <div className="flex items-end gap-6" style={{ height: "40px" }}>
+                    <span className="text-4xl font-bold w-10 text-right leading-none pb-1" style={{ color: "#f59e0b" }}>
                       {n}.
                     </span>
-                    <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1" }} />
+                    <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1", height: "100%" }} />
                   </div>
-                  <div className="flex items-end gap-6">
+                  <div className="flex items-end gap-6" style={{ height: "40px" }}>
                     <span className="w-10 text-right"></span>
-                    <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1" }} />
+                    <div className="flex-1 border-b-[3px]" style={{ borderColor: "#cbd5e1", height: "100%" }} />
                   </div>
                 </div>
               ))}
