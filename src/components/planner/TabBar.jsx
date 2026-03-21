@@ -73,6 +73,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
     <>
       {/* Primary Navigation */}
       <div 
+        id="tour-sidebar"
         className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-4 pb-2 pointer-events-auto z-40 overflow-hidden border-r border-black/20" 
         style={{background: "#1A120B"}}
         onPointerDown={(e) => { lastPointerRef.current = e.pointerType; }}
