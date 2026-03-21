@@ -24,7 +24,7 @@ export default function TutorialChat() {
                 
                 await base44.agents.addMessage(conv, {
                     role: "user",
-                    content: "Hi! Please introduce me to the app and its core features."
+                    content: "Give me a structured, beautifully formatted overview of all the app's features: Daily Planner, Quarterly Goals, Meeting Notes, Journal, and Scratchpad. Use emojis and bullet points. Do not ask me any questions at the end."
                 });
 
                 unsubscribe = base44.agents.subscribeToConversation(conv.id, (data) => {
@@ -49,19 +49,6 @@ export default function TutorialChat() {
         }
     }, [messages]);
 
-    const handleSend = async (e) => {
-        e.preventDefault();
-        if (!input.trim() || !conversation) return;
-        
-        const text = input;
-        setInput('');
-        
-        await base44.agents.addMessage(conversation, {
-            role: "user",
-            content: text
-        });
-    };
-
     return (
         <div className="flex flex-col h-[400px] bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
             <div className="flex-1 overflow-y-auto p-4" ref={scrollRef}>
@@ -72,7 +59,7 @@ export default function TutorialChat() {
                 ) : (
                     <div className="space-y-4">
                         {messages.map((msg, i) => {
-                            if (i === 0 && msg.role === 'user' && msg.content.includes("Please introduce me")) return null;
+                            if (msg.role === 'user') return null;
                             
                             const isUser = msg.role === 'user';
                             return (
@@ -93,20 +80,7 @@ export default function TutorialChat() {
                     </div>
                 )}
             </div>
-            <div className="p-3 bg-white border-t border-slate-200">
-                <form onSubmit={handleSend} className="flex gap-2">
-                    <Input 
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ask a question..."
-                        className="flex-1"
-                        disabled={loading}
-                    />
-                    <Button type="submit" size="icon" disabled={loading || !input.trim()} className="bg-[#F97316] hover:bg-[#ea580c] text-white">
-                        <Send size={16} />
-                    </Button>
-                </form>
-            </div>
+            {/* Removed prompt input per user request */}
         </div>
     );
 }
