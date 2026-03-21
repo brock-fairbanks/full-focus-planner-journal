@@ -266,7 +266,7 @@ export default function Planner() {
             <div id="topbar-center-portal" className="flex-1 flex justify-center pointer-events-auto mx-4"></div>
 
             {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
-              <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] p-1 rounded-lg shadow-sm">
+              <div id="tour-tools" className="flex items-center gap-1 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] p-1 rounded-lg shadow-sm">
                 <button
                   onClick={() => setActiveTool('pen')}
                   className={`p-1.5 rounded-md transition-colors ${(activeTool === 'pen' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
