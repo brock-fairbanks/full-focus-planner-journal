@@ -168,6 +168,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
           </button>
           
           <button
+            onClick={() => { if (lastPointerRef.current === 'mouse') onJournalModeChange("WEEKEND"); }}
             onDoubleClick={() => onJournalModeChange("WEEKEND")}
             className={`flex flex-col items-center justify-center w-16 md:w-20 h-20 rounded-xl transition-all duration-200 gap-2 select-none ${
               journalMode === "WEEKEND" 
@@ -180,6 +181,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
           </button>
 
           <button
+            onClick={() => { if (lastPointerRef.current === 'mouse') onJournalModeChange("ANNUAL"); }}
             onDoubleClick={() => onJournalModeChange("ANNUAL")}
             className={`flex flex-col items-center justify-center w-16 md:w-20 h-20 rounded-xl transition-all duration-200 gap-2 select-none ${
               journalMode === "ANNUAL" 
