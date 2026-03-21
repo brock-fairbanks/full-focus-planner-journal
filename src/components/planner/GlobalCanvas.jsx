@@ -100,6 +100,7 @@ const GlobalCanvas = forwardRef(({
 
       if (syncIdRef.current) {
         await base44.entities.PlannerSync.update(syncIdRef.current, {
+          page_key: pageKey,
           drawing_data: finalDrawingData,
           texts_data: textPayload,
           updated_at: timestamp
@@ -109,6 +110,7 @@ const GlobalCanvas = forwardRef(({
         if (records.length > 0) {
           syncIdRef.current = records[0].id;
           await base44.entities.PlannerSync.update(syncIdRef.current, {
+            page_key: pageKey,
             drawing_data: finalDrawingData,
             texts_data: textPayload,
             updated_at: timestamp
@@ -350,8 +352,8 @@ const GlobalCanvas = forwardRef(({
             if (!recordData) return;
         }
 
-        if (recordData.page_key === pageKey) {
-            syncIdRef.current = recordData.id;
+        if (recordData.page_key === pageKey || (event.id && syncIdRef.current === event.id)) {
+            syncIdRef.current = event.id || recordData.id || syncIdRef.current;
             // Use myRecentSaves instead of time offsets to bypass clock skew issues between devices
             if (recordData.updated_at && !myRecentSaves.current.has(recordData.updated_at)) {
                 lastLocalUpdateTime.current = recordData.updated_at;
