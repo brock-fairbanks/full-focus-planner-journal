@@ -73,7 +73,17 @@ const TOUR_STEPS = [
   { 
     path: '/meeting', 
     selector: '#tour-meeting-tools',
-    text: "The Meeting spread! Record your meetings and let AI transcribe them. Try hitting the microphone button to test it out." 
+    text: "The Meeting spread! Record your meetings and let AI transcribe them." 
+  },
+  { 
+    path: '/meeting', 
+    selector: '#tour-record-mic',
+    text: "Hit 'Record Mic' to start recording audio from your device's microphone." 
+  },
+  { 
+    path: '/meeting', 
+    selector: '#tour-record-system',
+    text: "Use 'Record System Audio' to record audio directly from a browser tab or your computer speakers. Note: this and the 'Upload' option are only available on the desktop version!" 
   },
   { 
     path: '/scratchpad', 
