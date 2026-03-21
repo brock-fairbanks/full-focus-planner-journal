@@ -6,11 +6,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapPin, Plus, Trash2, ArrowRight, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
+import TutorialChat from '../components/TutorialChat';
 
 export default function Onboarding() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return parseInt(params.get('step')) || 1;
+  });
   const [loading, setLoading] = useState(false);
   
   // Step 1: Profile
@@ -25,7 +29,7 @@ export default function Onboarding() {
 
   useEffect(() => {
     if (user) {
-      if (user.onboarding_completed) {
+      if (user.onboarding_completed && !window.location.search.includes('force=true')) {
         navigate('/today');
       }
       setFullName(user.full_name || '');
@@ -34,7 +38,7 @@ export default function Onboarding() {
     }
   }, [user, navigate]);
 
-  const handleNext = () => setStep(s => Math.min(s + 1, 3));
+  const handleNext = () => setStep(s => Math.min(s + 1, 4));
   const handleBack = () => setStep(s => Math.max(s - 1, 1));
 
   const addLocation = () => {
@@ -192,6 +196,24 @@ export default function Onboarding() {
                 </Button>
               )}
             </div>
+            
+            <div className="flex gap-3 mt-8">
+              <Button onClick={handleBack} variant="outline" className="flex-1" disabled={loading}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+              </Button>
+              <Button onClick={handleNext} className="flex-1 bg-[#1e293b] hover:bg-[#0f172a] text-white">
+                Next <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
+            <h2 className="text-xl font-bold text-[#1e293b] mb-2">4. App Tutorial</h2>
+            <p className="text-sm text-[#64748b] mb-4">Chat with your personalized agent to learn the ropes.</p>
+            
+            <TutorialChat />
             
             <div className="flex gap-3 mt-8">
               <Button onClick={handleBack} variant="outline" className="flex-1" disabled={loading}>
