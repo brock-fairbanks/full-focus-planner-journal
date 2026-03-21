@@ -521,7 +521,7 @@ const GlobalCanvas = forwardRef(({
     let snappedY = Math.round((clickY - 16) / 32) * 32;
 
     let startX = clientX - rect.left;
-    let lineHeight = 32;
+    let lineHeight = 40;
     let width = `200px`;
 
     // Find layout bounds using elementsFromPoint as fallback
