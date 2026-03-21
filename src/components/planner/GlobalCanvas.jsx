@@ -625,10 +625,10 @@ const GlobalCanvas = forwardRef(({
            }
         }
         
-        if (lineHeight < 20 || lineHeight > 100) lineHeight = 32;
+        if (lineHeight < 20 || lineHeight > 100) lineHeight = 40;
         
         // Align text box to fit within the cell
-        snappedY = (bestRect.bottom - rect.top) - lineHeight + (lineHeight === 32 ? 0 : 8); 
+        snappedY = (bestRect.bottom - rect.top) - lineHeight + (lineHeight === 40 ? 0 : 8); 
       } else if (bestLine.style.backgroundSize) {
          const match = bestLine.style.backgroundSize.match(/(\d+)px/g);
          if (match && match.length > 0) {
@@ -636,7 +636,7 @@ const GlobalCanvas = forwardRef(({
              const relativeY = clientY - bestRect.top;
              const gridY = Math.ceil(Math.max(0, relativeY - 10) / lineHeight) * lineHeight;
              const targetY = Math.max(lineHeight, gridY);
-             snappedY = targetY + bestRect.top - rect.top - lineHeight + (lineHeight === 32 ? 6 : 8); 
+             snappedY = targetY + bestRect.top - rect.top - lineHeight + (lineHeight === 40 ? 0 : 8); 
          }
       }
     }
