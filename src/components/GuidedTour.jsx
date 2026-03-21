@@ -5,11 +5,11 @@ import { Sparkles, X, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const TOUR_STEPS = [
-  { path: '/today', text: "Welcome to Planner! This is your Daily canvas. You can draw anywhere with your stylus, or double-tap to type." },
-  { path: '/goals', text: "Here is your Quarterly Goals view. Break down your annual vision into actionable targets." },
-  { path: '/meeting', text: "The Meeting spread! Record your meetings and let AI transcribe and summarize them for you automatically." },
-  { path: '/journal', text: "Reflect on your day in the Journal. It changes based on whether it's a weekday, weekend, or year-end." },
-  { path: '/scratchpad', text: "Need a quick place to jot things down? The Scratchpad gives you infinite digital paper with customizable backgrounds." },
+  { path: '/today', text: "Welcome to Planner! This is your Daily canvas. Try drawing something right now with your stylus or mouse, or double-tap anywhere to type!" },
+  { path: '/goals', text: "Here is your Quarterly Goals view. Try adding a new goal for this quarter to see how it works!" },
+  { path: '/meeting', text: "The Meeting spread! Record your meetings and let AI transcribe them. Try hitting the microphone button to test it out." },
+  { path: '/journal', text: "Reflect on your day in the Journal. Go ahead and try writing a quick thought for today." },
+  { path: '/scratchpad', text: "Need a quick place to jot things down? The Scratchpad gives you infinite digital paper. Try changing the background pattern!" },
 ];
 
 export default function GuidedTour() {
