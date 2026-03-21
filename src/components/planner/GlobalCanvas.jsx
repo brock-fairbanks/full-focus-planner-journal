@@ -1130,6 +1130,33 @@ const GlobalCanvas = forwardRef(({
           deleteText={(id) => updateTextsState(prev => prev.filter(t => t.id !== id))}
           onTripleClick={() => handleTripleClickAction(0, 0, textObj)}
           onFocus={() => setActiveTextId(textObj.id)}
+          onTab={() => {
+            const lh = textObj.lineHeight || 40;
+            const snappedY = textObj.y + lh;
+            const startX = textObj.x;
+            const width = textObj.width;
+
+            updateTextsState(prev => {
+              const existingTextIndex = prev.findIndex(t => Math.abs(t.y - snappedY) < 10 && Math.abs(t.x - startX) < 10);
+              if (existingTextIndex !== -1) {
+                const updated = [...prev];
+                updated[existingTextIndex] = { ...updated[existingTextIndex], isEditing: true };
+                return updated;
+              } else {
+                const newText = {
+                  id: Date.now().toString(),
+                  x: startX,
+                  y: snappedY,
+                  baselineY: snappedY + lh,
+                  text: '',
+                  isEditing: true,
+                  lineHeight: lh,
+                  width
+                };
+                return [...prev, newText];
+              }
+            });
+          }}
         />
       ))}
     </div>
