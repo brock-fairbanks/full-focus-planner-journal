@@ -12,7 +12,7 @@ const TOUR_STEPS = [
   },
   { 
     path: '/today', 
-    selector: '#tour-header',
+    selector: '#tour-date-navigator',
     text: "Here is your date navigator. Swipe left/right or click the arrows to move between days." 
   },
   { 
