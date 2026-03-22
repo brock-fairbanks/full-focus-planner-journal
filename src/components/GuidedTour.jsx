@@ -84,7 +84,7 @@ const TOUR_STEPS = [
   { 
     path: '/meeting', 
     selector: '#tour-record-system',
-    text: "Use 'Record System Audio' to record audio directly from a browser tab or your computer speakers. Note: this and the 'Upload' option are only available on the desktop version!" 
+    text: "Use 'Record System Audio' to record audio directly from a browser tab or your computer speakers. Note: this and the 'Upload' option are available on desktop and tablet versions, but not on mobile phones!" 
   },
   {
     path: '/scratchpad',
