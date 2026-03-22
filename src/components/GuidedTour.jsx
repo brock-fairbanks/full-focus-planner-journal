@@ -91,10 +91,15 @@ const TOUR_STEPS = [
     selector: '#tour-scratchpad-nav-btn',
     text: "You can quickly access your Scratchpad from this top menu!"
   },
+  {
+    path: '/scratchpad',
+    selector: '#tour-scratchpad-new-page',
+    text: "This is your Scratchpad history. Click 'New Page' to create a blank digital paper!"
+  },
   { 
     path: '/scratchpad', 
     selector: '#tour-scratchpad-tools',
-    text: "Need a quick place to jot things down? The Scratchpad gives you infinite digital paper. Try changing the background pattern!" 
+    text: "Now you have infinite digital paper. Try changing the background pattern to lined or dotted!" 
   },
   {
     path: '/settings',
