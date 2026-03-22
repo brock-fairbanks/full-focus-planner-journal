@@ -254,6 +254,7 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                                 />
                             </div>
                             <button 
+                                id="tour-scratchpad-new-page"
                                 onClick={createNewNote}
                                 className="flex items-center gap-2 px-4 py-2 bg-[#F97316] text-white rounded-lg hover:bg-orange-600 transition-colors font-bold text-sm shadow-sm"
                             >
