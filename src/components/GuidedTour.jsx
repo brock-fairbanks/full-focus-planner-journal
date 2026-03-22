@@ -229,7 +229,13 @@ export default function GuidedTour() {
         )}
       </AnimatePresence>
 
-      <div className="fixed bottom-8 right-8 z-[9999] w-80 md:w-96 pointer-events-auto">
+      <div 
+        className={`fixed z-[9999] w-80 md:w-96 pointer-events-auto transition-all duration-500 ${
+          currentStep === 0 
+            ? "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
+            : "bottom-8 right-8"
+        }`}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
