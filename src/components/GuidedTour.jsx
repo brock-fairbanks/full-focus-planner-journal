@@ -94,7 +94,7 @@ const TOUR_STEPS = [
   {
     path: '/scratchpad',
     selector: '#tour-scratchpad-new-page',
-    text: "This is your Scratchpad history. Click 'New Page' to create a blank digital paper!"
+    text: "This is your Scratchpad history, where all your notes are automatically saved and organized with a date and time stamp. Click 'New Page' to create a blank digital paper!"
   },
   { 
     path: '/scratchpad', 
