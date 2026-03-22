@@ -239,7 +239,7 @@ export default function Planner() {
         <div className={`relative min-h-full w-full flex flex-col ${isSmallPhone ? 'min-w-0' : 'min-w-[1024px]'}`}>
           {/* Fullscreen Toggle & Tools */}
           {!isSmallPhone && (
-          <div className="w-full flex justify-between items-center p-2 shrink-0 z-30 pointer-events-auto sticky top-0 left-0">
+          <div className={`w-full flex justify-between items-center p-2 shrink-0 z-50 pointer-events-auto sticky top-0 left-0 ${activeTemplate === 'SCRATCHPAD' ? 'bg-[#E5E0D8]' : 'bg-[#FAF9F6]'} border-b border-black/5`}>
             <button
               id="tour-fullscreen-btn"
               onClick={() => setIsFullscreen(!isFullscreen)}
