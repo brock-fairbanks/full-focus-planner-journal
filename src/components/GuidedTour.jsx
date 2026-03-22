@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { base44 } from '@/api/base44Client';
 
 const TOUR_STEPS = [
   { 
@@ -68,7 +69,7 @@ const TOUR_STEPS = [
   { 
     path: '/today', 
     selector: '#tour-canvas',
-    text: "This is your Daily canvas. Try drawing something, or double-tap anywhere to type! Pro tip: While typing, press the Tab key to easily move to the next line." 
+    text: "This is your Daily canvas. Try drawing something! On a desktop, use your mouse to draw. On a tablet, use your stylus for the best handwriting experience (this feature was mainly intended for tablets). You can also double-tap anywhere to type! Pro tip: While typing, press the Tab key to easily move to the next line." 
   },
   { 
     path: '/meeting', 
@@ -159,11 +160,53 @@ export default function GuidedTour() {
     }
   };
 
-  const endTour = () => {
+  const endTour = async () => {
     setCurrentStep(0);
     setSpotlightStyle(null);
-    navigate(location.pathname, { replace: true });
+
+    const startTimeStr = localStorage.getItem('tourStartTime');
+    if (startTimeStr) {
+      const startTime = parseInt(startTimeStr, 10);
+      try {
+        const syncs = await base44.entities.PlannerSync.list();
+        for (const s of syncs) {
+          if (s.updated_at >= startTime) {
+            await base44.entities.PlannerSync.delete(s.id);
+            localStorage.removeItem(`planner_drawing_${s.page_key}`);
+            localStorage.removeItem(`planner_texts_${s.page_key}`);
+            localStorage.removeItem(`planner_updated_at_${s.page_key}`);
+          }
+        }
+        
+        const scratchpads = await base44.entities.ScratchpadNote.list();
+        for (const s of scratchpads) {
+          if (s.created_at >= startTime) {
+            await base44.entities.ScratchpadNote.delete(s.id);
+          }
+        }
+        
+        const meetings = await base44.entities.MeetingNote.list();
+        for (const m of meetings) {
+          const mDate = new Date(m.created_date).getTime();
+          if (mDate >= startTime) {
+            await base44.entities.MeetingNote.delete(m.id);
+          }
+        }
+      } catch (e) {
+        console.error("Error cleaning up tour data", e);
+      }
+      localStorage.removeItem('tourStartTime');
+      window.location.href = location.pathname;
+    } else {
+      navigate(location.pathname, { replace: true });
+    }
   };
+
+  useEffect(() => {
+    if (isTourActive && !localStorage.getItem('tourStartTime')) {
+      localStorage.setItem('tourStartTime', Date.now().toString());
+    }
+  }, [isTourActive]);
 
   return (
     <>
