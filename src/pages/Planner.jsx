@@ -362,7 +362,7 @@ export default function Planner() {
           )}
 
           {/* Template Layer */}
-          <div className={`flex-1 w-full pointer-events-auto mx-auto relative ${activeTemplate === 'SCRATCHPAD' ? 'max-w-[95%]' : 'max-w-5xl'}`}>
+          <div id="tour-content-area" className={`flex-1 w-full pointer-events-auto mx-auto relative ${activeTemplate === 'SCRATCHPAD' ? 'max-w-[95%]' : 'max-w-5xl'}`}>
             <TemplateRenderer template={activeTemplate} date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} journalMode={journalMode} />
           </div>
           
