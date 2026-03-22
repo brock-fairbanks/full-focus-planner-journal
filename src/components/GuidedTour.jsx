@@ -155,6 +155,12 @@ export default function GuidedTour() {
     return () => window.removeEventListener('resize', updateSpotlight);
   }, [isTourActive, currentStep]);
 
+  useEffect(() => {
+    if (isTourActive && !localStorage.getItem('tourStartTime')) {
+      localStorage.setItem('tourStartTime', Date.now().toString());
+    }
+  }, [isTourActive]);
+
   if (!isTourActive) return null;
 
   const nextStep = () => {
@@ -206,12 +212,6 @@ export default function GuidedTour() {
       navigate(location.pathname, { replace: true });
     }
   };
-
-  useEffect(() => {
-    if (isTourActive && !localStorage.getItem('tourStartTime')) {
-      localStorage.setItem('tourStartTime', Date.now().toString());
-    }
-  }, [isTourActive]);
 
   return (
     <>
