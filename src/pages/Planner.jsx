@@ -239,14 +239,14 @@ export default function Planner() {
         <div className={`relative min-h-full w-full flex flex-col ${isSmallPhone ? 'min-w-0' : 'min-w-[1024px]'}`}>
           {/* Fullscreen Toggle & Tools */}
           {!isSmallPhone && (
-          <div className={`w-full flex justify-between items-center p-2 shrink-0 z-50 pointer-events-auto sticky top-0 left-0 ${activeTemplate === 'SCRATCHPAD' ? 'bg-[#E5E0D8]' : 'bg-[#FAF9F6]'} border-b border-black/5`}>
+          <div className={`w-full flex justify-between items-center p-3 shrink-0 z-50 pointer-events-auto sticky top-0 left-0 ${activeTemplate === 'SCRATCHPAD' ? 'bg-[#E5E0D8]' : 'bg-[#FAF9F6]'} border-b border-black/5`}>
             <button
               id="tour-fullscreen-btn"
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] rounded-md shadow-sm text-[#94a3b8] hover:text-[#1e293b] transition-colors"
+              className="p-2.5 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] rounded-lg shadow-sm text-[#94a3b8] hover:text-[#1e293b] transition-colors"
               title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 {isFullscreen ? (
                   <>
                     <path d="M8 3v3a2 2 0 0 1-2 2H3" />
@@ -268,20 +268,20 @@ export default function Planner() {
             <div id="topbar-center-portal" className="flex-1 flex justify-center pointer-events-auto mx-4"></div>
 
             {activeTemplate !== "MEETING" && activeTemplate !== "CHAT" && (
-              <div id="tour-tools" className="flex items-center gap-1 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] p-1 rounded-lg shadow-sm">
+              <div id="tour-tools" className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] p-1.5 rounded-xl shadow-sm">
                 <button
                   onClick={() => setActiveTool('pen')}
-                  className={`p-1.5 rounded-md transition-colors ${(activeTool === 'pen' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  className={`p-2.5 rounded-lg transition-colors ${(activeTool === 'pen' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
                   title="Pen"
                 >
-                  <Pen size={16} />
+                  <Pen size={20} />
                 </button>
                 <button
                   onClick={() => setActiveTool('highlighter')}
-                  className={`p-1.5 rounded-md transition-colors ${(activeTool === 'highlighter' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  className={`p-2.5 rounded-lg transition-colors ${(activeTool === 'highlighter' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
                   title="Highlighter"
                 >
-                  <Highlighter size={16} />
+                  <Highlighter size={20} />
                 </button>
                 <button
                   onClick={() => setActiveTool('eraser')}
@@ -290,18 +290,18 @@ export default function Planner() {
                   onPointerLeave={() => setIsEraserMode(false)}
                   onPointerCancel={() => setIsEraserMode(false)}
                   onContextMenu={(e) => e.preventDefault()}
-                  className={`p-1.5 rounded-md transition-colors select-none ${(activeTool === 'eraser' || isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                  className={`p-2.5 rounded-lg transition-colors select-none ${(activeTool === 'eraser' || isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
                   title="Eraser (Tap to select, Hold to quick-erase)"
                   style={{ touchAction: 'none' }}
                 >
-                  <Eraser size={16} />
+                  <Eraser size={20} />
                 </button>
-                <div className="flex items-center ml-1 gap-1 border-l border-slate-200 pl-1">
+                <div className="flex items-center ml-2 gap-2 border-l border-slate-200 pl-2">
                   {(() => {
                     const currentTool = isEraserMode ? 'eraser' : activeTool;
                     if (currentTool === 'pen') {
                       return [1.5, 3, 5].map(w => (
-                        <button key={w} onClick={() => setPenWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-sm transition-colors ${penWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Thickness: ${w}`}>
+                        <button key={w} onClick={() => setPenWidth(w)} className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${penWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Thickness: ${w}`}>
                           <div className="bg-[#1e293b] rounded-full" style={{ width: w + 2, height: w + 2 }}></div>
                         </button>
                       ));
@@ -312,21 +312,21 @@ export default function Planner() {
                           <select 
                             value={highlighterWidth} 
                             onChange={(e) => setHighlighterWidth(Number(e.target.value))}
-                            className="h-6 px-1 rounded-sm bg-slate-100 hover:bg-slate-200 text-xs text-[#1e293b] outline-none cursor-pointer border-none font-medium"
+                            className="h-8 px-2 rounded-md bg-slate-100 hover:bg-slate-200 text-sm text-[#1e293b] outline-none cursor-pointer border-none font-medium"
                             title="Highlighter Size"
                           >
                             {[10, 14, 18, 24, 30, 40, 50, 60, 80, 100].map(w => (
                               <option key={w} value={w}>Size {w}</option>
                             ))}
                           </select>
-                          <div className="w-px h-4 bg-slate-200 mx-1"></div>
+                          <div className="w-px h-6 bg-slate-200 mx-1"></div>
                           {[
                             { c: 'rgba(253, 224, 71, 0.8)', bg: '#fef08a' },
                             { c: 'rgba(167, 243, 208, 0.8)', bg: '#a7f3d0' },
                             { c: 'rgba(251, 207, 232, 0.8)', bg: '#fbcfe8' },
                             { c: 'rgba(191, 219, 254, 0.8)', bg: '#bfdbfe' }
                           ].map(item => (
-                            <button key={item.c} onClick={() => setHighlighterColor(item.c)} className={`w-5 h-5 rounded-full border border-slate-200 ${highlighterColor === item.c ? 'ring-2 ring-offset-1 ring-slate-400' : ''}`} style={{ backgroundColor: item.bg }} title="Color" />
+                            <button key={item.c} onClick={() => setHighlighterColor(item.c)} className={`w-7 h-7 rounded-full border border-slate-200 ${highlighterColor === item.c ? 'ring-2 ring-offset-2 ring-slate-400' : ''}`} style={{ backgroundColor: item.bg }} title="Color" />
                           ))}
                         </>
                       );
@@ -336,7 +336,7 @@ export default function Planner() {
                         <select 
                           value={eraserWidth} 
                           onChange={(e) => setEraserWidth(Number(e.target.value))}
-                          className="h-6 px-1 rounded-sm bg-slate-100 hover:bg-slate-200 text-xs text-[#1e293b] outline-none cursor-pointer border-none font-medium"
+                          className="h-8 px-2 rounded-md bg-slate-100 hover:bg-slate-200 text-sm text-[#1e293b] outline-none cursor-pointer border-none font-medium"
                           title="Eraser Size"
                         >
                           {[10, 20, 30, 40, 50, 60, 80, 100, 150, 200].map(w => (
@@ -347,13 +347,13 @@ export default function Planner() {
                     }
                   })()}
                 </div>
-                <div className="flex items-center ml-1 gap-1 border-l border-slate-200 pl-1">
+                <div className="flex items-center ml-2 gap-2 border-l border-slate-200 pl-2">
                   <button
                     onClick={() => canvasRef.current?.undo && canvasRef.current.undo()}
-                    className="p-1.5 rounded-md transition-colors text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                    className="p-2.5 rounded-lg transition-colors text-slate-400 hover:bg-slate-100 hover:text-slate-600"
                     title="Undo"
                   >
-                    <Undo size={16} />
+                    <Undo size={20} />
                   </button>
                 </div>
               </div>
