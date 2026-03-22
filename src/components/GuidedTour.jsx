@@ -23,32 +23,32 @@ const TOUR_STEPS = [
   },
   { 
     path: '/today', 
-    selector: '#tour-sidebar',
+    selector: '#tour-content-area',
     text: "The 'Today' tab is your daily canvas for time-blocking your day, managing tasks, and writing your Big 3 priorities." 
   },
   { 
     path: '/journal', 
-    selector: '#tour-sidebar',
+    selector: '#tour-content-area',
     text: "The 'Journal' tab provides structured reflections. You can switch between Daily, Weekend, and Annual journaling modes here." 
   },
   { 
     path: '/ideal-week', 
-    selector: '#tour-sidebar',
+    selector: '#tour-content-area',
     text: "The 'Ideal Week' tab lets you design your perfect weekly routine from Monday to Sunday." 
   },
   { 
     path: '/goals', 
-    selector: '#tour-sidebar',
+    selector: '#tour-content-area',
     text: "The 'Goals' tab helps you track your quarterly objectives, key motivations, and actionable next steps." 
   },
   { 
     path: '/rituals', 
-    selector: '#tour-sidebar',
+    selector: '#tour-content-area',
     text: "The 'Rituals' tab holds your morning startup and evening shutdown checklists to keep your habits on track." 
   },
   { 
     path: '/weekly-review', 
-    selector: '#tour-sidebar',
+    selector: '#tour-content-area',
     text: "The 'Weekly' tab is your space for your weekly review—recording wins, lessons, and top priorities for the coming week." 
   },
   { 
