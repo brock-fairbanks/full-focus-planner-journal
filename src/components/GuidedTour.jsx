@@ -85,6 +85,11 @@ const TOUR_STEPS = [
     selector: '#tour-record-system',
     text: "Use 'Record System Audio' to record audio directly from a browser tab or your computer speakers. Note: this and the 'Upload' option are only available on the desktop version!" 
   },
+  {
+    path: '/scratchpad',
+    selector: '#tour-scratchpad-nav-btn',
+    text: "You can quickly access your Scratchpad from this top menu!"
+  },
   { 
     path: '/scratchpad', 
     selector: '#tour-scratchpad-tools',
