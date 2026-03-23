@@ -28,7 +28,7 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
       {Array.from({ length: 8 }).map((_, i) => (
         <div
           key={i}
-          className="border border-[#cbd5e1] bg-white p-10 md:p-14 shadow-sm w-full mx-auto"
+          className="border border-[#cbd5e1] bg-white p-10 md:p-14 shadow-md w-full mx-auto rounded-3xl"
         >
           {/* Header Row */}
           <div className="flex justify-between items-start mb-12 flex-wrap gap-6">
