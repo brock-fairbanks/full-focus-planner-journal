@@ -55,8 +55,6 @@ export default function Planner() {
       return;
     }
 
-    if (!window.confirm("This will replace your handwriting with typed text. Continue?")) return;
-
     setIsTranscribing(true);
 
     try {

@@ -240,8 +240,8 @@ const GlobalCanvas = forwardRef(({
              if (match && match.length > 0) {
                  const elLh = parseInt(match[match.length - 1]);
                  const relativeY = clientY - elRect.top;
-                 const gridY = Math.ceil(Math.max(0, relativeY - 10) / elLh) * elLh;
-                 targetY = elRect.top + Math.max(elLh, gridY);
+                 const lineIndex = Math.floor(Math.max(0, relativeY) / elLh);
+                 targetY = elRect.top + (lineIndex + 1) * elLh;
              } else {
                  targetY = elRect.bottom;
              }
@@ -286,9 +286,9 @@ const GlobalCanvas = forwardRef(({
              if (match && match.length > 0) {
                  actualLh = parseInt(match[match.length - 1]);
                  const relativeY = clientY - bestRect.top;
-                 const gridY = Math.ceil(Math.max(0, relativeY - 10) / actualLh) * actualLh;
-                 const targetY = Math.max(actualLh, gridY);
-                 snappedY = targetY + bestRect.top - rect.top - actualLh + (actualLh === 40 ? 0 : 8); 
+                 const lineIndex = Math.floor(Math.max(0, relativeY) / actualLh);
+                 const targetBaseline = bestRect.top + (lineIndex + 1) * actualLh;
+                 snappedY = targetBaseline - rect.top - actualLh + (actualLh === 40 ? 0 : 8); 
              }
              startX = Math.max(0, bestRect.left - rect.left + 8);
              textW = Math.max(50, bestRect.width - 16);
