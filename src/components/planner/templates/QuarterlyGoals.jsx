@@ -69,9 +69,9 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
                   </div>
                 </div>
               </div>
-              <div className="w-full mt-4 relative">
-                <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
-                <div className="w-full h-full border-t border-[#cbd5e1]" style={{ height: "120px", backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+              <div className="w-full mt-4 relative" style={{ height: "120px" }}>
+                <div className="absolute inset-0 border-l border-r border-t border-[#cbd5e1] pointer-events-none" />
+                <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
               </div>
             </div>
 
@@ -85,9 +85,9 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
                   Write, then rank, your key motivations.
                 </span>
               </div>
-              <div className="w-full mt-4 relative">
-                <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
-                <div className="w-full h-full border-t border-[#cbd5e1]" style={{ height: "160px", backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+              <div className="w-full mt-4 relative" style={{ height: "160px" }}>
+                <div className="absolute inset-0 border-l border-r border-t border-[#cbd5e1] pointer-events-none" />
+                <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
               </div>
             </div>
 
@@ -101,9 +101,9 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
                   List the first few projects or tasks that make up your goal.
                 </span>
               </div>
-              <div className="w-full mt-4 relative">
-                <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
-                <div className="w-full h-full border-t border-[#cbd5e1]" style={{ height: "160px", backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+              <div className="w-full mt-4 relative" style={{ height: "160px" }}>
+                <div className="absolute inset-0 border-l border-r border-t border-[#cbd5e1] pointer-events-none" />
+                <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
               </div>
             </div>
 
@@ -117,9 +117,9 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
                   Decide how you'll celebrate your success.
                 </span>
               </div>
-              <div className="w-full mt-4 relative">
-                <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
-                <div className="w-full h-full border-t border-[#cbd5e1]" style={{ height: "80px", backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+              <div className="w-full mt-4 relative" style={{ height: "80px" }}>
+                <div className="absolute inset-0 border-l border-r border-t border-[#cbd5e1] pointer-events-none" />
+                <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
               </div>
             </div>
 
