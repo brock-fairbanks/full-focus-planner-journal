@@ -1277,9 +1277,19 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 </button>
               </>
             ) : (
-              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-                <button 
-                  onClick={togglePause}
+              <div className="flex flex-col items-center gap-4 w-full">
+                {streamRef.current?.getVideoTracks().length > 0 && (
+                  <video 
+                    ref={liveVideoRef}
+                    autoPlay 
+                    muted 
+                    playsInline 
+                    className="w-full max-w-xl max-h-[300px] bg-black rounded shadow-sm" 
+                  />
+                )}
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                  <button 
+                    onClick={togglePause}
                   className="flex justify-center items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-full font-medium transition-all shadow-sm w-full sm:w-auto"
                 >
                   {isPaused ? <Play size={20} className="fill-current" /> : <Pause size={20} className="fill-current" />}
