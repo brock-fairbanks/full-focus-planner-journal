@@ -468,7 +468,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
       }
 
       if (isFinal) {
-        await saveNote(null, null, uploadedFileUrl);
+        await saveNote(null, null, uploadedFileUrl, mimeType.includes('video'));
         setProcessingStatus("Sending to Gemini for transcription...");
       }
 
@@ -511,7 +511,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
       if (isFinal) setProcessingStatus("Saving...");
       setTranscription(prev => {
         const newText = prev ? prev + "\n\n" + text : text;
-        saveNote(newText, null, uploadedFileUrl);
+        saveNote(newText, null, uploadedFileUrl, mimeType.includes('video'));
         return newText;
       });
     } catch (err) {
