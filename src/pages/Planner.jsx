@@ -442,7 +442,18 @@ export default function Planner() {
         </div>
       </div>
 
-
+      {/* Processing Overlay */}
+      {isTranscribing && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/40 backdrop-blur-sm transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-8 flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-200">
+            <Loader2 size={40} className="animate-spin text-orange-500" />
+            <div className="text-center">
+              <h3 className="font-bold text-lg text-slate-800">Converting Handwriting...</h3>
+              <p className="text-slate-500 text-sm mt-1">This might take a few seconds.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
