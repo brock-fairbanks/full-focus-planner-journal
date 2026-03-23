@@ -160,7 +160,35 @@ const GlobalCanvas = forwardRef(({
         }
       }
     },
-    getDataUrl: () => getScaledDataUrl()
+    getDataUrl: () => getScaledDataUrl(),
+    convertHandwritingToText: (newText) => {
+      if (canvasRef.current && ctxRef.current) {
+        undoStackRef.current.push(getCanvasSnapshot());
+        if (undoStackRef.current.length > 30) undoStackRef.current.shift();
+        ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        
+        const lh = 40;
+        const rect = canvasRef.current.getBoundingClientRect();
+        
+        updateTextsState(prev => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            x: 60,
+            y: 80,
+            baselineY: 80 + lh,
+            text: newText,
+            isEditing: false,
+            lineHeight: lh,
+            width: `${Math.max(200, (rect.width || 800) - 120)}px`
+          }
+        ]);
+        
+        const dataUrl = getScaledDataUrl();
+        localStorage.setItem(`planner_drawing_${pageKey}`, dataUrl);
+        if (onSave) onSave(dataUrl);
+      }
+    }
   }));
 
   useLayoutEffect(() => {
