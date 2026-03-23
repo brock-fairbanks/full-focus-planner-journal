@@ -1214,6 +1214,20 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
                   <option value="1.5">1.5x</option>
                   <option value="2">2x</option>
                 </select>
+                {audioUrl.hasVideo && (
+                  <button
+                    onClick={() => {
+                      const elem = mainAudioRef.current;
+                      if (!elem) return;
+                      if (elem.requestFullscreen) elem.requestFullscreen();
+                      else if (elem.webkitEnterFullscreen) elem.webkitEnterFullscreen();
+                      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+                    }}
+                    className="flex items-center gap-1 text-[10px] font-medium text-[#1e293b] bg-slate-100 px-2 py-1 rounded hover:bg-slate-200 transition-colors"
+                  >
+                    <Maximize size={12} /> Fullscreen
+                  </button>
+                )}
             </div>
             <button 
               onClick={async (e) => {
