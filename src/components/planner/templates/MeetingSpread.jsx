@@ -543,10 +543,10 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       
       setProcessingStatus("Saving...");
       setTranscription(finalTranscription);
-      saveNote(finalTranscription, null, uploadedFileUrl);
+      saveNote(finalTranscription, null, uploadedFileUrl, mimeType.includes('video'));
     } catch (err) {
       if (uploadedFileUrl) {
-        saveNote(null, null, uploadedFileUrl);
+        saveNote(null, null, uploadedFileUrl, mimeType.includes('video'));
       }
       console.error("Upload error", err);
       const errorMsg = err.response?.data?.error || err.message || "Unknown error";
