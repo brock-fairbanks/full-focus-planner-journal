@@ -1023,7 +1023,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       }
       
       setTranscription(finalTranscription);
-      saveNote(finalTranscription, null, fileUrlToUse);
+      saveNote(finalTranscription, null, fileUrlToUse, mimeType.includes('video'));
     } catch (err) {
       console.error("Retranscription error", err);
       const errorMsg = err.response?.data?.error || err.message || "Unknown error";
