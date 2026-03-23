@@ -344,7 +344,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
-  const processChunk = async (audioBlob, partNum, mimeType, extension, isFinal) => {
+  const processChunk = async (mainBlob, geminiBlob, partNum, mainMimeType, geminiMimeType, extension, isFinal) => {
     if (isFinal) {
       setIsProcessing(true);
       setProcessingStatus("Uploading recording to server...");
@@ -360,9 +360,18 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       const cleanExtension = extension.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'webm';
       const fileName = `${safeTitle}_${dateStr}_${sessionId}_part${partNum}.${cleanExtension}`;
 
-      const file = new File([audioBlob], fileName, { type: mimeType });
+      const file = new File([mainBlob], fileName, { type: mainMimeType });
       const uploadRes = await base44.integrations.Core.UploadFile({ file });
       uploadedFileUrl = uploadRes.file_url;
+      
+      let geminiFileUrl = uploadedFileUrl;
+      if (geminiBlob && geminiBlob !== mainBlob) {
+        if (isFinal) setProcessingStatus("Uploading audio track for faster AI processing...");
+        const audioExt = geminiMimeType.includes('mp4') ? 'mp4' : 'webm';
+        const gFile = new File([geminiBlob], `audio_${fileName.replace(cleanExtension, audioExt)}`, { type: geminiMimeType });
+        const gUploadRes = await base44.integrations.Core.UploadFile({ file: gFile });
+        geminiFileUrl = gUploadRes.file_url;
+      }
 
       if (user?.drive_connected) {
         const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : 'Meeting');
@@ -372,20 +381,20 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         base44.functions.invoke('uploadToGoogleDrive', {
           file_url: uploadedFileUrl,
           file_name: driveFileName,
-          mime_type: mimeType
+          mime_type: mainMimeType
         }).catch(e => console.error("Drive upload failed", e));
       }
 
       // Save the note immediately to preserve the audio file if the transcribe call fails
       if (isFinal) {
-        await saveNote(null, null, uploadedFileUrl, mimeType.includes('video'));
+        await saveNote(null, null, uploadedFileUrl, mainMimeType.includes('video'));
         setProcessingStatus("Sending to Gemini for transcription...");
       }
 
       const startRes = await base44.functions.invoke('processMeetingWithGemini', {
         action: 'transcribe_start',
-        fileUrl: uploadedFileUrl,
-        mimeType: mimeType
+        fileUrl: geminiFileUrl,
+        mimeType: geminiMimeType
       });
       
       if (startRes.data.error) throw new Error(startRes.data.error);
@@ -399,13 +408,13 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
 
       while (!isCompleted) {
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 1500));
         const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
           action: 'transcribe_poll',
           fileName: startRes.data.fileName,
           fileUri: startRes.data.fileUri,
           prompt,
-          mimeType: mimeType,
+          mimeType: geminiMimeType,
           model: selectedModelRef.current || 'gemini-3-flash-preview'
         });
         
@@ -522,7 +531,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
 
       while (!isCompleted) {
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 1500));
         const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
           action: 'transcribe_poll',
           fileName: geminiFileName,
@@ -557,6 +566,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
+  const audioRecorderRef = useRef(null);
+
   const startRecorderInstance = (stream) => {
     const hasVideo = stream.getVideoTracks().length > 0;
     let mimeType = hasVideo ? 'video/webm' : 'audio/webm';
@@ -581,8 +592,25 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     if (hasVideo) options.videoBitsPerSecond = 2500000;
     
     const mediaRecorder = new MediaRecorder(stream, options);
-
     mediaRecorderRef.current = mediaRecorder;
+
+    let audioRecorder = null;
+    let localAudioChunks = [];
+    let audioMimeType = 'audio/webm';
+    
+    if (hasVideo && stream.getAudioTracks().length > 0) {
+       const audioStream = new MediaStream(stream.getAudioTracks());
+       if (MediaRecorder.isTypeSupported('audio/webm')) audioMimeType = 'audio/webm';
+       else if (MediaRecorder.isTypeSupported('audio/mp4')) audioMimeType = 'audio/mp4';
+       
+       audioRecorder = new MediaRecorder(audioStream, { mimeType: audioMimeType, audioBitsPerSecond: 32000 });
+       audioRecorderRef.current = audioRecorder;
+       audioRecorder.ondataavailable = (e) => {
+         if (e.data.size > 0) localAudioChunks.push(e.data);
+       };
+    } else {
+       audioRecorderRef.current = null;
+    }
 
     const localChunks = [];
 
@@ -592,26 +620,53 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       }
     };
 
+    let mainStopped = false;
+    let audioStopped = false;
+    let finalMainBlob = null;
+    let finalGeminiBlob = null;
+    let finalActualMime = null;
+    let finalExtension = null;
+
+    const checkBothStopped = () => {
+      if (mainStopped && (!audioRecorder || audioStopped)) {
+        processChunk(finalMainBlob, finalGeminiBlob || finalMainBlob, 1, finalActualMime, hasVideo && audioRecorder ? audioMimeType : finalActualMime, finalExtension, true);
+      }
+    };
+
     mediaRecorder.onstop = () => {
       const actualMimeType = mediaRecorder.mimeType || mimeType;
       const extensionMatch = actualMimeType.match(/\/(.*?)(;|$)/);
       const extension = extensionMatch ? extensionMatch[1] : (hasVideo ? 'webm' : 'webm');
 
-      const audioBlob = new Blob(localChunks, { type: actualMimeType });
+      finalMainBlob = new Blob(localChunks, { type: actualMimeType });
+      finalActualMime = actualMimeType;
+      finalExtension = extension;
 
-      const url = URL.createObjectURL(audioBlob);
+      const url = URL.createObjectURL(finalMainBlob);
       setAudioUrl({ url, extension, hasVideo });
 
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
 
-      processChunk(audioBlob, 1, actualMimeType, extension, true);
+      mainStopped = true;
+      checkBothStopped();
     };
 
+    if (audioRecorder) {
+      audioRecorder.onstop = () => {
+        finalGeminiBlob = new Blob(localAudioChunks, { type: audioMimeType });
+        audioStopped = true;
+        checkBothStopped();
+      };
+    }
+
     mediaRecorder.start();
+    if (audioRecorder) audioRecorder.start();
+
     if (isPausedRef.current) {
       mediaRecorder.pause();
+      if (audioRecorder) audioRecorder.pause();
     }
   };
 
@@ -619,10 +674,12 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     if (!mediaRecorderRef.current) return;
     if (mediaRecorderRef.current.state === "recording") {
       mediaRecorderRef.current.pause();
+      if (audioRecorderRef.current && audioRecorderRef.current.state === "recording") audioRecorderRef.current.pause();
       manualPauseRef.current = true;
       setIsPaused(true);
     } else if (mediaRecorderRef.current.state === "paused") {
       mediaRecorderRef.current.resume();
+      if (audioRecorderRef.current && audioRecorderRef.current.state === "paused") audioRecorderRef.current.resume();
       manualPauseRef.current = false;
       autoPausedRef.current = false;
       setIsPaused(false);
@@ -802,6 +859,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       setIsPaused(false);
       manualPauseRef.current = false;
       mediaRecorderRef.current.stop();
+      if (audioRecorderRef.current && audioRecorderRef.current.state !== "inactive") {
+        audioRecorderRef.current.stop();
+      }
       releaseWakeLock();
     }
   };
@@ -812,12 +872,16 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       
       // Prevent the onstop handler from processing the chunk
       mediaRecorderRef.current.onstop = null;
+      if (audioRecorderRef.current) audioRecorderRef.current.onstop = null;
       
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
       
       mediaRecorderRef.current.stop();
+      if (audioRecorderRef.current && audioRecorderRef.current.state !== "inactive") {
+        audioRecorderRef.current.stop();
+      }
       
       isRecordingRef.current = false;
       setIsRecording(false);
@@ -1003,7 +1067,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
 
       while (!isCompleted) {
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 1500));
         const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
           action: 'transcribe_poll',
           fileName: geminiFileName,
