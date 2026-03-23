@@ -224,7 +224,16 @@ const GlobalCanvas = forwardRef(({
                      const elLh = parseInt(match[match.length - 1]);
                      const relativeY = clientY - elRect.top;
                      const lineIndex = Math.floor(Math.max(0, relativeY) / elLh);
-                     targetY = elRect.top + (lineIndex + 1) * elLh;
+                     
+                     let offset = 0;
+                     if (el.style.backgroundPosition) {
+                        const posMatch = el.style.backgroundPosition.match(/(\d+)px/);
+                        if (posMatch && posMatch.length > 1) {
+                           offset = parseInt(posMatch[1]);
+                        }
+                     }
+                     
+                     targetY = elRect.top + lineIndex * elLh + offset;
                  } else {
                      targetY = elRect.bottom;
                  }
@@ -713,8 +722,17 @@ const GlobalCanvas = forwardRef(({
          if (match && match.length > 0) {
              const lh = parseInt(match[match.length - 1]);
              const relativeY = clientY - elRect.top;
-             const gridY = Math.ceil(Math.max(0, relativeY - 10) / lh) * lh;
-             targetY = elRect.top + Math.max(lh, gridY);
+             
+             let offset = 0;
+             if (el.style.backgroundPosition) {
+                const posMatch = el.style.backgroundPosition.match(/(\d+)px/);
+                if (posMatch && posMatch.length > 1) {
+                   offset = parseInt(posMatch[1]);
+                }
+             }
+
+             const lineIndex = Math.floor(Math.max(0, relativeY) / lh);
+             targetY = elRect.top + lineIndex * lh + offset;
          } else {
              targetY = elRect.bottom;
          }
@@ -762,8 +780,18 @@ const GlobalCanvas = forwardRef(({
          if (match && match.length > 0) {
              lineHeight = parseInt(match[match.length - 1]);
              const relativeY = clientY - bestRect.top;
-             const gridY = Math.ceil(Math.max(0, relativeY - 10) / lineHeight) * lineHeight;
-             const targetY = Math.max(lineHeight, gridY);
+             
+             let offset = 0;
+             if (bestLine.style.backgroundPosition) {
+                const posMatch = bestLine.style.backgroundPosition.match(/(\d+)px/);
+                if (posMatch && posMatch.length > 1) {
+                   offset = parseInt(posMatch[1]);
+                }
+             }
+
+             const lineIndex = Math.floor(Math.max(0, relativeY) / lineHeight);
+             const targetY = lineIndex * lineHeight + offset;
+             
              snappedY = targetY + bestRect.top - rect.top - lineHeight + (lineHeight === 40 ? 0 : 8); 
          }
          startX = Math.max(0, bestRect.left - rect.left + 8);
