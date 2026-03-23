@@ -1305,7 +1305,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
           <div className="w-full bg-white border border-[#cbd5e1] rounded-xl p-4 mb-4 shadow-sm relative z-30 pointer-events-auto">
             <div className="flex flex-col items-center gap-4">
               <div className="text-center">
-                <h2 className="text-base font-bold text-[#1e293b] mb-1">Record Audio</h2>
+                <h2 className="text-base font-bold text-[#1e293b] mb-1">Record Audio/Video</h2>
               </div>
 
               {!isRecording && !transcription && (
