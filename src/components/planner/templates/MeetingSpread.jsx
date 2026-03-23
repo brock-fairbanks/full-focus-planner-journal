@@ -182,7 +182,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     }
   };
 
-  const saveNote = async (newTranscription, newSummary, newAudioUrl = null) => {
+  const saveNote = async (newTranscription, newSummary, newAudioUrl = null, hasVideo = false) => {
     if (!newTranscription && !newSummary && !newAudioUrl) return;
     try {
       const type = recordingTypeRef.current;
@@ -191,7 +191,10 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       const currentSumm = newSummary !== null ? newSummary : summary;
       if (newTranscription !== null) updateData.transcription = currentTrans;
       if (newSummary !== null) updateData.summary = currentSumm;
-      if (newAudioUrl !== null) updateData.audio_url = newAudioUrl;
+      if (newAudioUrl !== null) {
+        updateData.audio_url = newAudioUrl;
+        if (hasVideo) updateData.has_video = true;
+      }
       
       if (currentNoteIdRef.current) {
         await base44.entities.MeetingNote.update(currentNoteIdRef.current, updateData);
