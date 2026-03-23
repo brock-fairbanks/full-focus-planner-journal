@@ -732,6 +732,37 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
     }
   };
 
+  const liveVideoRef = useRef(null);
+  
+  useEffect(() => {
+    if (isRecording && streamRef.current && streamRef.current.getVideoTracks().length > 0) {
+      if (liveVideoRef.current && liveVideoRef.current.srcObject !== streamRef.current) {
+        liveVideoRef.current.srcObject = streamRef.current;
+      }
+    }
+  }, [isRecording, isPaused]);
+
+  const startVideoRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      streamRef.current = stream;
+      partNumberRef.current = 1;
+      isRecordingRef.current = true;
+      manualPauseRef.current = false;
+      setIsPaused(false);
+      sessionIdRef.current = Math.random().toString(36).substring(2, 8).toUpperCase();
+      setAudioUrl(null);
+      setIsRecording(true);
+      
+      await requestWakeLock();
+      
+      startRecorderInstance(stream);
+    } catch (err) {
+      console.error("Failed to start video recording", err);
+      alert("Camera/Microphone access denied or error occurred.");
+    }
+  };
+
   const startSystemAudioRecording = async () => {
     try {
       const getDisplayMedia = navigator.mediaDevices?.getDisplayMedia || navigator.getDisplayMedia;
