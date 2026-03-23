@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/lib/AuthContext';
 
 const TOUR_STEPS = [
   { 
@@ -111,6 +112,7 @@ const TOUR_STEPS = [
 export default function GuidedTour() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const isTourActive = new URLSearchParams(location.search).get('tour') === 'true';
   const [currentStep, setCurrentStep] = useState(0);
   const [spotlightStyle, setSpotlightStyle] = useState(null);
@@ -179,7 +181,7 @@ export default function GuidedTour() {
     if (startTimeStr) {
       const startTime = parseInt(startTimeStr, 10);
       try {
-        const syncs = await base44.entities.PlannerSync.list();
+        const syncs = user ? await base44.entities.PlannerSync.filter({ created_by: user.email }) : [];
         for (const s of syncs) {
           if (s.updated_at >= startTime) {
             await base44.entities.PlannerSync.delete(s.id);
@@ -189,14 +191,14 @@ export default function GuidedTour() {
           }
         }
         
-        const scratchpads = await base44.entities.ScratchpadNote.list();
+        const scratchpads = user ? await base44.entities.ScratchpadNote.filter({ created_by: user.email }) : [];
         for (const s of scratchpads) {
           if (s.created_at >= startTime) {
             await base44.entities.ScratchpadNote.delete(s.id);
           }
         }
         
-        const meetings = await base44.entities.MeetingNote.list();
+        const meetings = user ? await base44.entities.MeetingNote.filter({ created_by: user.email }) : [];
         for (const m of meetings) {
           const mDate = new Date(m.created_date).getTime();
           if (mDate >= startTime) {
