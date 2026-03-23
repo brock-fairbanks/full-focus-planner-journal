@@ -421,7 +421,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       if (isFinal) setProcessingStatus("Saving...");
       setTranscription(prev => {
         const newText = prev ? prev + "\n\n" + text : text;
-        saveNote(newText, null, uploadedFileUrl);
+        saveNote(newText, null, uploadedFileUrl, mimeType.includes('video'));
         return newText;
       });
     } catch (err) {
