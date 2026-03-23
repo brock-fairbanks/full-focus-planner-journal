@@ -67,7 +67,7 @@ export default function Planner() {
       const res = await base44.integrations.Core.InvokeLLM({
         prompt: "Transcribe the handwritten text from the image. \n\nRULES:\n1. Return ONLY the text actually written. Do NOT describe the image.\n2. If the image is blank or contains no legible text, return an empty items array.\n3. Group text into distinct blocks based on physical location.\n4. For each block, return:\n   - 'text': The content.\n   - 'x_percent': Horizontal start position (0.0=left, 1.0=right).\n   - 'y_percent': Vertical center position (0.0=top, 1.0=bottom).\n\nIf you are unsure of a word, mark it with [?]. Do not hallucinate text.",
         file_urls: [uploadRes.file_url],
-        model: "gemini_3_pro",
+        model: "gemini_3_flash",
         response_json_schema: {
           type: "object",
           properties: {
