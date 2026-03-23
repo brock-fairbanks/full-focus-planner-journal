@@ -640,16 +640,28 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
   };
 
   const startRecorderInstance = (stream) => {
-    let mimeType = 'audio/webm';
-    if (MediaRecorder.isTypeSupported('audio/webm')) {
-      mimeType = 'audio/webm';
-    } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-      mimeType = 'audio/mp4';
-    } else if (MediaRecorder.isTypeSupported('audio/mp3')) {
-      mimeType = 'audio/mp3';
+    const hasVideo = stream.getVideoTracks().length > 0;
+    let mimeType = hasVideo ? 'video/webm' : 'audio/webm';
+    
+    if (hasVideo) {
+      if (MediaRecorder.isTypeSupported('video/webm')) {
+        mimeType = 'video/webm';
+      } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+        mimeType = 'video/mp4';
+      }
+    } else {
+      if (MediaRecorder.isTypeSupported('audio/webm')) {
+        mimeType = 'audio/webm';
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        mimeType = 'audio/mp4';
+      } else if (MediaRecorder.isTypeSupported('audio/mp3')) {
+        mimeType = 'audio/mp3';
+      }
     }
     
     const options = { mimeType, audioBitsPerSecond: 32000 };
+    if (hasVideo) options.videoBitsPerSecond = 2500000;
+    
     const mediaRecorder = new MediaRecorder(stream, options);
 
     mediaRecorderRef.current = mediaRecorder;
@@ -665,12 +677,12 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
     mediaRecorder.onstop = () => {
       const actualMimeType = mediaRecorder.mimeType || mimeType;
       const extensionMatch = actualMimeType.match(/\/(.*?)(;|$)/);
-      const extension = extensionMatch ? extensionMatch[1] : 'webm';
+      const extension = extensionMatch ? extensionMatch[1] : (hasVideo ? 'webm' : 'webm');
 
       const audioBlob = new Blob(localChunks, { type: actualMimeType });
 
       const url = URL.createObjectURL(audioBlob);
-      setAudioUrl({ url, extension });
+      setAudioUrl({ url, extension, hasVideo });
 
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
