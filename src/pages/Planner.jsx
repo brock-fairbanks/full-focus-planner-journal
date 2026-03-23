@@ -204,7 +204,7 @@ export default function Planner() {
           />
 
           {/* Tools Sub Header */}
-          <div id="tour-subheader" className={`fixed top-16 right-0 h-10 bg-[#E5E0D8] flex items-center justify-end px-4 gap-4 z-40 ${activeTemplate === "JOURNAL" ? "left-40 md:left-44" : "left-20"} transition-all duration-300 ease-in-out`}>
+          <div id="tour-subheader" className={`fixed top-16 right-0 h-10 bg-[#E5E0D8] flex items-center justify-end px-4 gap-4 z-40 ${activeTemplate === "JOURNAL" ? "left-48 md:left-52" : "left-24"} transition-all duration-300 ease-in-out`}>
             <button 
                 onClick={() => handleTabChange("MEETING")}
                 className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-md transition-colors ${activeTemplate === 'MEETING' ? 'bg-[#1e293b] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200'}`}
@@ -233,7 +233,7 @@ export default function Planner() {
         className={`fixed ${
           isFullscreen || isSmallPhone
             ? "left-0 top-0" 
-            : (activeTemplate === "JOURNAL" ? "left-40 md:left-44 top-[104px]" : "left-20 top-[104px]")
+            : (activeTemplate === "JOURNAL" ? "left-48 md:left-52 top-[104px]" : "left-24 top-[104px]")
         } right-0 bottom-0 ${activeTemplate === 'SCRATCHPAD' ? 'bg-[#E5E0D8]' : 'bg-[#FAF9F6]'} overflow-y-auto overflow-x-auto transition-all duration-300 ease-in-out`}
       >
         <div className={`relative min-h-full w-full flex flex-col ${isSmallPhone ? 'min-w-0' : 'min-w-[1024px]'}`}>

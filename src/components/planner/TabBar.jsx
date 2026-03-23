@@ -74,7 +74,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
       {/* Primary Navigation */}
       <div 
         id="tour-sidebar"
-        className="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center pt-4 pb-2 pointer-events-auto z-40 overflow-hidden border-r border-slate-800 bg-[#0f172a] shadow-xl" 
+        className="fixed left-0 top-16 bottom-0 w-24 flex flex-col items-center pt-4 pb-2 pointer-events-auto z-40 overflow-hidden border-r border-slate-800 bg-[#0f172a] shadow-xl" 
         onPointerDown={(e) => { lastPointerRef.current = e.pointerType; }}
       >
         <div className="w-full flex flex-col items-center justify-center pb-4 mb-2 border-b border-slate-800 shrink-0 mt-2">
@@ -102,16 +102,16 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
                   <button
                     onClick={() => { if (lastPointerRef.current === 'mouse') onTemplateChange(tab.id); }}
                     onDoubleClick={() => onTemplateChange(tab.id)}
-                    className={`relative flex flex-col items-center justify-center w-full flex-1 min-h-0 transition-all duration-200 gap-1.5 select-none py-2 hover:bg-slate-800/50 ${isActive ? 'bg-slate-800/80 text-orange-500' : 'text-slate-400'}`}
+                    className={`relative flex flex-col items-center justify-center w-full flex-1 min-h-0 transition-all duration-200 gap-2 select-none py-3 hover:bg-slate-800/50 ${isActive ? 'bg-slate-800/80 text-orange-500' : 'text-slate-400'}`}
                     title={tab.label}
                     style={{
                       textShadow: isActive ? "0 0 10px rgba(249, 115, 22, 0.8)" : "none",
                     }}
                   >
-                    <Icon size={22} style={{ filter: isActive ? "drop-shadow(0 0 8px rgba(249, 115, 22, 0.8))" : "none" }} className="md:w-6 md:h-6" />
-                    <span className="text-[10px] md:text-xs font-bold tracking-wide uppercase text-center leading-tight px-1">{tab.label}</span>
+                    <Icon size={32} style={{ filter: isActive ? "drop-shadow(0 0 8px rgba(249, 115, 22, 0.8))" : "none" }} className="md:w-8 md:h-8" />
+                    <span className="text-xs md:text-sm font-bold tracking-wide uppercase text-center leading-tight px-1">{tab.label}</span>
                     {isActive && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1.5 rounded-r-md bg-orange-500" style={{
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-1.5 rounded-r-md bg-orange-500" style={{
                         boxShadow: "0 0 12px 3px rgba(249, 115, 22, 0.8)"
                       }} />
                     )}
@@ -126,20 +126,20 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
             href="/settings"
             onClick={(e) => { if (lastPointerRef.current !== 'mouse') e.preventDefault(); }}
             onDoubleClick={() => window.location.href = "/settings"}
-            className="flex flex-col items-center justify-center w-full h-14 transition-all duration-200 gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/50"
+            className="flex flex-col items-center justify-center w-full h-16 transition-all duration-200 gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/50"
             title="Settings"
           >
-            <Settings size={20} className="md:w-5 md:h-5" />
-            <span className="text-[10px] md:text-xs font-bold tracking-wide uppercase">Settings</span>
+            <Settings size={26} className="md:w-7 md:h-7" />
+            <span className="text-xs md:text-sm font-bold tracking-wide uppercase">Settings</span>
           </a>
           <button
             onClick={() => { if (lastPointerRef.current === 'mouse') base44.auth.logout(); }}
             onDoubleClick={() => base44.auth.logout()}
-            className="flex flex-col items-center justify-center w-full h-14 transition-all duration-200 gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/50"
+            className="flex flex-col items-center justify-center w-full h-16 transition-all duration-200 gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/50"
             title="Logout"
           >
-            <LogOut size={20} className="md:w-5 md:h-5" />
-            <span className="text-[10px] md:text-xs font-bold tracking-wide uppercase">Logout</span>
+            <LogOut size={26} className="md:w-7 md:h-7" />
+            <span className="text-xs md:text-sm font-bold tracking-wide uppercase">Logout</span>
           </button>
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
       {activeTemplate === "JOURNAL" && (
         <div 
           id="tour-journal-modes"
-          className="fixed left-20 top-16 bottom-0 w-20 md:w-24 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-[#1e293b] border-r border-slate-800 shadow-xl gap-4"
+          className="fixed left-24 top-16 bottom-0 w-24 md:w-28 flex flex-col items-center pt-6 pb-4 pointer-events-auto z-40 bg-[#1e293b] border-r border-slate-800 shadow-xl gap-4"
           onPointerDown={(e) => { lastPointerRef.current = e.pointerType; }}
         >
           <button
