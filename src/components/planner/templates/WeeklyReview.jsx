@@ -29,7 +29,10 @@ export default function WeeklyReview({ date, onClearCanvas }) {
               List 3-5 of your biggest wins from the week.
             </span>
           </div>
-          <div className="flex-1 w-full mt-2" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+          <div className="flex-1 w-full mt-2 relative">
+             <div className="absolute inset-0 border-x border-[#cbd5e1] pointer-events-none" />
+             <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+          </div>
         </div>
 
         {/* Section 2: Big 3 Progress */}
@@ -56,7 +59,10 @@ export default function WeeklyReview({ date, onClearCanvas }) {
           <h2 className="text-base font-medium mb-4" style={{ color: "#1e293b" }}>
             What worked? What didn't? Why?
           </h2>
-          <div className="flex-1 w-full mt-2" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+          <div className="flex-1 w-full mt-2 relative">
+             <div className="absolute inset-0 border-x border-[#cbd5e1] pointer-events-none" />
+             <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+          </div>
         </div>
 
         {/* Section 4: What will you continue or change */}
@@ -64,7 +70,10 @@ export default function WeeklyReview({ date, onClearCanvas }) {
           <h2 className="text-base font-medium mb-4" style={{ color: "#1e293b" }}>
             What will you continue or change?
           </h2>
-          <div className="flex-1 w-full mt-2" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+          <div className="flex-1 w-full mt-2 relative">
+             <div className="absolute inset-0 border-x border-[#cbd5e1] pointer-events-none" />
+             <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+          </div>
         </div>
         
         {/* Digital Addition: Weekly Sweep & Next Week Setup */}
