@@ -487,9 +487,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       const extension = cleanExtension;
       const mimeType = file.type || 'audio/webm';
       
-      setAudioUrl({ url: uploadedFileUrl, extension });
+      setAudioUrl({ url: uploadedFileUrl, extension, hasVideo: mimeType.includes('video') });
       // Save just the URL first so we don't lose it if transcription fails
-      await saveNote(null, null, uploadedFileUrl);
+      await saveNote(null, null, uploadedFileUrl, mimeType.includes('video'));
 
       if (user?.drive_connected) {
         const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : rType === 'dialog' ? 'Dialog' : 'Meeting');
