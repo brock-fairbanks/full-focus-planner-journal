@@ -65,13 +65,31 @@ export default function Planner() {
       const uploadRes = await base44.integrations.Core.UploadFile({ file });
       
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: "Please transcribe the handwritten text in this image. Only return the transcribed text, nothing else. Preserve line breaks. Do not add any introductory or concluding remarks. Just the text.",
+        prompt: "Transcribe the handwritten text in this image. Identify each distinct word or phrase that is physically separated from others (e.g. a word on the far left and a word on the far right should be separate items). For each item, provide the 'text', 'x_percent' (the horizontal start position of the word/phrase, from 0.0 left to 1.0 right), and 'y_percent' (the vertical center position, from 0.0 top to 1.0 bottom).",
         file_urls: [uploadRes.file_url],
-        model: "gemini_3_flash"
+        model: "gemini_3_flash",
+        response_json_schema: {
+          type: "object",
+          properties: {
+            items: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  text: { type: "string" },
+                  x_percent: { type: "number" },
+                  y_percent: { type: "number" }
+                },
+                required: ["text", "x_percent", "y_percent"]
+              }
+            }
+          },
+          required: ["items"]
+        }
       });
 
-      if (res && !res.toLowerCase().includes("no handwriting detected")) {
-          canvasRef.current.convertHandwritingToText(res);
+      if (res && res.items && res.items.length > 0) {
+          canvasRef.current.convertHandwritingToText(res.items);
       } else {
           alert("Could not detect handwriting.");
       }
