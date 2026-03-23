@@ -588,7 +588,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       }
     }
     
-    const options = { mimeType, audioBitsPerSecond: 32000 };
+    const options = { mimeType, audioBitsPerSecond: 128000 };
     if (hasVideo) options.videoBitsPerSecond = 2500000;
     
     const mediaRecorder = new MediaRecorder(stream, options);
@@ -603,7 +603,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
        if (MediaRecorder.isTypeSupported('audio/webm')) audioMimeType = 'audio/webm';
        else if (MediaRecorder.isTypeSupported('audio/mp4')) audioMimeType = 'audio/mp4';
        
-       audioRecorder = new MediaRecorder(audioStream, { mimeType: audioMimeType, audioBitsPerSecond: 32000 });
+       audioRecorder = new MediaRecorder(audioStream, { mimeType: audioMimeType, audioBitsPerSecond: 128000 });
        audioRecorderRef.current = audioRecorder;
        audioRecorder.ondataavailable = (e) => {
          if (e.data.size > 0) localAudioChunks.push(e.data);
