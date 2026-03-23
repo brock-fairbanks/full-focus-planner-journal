@@ -86,8 +86,8 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
                 </span>
               </div>
               <div className="w-full mt-4 relative">
-                <div className="absolute inset-0 border-x border-[#cbd5e1] pointer-events-none" />
-                <div className="w-full h-full" style={{ height: "160px", backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+                <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
+                <div className="w-full h-full border-t border-[#cbd5e1]" style={{ height: "160px", backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
               </div>
             </div>
 
@@ -102,8 +102,8 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
                 </span>
               </div>
               <div className="w-full mt-4 relative">
-                <div className="absolute inset-0 border-x border-[#cbd5e1] pointer-events-none" />
-                <div className="w-full h-full" style={{ height: "160px", backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+                <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
+                <div className="w-full h-full border-t border-[#cbd5e1]" style={{ height: "160px", backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
               </div>
             </div>
 
