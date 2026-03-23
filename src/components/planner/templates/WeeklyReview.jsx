@@ -30,8 +30,8 @@ export default function WeeklyReview({ date, onClearCanvas }) {
             </span>
           </div>
           <div className="flex-1 w-full mt-2 relative">
-             <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
-             <div className="w-full h-full border-t border-[#cbd5e1]" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+             <div className="absolute inset-0 border-l border-r border-t border-[#cbd5e1] pointer-events-none" />
+             <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
           </div>
         </div>
 
@@ -60,8 +60,8 @@ export default function WeeklyReview({ date, onClearCanvas }) {
             What worked? What didn't? Why?
           </h2>
           <div className="flex-1 w-full mt-2 relative">
-             <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
-             <div className="w-full h-full border-t border-[#cbd5e1]" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+             <div className="absolute inset-0 border-l border-r border-t border-[#cbd5e1] pointer-events-none" />
+             <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
           </div>
         </div>
 
@@ -71,8 +71,8 @@ export default function WeeklyReview({ date, onClearCanvas }) {
             What will you continue or change?
           </h2>
           <div className="flex-1 w-full mt-2 relative">
-             <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
-             <div className="w-full h-full border-t border-[#cbd5e1]" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+             <div className="absolute inset-0 border-l border-r border-t border-[#cbd5e1] pointer-events-none" />
+             <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
           </div>
         </div>
         
@@ -135,8 +135,8 @@ export default function WeeklyReview({ date, onClearCanvas }) {
                 How will you recharge next week?
               </span>
               <div className="flex-1 w-full mt-2 relative">
-                 <div className="absolute inset-0 border-l border-r border-[#cbd5e1] pointer-events-none" />
-                 <div className="w-full h-full border-t border-[#cbd5e1]" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
+                 <div className="absolute inset-0 border-l border-r border-t border-[#cbd5e1] pointer-events-none" />
+                 <div className="w-full h-full" style={{ backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 39px, #cbd5e1 40px)`, backgroundSize: "100% 40px" }} />
               </div>
            </div>
         </div>
