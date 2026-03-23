@@ -1219,12 +1219,6 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
 
       {!showHistory && audioUrl && !isRecording && !isProcessing && (
         <div className="w-full bg-white border border-[#cbd5e1] rounded-xl p-3 mb-4 shadow-sm relative z-30 pointer-events-auto flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#1e293b] p-1.5 rounded text-white shrink-0">
-              {audioUrl.hasVideo ? <Video size={16} /> : <Mic size={16} />}
-            </div>
-            <span className="text-xs font-bold text-[#1e293b] truncate">{audioUrl.hasVideo ? "Video Recording" : "Recording Audio"}</span>
-          </div>
           {audioUrl.hasVideo ? (
             <video 
               ref={mainAudioRef}

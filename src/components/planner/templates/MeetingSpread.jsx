@@ -1141,16 +1141,6 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
       {!showHistory && audioUrl && !isRecording && !isProcessing && (
         <div className={`w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-4 mb-6 shadow-sm relative z-30 pointer-events-auto flex ${audioUrl.hasVideo ? 'flex-col' : 'flex-col md:flex-row'} justify-between items-center gap-4`}>
-          <div className="flex items-center justify-between w-full md:w-auto">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#1e293b] p-2 rounded-lg text-white shrink-0">
-                {audioUrl.hasVideo ? <Video size={20} /> : <Mic size={20} />}
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-sm font-bold text-[#1e293b] truncate">{audioUrl.hasVideo ? "Video Recording" : "Recording Audio"}</span>
-              </div>
-            </div>
-          </div>
           {audioUrl.hasVideo ? (
             <video 
               ref={mainAudioRef}
