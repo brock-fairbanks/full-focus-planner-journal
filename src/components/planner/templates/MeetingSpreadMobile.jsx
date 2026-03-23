@@ -1142,22 +1142,37 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
         <div className="w-full bg-white border border-[#cbd5e1] rounded-xl p-3 mb-4 shadow-sm relative z-30 pointer-events-auto flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <div className="bg-[#1e293b] p-1.5 rounded text-white shrink-0">
-              <Mic size={16} />
+              {audioUrl.hasVideo ? <Video size={16} /> : <Mic size={16} />}
             </div>
-            <span className="text-xs font-bold text-[#1e293b] truncate">Recording Audio</span>
+            <span className="text-xs font-bold text-[#1e293b] truncate">{audioUrl.hasVideo ? "Video Recording" : "Recording Audio"}</span>
           </div>
-          <audio 
-            ref={mainAudioRef}
-            controls 
-            src={audioUrl.url} 
-            className="h-8 w-full" 
-            onLoadedData={(e) => { 
-              e.target.playbackRate = playbackSpeed; 
-              e.target.preservesPitch = preservePitch;
-              if ('webkitPreservesPitch' in e.target) e.target.webkitPreservesPitch = preservePitch;
-            }}
-            onRateChange={(e) => { if (e.target.playbackRate !== playbackSpeed) setPlaybackSpeed(e.target.playbackRate); }}
-          />
+          {audioUrl.hasVideo ? (
+            <video 
+              ref={mainAudioRef}
+              controls 
+              src={audioUrl.url} 
+              className="w-full max-h-[300px] bg-black rounded" 
+              onLoadedData={(e) => { 
+                e.target.playbackRate = playbackSpeed; 
+                e.target.preservesPitch = preservePitch;
+                if ('webkitPreservesPitch' in e.target) e.target.webkitPreservesPitch = preservePitch;
+              }}
+              onRateChange={(e) => { if (e.target.playbackRate !== playbackSpeed) setPlaybackSpeed(e.target.playbackRate); }}
+            />
+          ) : (
+            <audio 
+              ref={mainAudioRef}
+              controls 
+              src={audioUrl.url} 
+              className="h-8 w-full" 
+              onLoadedData={(e) => { 
+                e.target.playbackRate = playbackSpeed; 
+                e.target.preservesPitch = preservePitch;
+                if ('webkitPreservesPitch' in e.target) e.target.webkitPreservesPitch = preservePitch;
+              }}
+              onRateChange={(e) => { if (e.target.playbackRate !== playbackSpeed) setPlaybackSpeed(e.target.playbackRate); }}
+            />
+          )}
           <div className="flex items-center justify-between gap-2">
             <div className="flex gap-2">
                 <button
