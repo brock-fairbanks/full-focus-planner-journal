@@ -274,8 +274,19 @@ const GlobalCanvas = forwardRef(({
              startX = clientX - rect.left;
              textW = bestRect.right - clientX - 16;
           } else {
-             startX = Math.max(0, bestRect.left - rect.left + 8); 
-             textW = Math.max(50, bestRect.width - 16);
+             if (found) {
+                 // If handwriting was detected, start text exactly where handwriting starts
+                 // But constrain it to be inside the detected line
+                 const lineStart = bestRect.left - rect.left + 8;
+                 startX = Math.max(lineStart, textX); 
+                 
+                 // Calculate width based on remaining space in the line
+                 const lineEnd = bestRect.right - rect.left;
+                 textW = Math.max(50, lineEnd - startX - 16);
+             } else {
+                 startX = Math.max(0, bestRect.left - rect.left + 8); 
+                 textW = Math.max(50, bestRect.width - 16);
+             }
           }
           
           if (bestLine.className && typeof bestLine.className === 'string' && bestLine.className.includes('border')) {
