@@ -45,23 +45,22 @@ const GlobalCanvas = forwardRef(({
     const canvas = canvasRef.current;
     const dpr = window.devicePixelRatio || 1;
     
-    // If we're already at standard resolution or lower, just return
     if (dpr <= 1) {
       return canvas.toDataURL("image/webp", 0.4);
     }
     
-    // Otherwise, scale down to logical CSS pixels to drastically reduce base64 size and fit under DB limits
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = canvas.width / dpr;
     tempCanvas.height = canvas.height / dpr;
     const ctx = tempCanvas.getContext('2d');
-    // Fill white background first to ensure transparent ink is visible against white for the AI
-    // (Actually the ink is dark, background transparent. AI handles transparent PNGs well usually, 
-    // but a white background ensures no artifacts).
-    // However, we want to keep it simple. Let's just increase quality.
+    
+    // Fill white background so webp compresses well
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
     ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
-    // Use PNG to avoid compression artifacts on thin handwriting lines
-    return tempCanvas.toDataURL("image/png");
+    
+    // Use low-quality webp to drastically reduce size and upload/processing time
+    return tempCanvas.toDataURL("image/webp", 0.4);
   };
 
   const putCanvasSnapshot = (snapshot) => {
