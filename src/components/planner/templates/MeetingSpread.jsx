@@ -266,7 +266,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
     sessionIdRef.current = note.session_id;
     if (note.audio_url) {
       const ext = note.audio_url.split('.').pop()?.split('?')[0] || 'webm';
-      setAudioUrl({ url: note.audio_url, extension: ext });
+      const hasVideo = ext === 'mp4' || note.audio_url.includes('video');
+      setAudioUrl({ url: note.audio_url, extension: ext, hasVideo });
     } else {
       setAudioUrl(null);
     }
