@@ -659,7 +659,18 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
   const startVideoRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      const getDisplayMedia = navigator.mediaDevices?.getDisplayMedia || navigator.getDisplayMedia;
+      
+      if (!getDisplayMedia) {
+         alert("Your browser does not support screen recording. Try using the 'Record Mic' option instead.");
+         return;
+      }
+
+      const stream = await getDisplayMedia.call(navigator.mediaDevices || navigator, { 
+        video: true,
+        audio: true 
+      });
+
       streamRef.current = stream;
       partNumberRef.current = 1;
       isRecordingRef.current = true;
@@ -674,7 +685,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       startRecorderInstance(stream);
     } catch (err) {
       console.error("Failed to start video recording", err);
-      alert("Camera/Microphone access denied or error occurred.");
+      alert("Screen sharing access denied or error occurred.");
     }
   };
 
