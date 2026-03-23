@@ -1241,8 +1241,8 @@ export default function MeetingSpread({ date, onClearCanvas }) {
           <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-8 mb-8 shadow-sm relative z-30 pointer-events-auto">
             <div className="flex flex-col items-center justify-center gap-6">
           <div className="text-center">
-            <h2 className="text-xl font-bold text-[#1e293b] mb-2">Record Audio</h2>
-            <p className="text-[#64748b] text-sm">Record your audio, and AI will transcribe it for you.</p>
+            <h2 className="text-xl font-bold text-[#1e293b] mb-2">Record Audio/Video</h2>
+            <p className="text-[#64748b] text-sm">Record your audio or video, and AI will transcribe it for you.</p>
           </div>
 
           {!isRecording && !transcription && (
