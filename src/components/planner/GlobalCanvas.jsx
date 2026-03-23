@@ -163,24 +163,151 @@ const GlobalCanvas = forwardRef(({
     getDataUrl: () => getScaledDataUrl(),
     convertHandwritingToText: (newText) => {
       if (canvasRef.current && ctxRef.current) {
+        const canvas = canvasRef.current;
+        const ctx = ctxRef.current;
+        const w = canvas.width;
+        const h = canvas.height;
+        
+        // Find bounding box by downscaling for speed
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = Math.max(1, Math.floor(w / 4));
+        tempCanvas.height = Math.max(1, Math.floor(h / 4));
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+        
+        const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const data = imageData.data;
+        
+        let minX = tempCanvas.width, minY = tempCanvas.height, maxX = 0, maxY = 0;
+        let found = false;
+        
+        for (let y = 0; y < tempCanvas.height; y++) {
+          for (let x = 0; x < tempCanvas.width; x++) {
+            const alpha = data[(y * tempCanvas.width + x) * 4 + 3];
+            if (alpha > 10) {
+              if (x < minX) minX = x;
+              if (x > maxX) maxX = x;
+              if (y < minY) minY = y;
+              if (y > maxY) maxY = y;
+              found = true;
+            }
+          }
+        }
+        
         undoStackRef.current.push(getCanvasSnapshot());
         if (undoStackRef.current.length > 30) undoStackRef.current.shift();
-        ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         
-        const lh = 40;
-        const rect = canvasRef.current.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        let textX = 60;
+        let textY = 80;
+        const rect = canvas.getBoundingClientRect();
+        let textW = Math.max(200, (rect.width || 800) - 120);
         
+        if (found) {
+           textX = (minX * 4) / dpr;
+           textY = (minY * 4) / dpr;
+           textW = Math.max(200, ((maxX - minX) * 4) / dpr + 40);
+        }
+
+        ctx.clearRect(0, 0, w, h);
+        
+        let startX = textX;
+        let snappedY = textY;
+        let actualLh = 40;
+        
+        // Smart Snapping Logic to place text perfectly on lines
+        const clientY = textY + rect.top;
+        const clientX = textX + rect.left;
+        
+        const lineElements = Array.from(document.querySelectorAll(
+          '[class*="border-b"], [style*="gradient"], hr'
+        )).filter(el => {
+           if (el.children.length > 0 && !el.style.backgroundImage) return false;
+           if (el.tagName.toLowerCase() === 'button' || el.closest('button')) return false;
+           return true;
+        });
+
+        let minDistance = Infinity;
+        let bestLine = null;
+
+        for (const el of lineElements) {
+          const elRect = el.getBoundingClientRect();
+          if (elRect.width === 0 || elRect.height === 0) continue;
+
+          let targetY;
+          if (el.style.backgroundSize) {
+             const match = el.style.backgroundSize.match(/(\d+)px/g);
+             if (match && match.length > 0) {
+                 const elLh = parseInt(match[match.length - 1]);
+                 const relativeY = clientY - elRect.top;
+                 const gridY = Math.ceil(Math.max(0, relativeY - 10) / elLh) * elLh;
+                 targetY = elRect.top + Math.max(elLh, gridY);
+             } else {
+                 targetY = elRect.bottom;
+             }
+          } else {
+             targetY = elRect.bottom;
+          }
+
+          let verticalPenalty = 0;
+          if (targetY < clientY - 15) {
+             verticalPenalty = 1000;
+          }
+
+          let vDist = Math.abs(clientY - targetY) + verticalPenalty;
+
+          let hDist = 0;
+          if (clientX < elRect.left) hDist = elRect.left - clientX;
+          else if (clientX > elRect.right) hDist = clientX - elRect.right;
+
+          let dist = vDist * 10 + hDist;
+
+          if (dist < minDistance && dist < 2000) {
+            minDistance = dist;
+            bestLine = el;
+          }
+        }
+
+        if (bestLine) {
+          const bestRect = bestLine.getBoundingClientRect();
+          if (bestLine.style.backgroundImage && bestLine.style.backgroundImage.includes('radial-gradient')) {
+             startX = clientX - rect.left;
+             textW = bestRect.right - clientX - 16;
+          } else {
+             startX = Math.max(0, bestRect.left - rect.left + 8); 
+             textW = Math.max(50, bestRect.width - 16);
+          }
+          
+          if (bestLine.className && typeof bestLine.className === 'string' && bestLine.className.includes('border')) {
+            actualLh = 40;
+            snappedY = (bestRect.bottom - rect.top) - 40; 
+          } else if (bestLine.style.backgroundSize) {
+             const match = bestLine.style.backgroundSize.match(/(\d+)px/g);
+             if (match && match.length > 0) {
+                 actualLh = parseInt(match[match.length - 1]);
+                 const relativeY = clientY - bestRect.top;
+                 const gridY = Math.ceil(Math.max(0, relativeY - 10) / actualLh) * actualLh;
+                 const targetY = Math.max(actualLh, gridY);
+                 snappedY = targetY + bestRect.top - rect.top - actualLh + (actualLh === 40 ? 0 : 8); 
+             }
+             startX = Math.max(0, bestRect.left - rect.left + 8);
+             textW = Math.max(50, bestRect.width - 16);
+          }
+        } else {
+           snappedY = Math.round((textY - 16) / 40) * 40;
+        }
+
         updateTextsState(prev => [
           ...prev,
           {
             id: Date.now().toString(),
-            x: 60,
-            y: 80,
-            baselineY: 80 + lh,
+            x: startX,
+            y: snappedY,
+            baselineY: snappedY + actualLh,
             text: newText,
             isEditing: false,
-            lineHeight: lh,
-            width: `${Math.max(200, (rect.width || 800) - 120)}px`
+            lineHeight: actualLh,
+            width: `${textW}px`
           }
         ]);
         
