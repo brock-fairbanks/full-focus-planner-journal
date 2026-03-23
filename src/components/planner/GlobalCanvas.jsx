@@ -281,8 +281,17 @@ const GlobalCanvas = forwardRef(({
                  if (match && match.length > 0) {
                      actualLh = parseInt(match[match.length - 1]);
                      const relativeY = clientY - bestRect.top;
+                     
+                     let offset = 0;
+                     if (bestLine.style.backgroundPosition) {
+                        const posMatch = bestLine.style.backgroundPosition.match(/(\d+)px/);
+                        if (posMatch && posMatch.length > 1) {
+                           offset = parseInt(posMatch[1]);
+                        }
+                     }
+                     
                      const lineIndex = Math.floor(Math.max(0, relativeY) / actualLh);
-                     const targetBaseline = bestRect.top + (lineIndex + 1) * actualLh;
+                     const targetBaseline = bestRect.top + lineIndex * actualLh + offset;
                      snappedY = targetBaseline - rect.top - actualLh + (actualLh === 40 ? 0 : 8); 
                  }
                  // Allow startX to be accurate to where user wrote it within the line bounds
