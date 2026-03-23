@@ -361,7 +361,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
     sessionIdRef.current = note.session_id;
     if (note.audio_url) {
       const ext = note.audio_url.split('.').pop()?.split('?')[0] || 'webm';
-      const hasVideo = ext === 'mp4' || note.audio_url.includes('video');
+      const hasVideo = note.has_video || ext === 'mp4' || note.audio_url.includes('video');
       setAudioUrl({ url: note.audio_url, extension: ext, hasVideo });
     } else {
       setAudioUrl(null);
@@ -1060,7 +1060,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
         const uploadRes = await base44.integrations.Core.UploadFile({ file });
         fileUrlToUse = uploadRes.file_url;
         
-        await saveNote(null, null, fileUrlToUse);
+        await saveNote(null, null, fileUrlToUse, mimeType.includes('video'));
       }
       
       setProcessingStatus("Sending to Gemini for transcription...");
@@ -1103,7 +1103,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
       }
       
       setTranscription(finalTranscription);
-      saveNote(finalTranscription, null, fileUrlToUse);
+      saveNote(finalTranscription, null, fileUrlToUse, mimeType.includes('video'));
     } catch (err) {
       console.error("Retranscription error", err);
       const errorMsg = err.response?.data?.error || err.message || "Unknown error";
