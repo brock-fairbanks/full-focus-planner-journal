@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download, History, ChevronLeft, Save, Printer, Upload, Monitor, Pause, Play, Search, Volume2, Video } from "lucide-react";
+import { Mic, Square, FileText, Loader2, Sparkles, Trash2, Download, History, ChevronLeft, Save, Printer, Upload, Monitor, Pause, Play, Search, Volume2, Video, Maximize } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { jsPDF } from "jspdf";
 import { useAuth } from '@/lib/AuthContext';
