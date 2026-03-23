@@ -65,9 +65,9 @@ export default function Planner() {
       const uploadRes = await base44.integrations.Core.UploadFile({ file });
       
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: "Transcribe the handwritten text in this image. Identify each distinct word or phrase that is physically separated from others (e.g. a word on the far left and a word on the far right should be separate items). For each item, provide the 'text', 'x_percent' (the horizontal start position of the word/phrase, from 0.0 left to 1.0 right), and 'y_percent' (the vertical center position, from 0.0 top to 1.0 bottom).",
+        prompt: "You are a precise OCR layout parser. Analyze this image and transcribe the handwritten text.\n\nCRITICAL INSTRUCTIONS:\n1. Group text into distinct blocks. If words are separated by large horizontal or vertical spaces (e.g., a word on the far left and another on the far right), they MUST be returned as separate items.\n2. For each item, estimate its position relative to the entire image dimensions.\n3. 'x_percent': A float between 0.00 and 1.00 indicating the exact horizontal START (left edge) of the text block.\n4. 'y_percent': A float between 0.00 and 1.00 indicating the vertical CENTER of the text block.",
         file_urls: [uploadRes.file_url],
-        model: "gemini_3_flash",
+        model: "automatic",
         response_json_schema: {
           type: "object",
           properties: {
@@ -76,9 +76,9 @@ export default function Planner() {
               items: {
                 type: "object",
                 properties: {
-                  text: { type: "string" },
-                  x_percent: { type: "number" },
-                  y_percent: { type: "number" }
+                  text: { type: "string", description: "The transcribed text block" },
+                  x_percent: { type: "number", description: "Horizontal start position (0.00 to 1.00)" },
+                  y_percent: { type: "number", description: "Vertical center position (0.00 to 1.00)" }
                 },
                 required: ["text", "x_percent", "y_percent"]
               }
