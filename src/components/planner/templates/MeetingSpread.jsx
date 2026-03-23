@@ -1309,6 +1309,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                   Cancel
                 </button>
               </div>
+            </div>
             )}
             {!isRecording && !transcription && (
               <>
