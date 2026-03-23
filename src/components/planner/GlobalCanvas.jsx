@@ -216,7 +216,10 @@ const GlobalCanvas = forwardRef(({
         let actualLh = 40;
         
         // Smart Snapping Logic to place text perfectly on lines
-        const clientY = textY + rect.top;
+        // Use the vertical center of the handwriting to determine which line it belongs to
+        // because tall letters can poke into the line above and cause it to snap to the wrong line.
+        const centerY = found ? ((minY + maxY) / 2 * 4) / dpr : textY;
+        const clientY = centerY + rect.top;
         const clientX = textX + rect.left;
         
         const lineElements = Array.from(document.querySelectorAll(
