@@ -144,10 +144,10 @@ export default function MeetingSpread({ date, onClearCanvas }) {
 
   useEffect(() => {
     fetchNotes();
-  }, []);
+  }, [user?.email]);
 
   const fetchNotes = async () => {
-    if (!user) return;
+    if (!user?.email) return;
     try {
       const notes = await base44.entities.MeetingNote.filter({ created_by: user.email }, "-created_date", 50);
       setSavedNotes(notes);
