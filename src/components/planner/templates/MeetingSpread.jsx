@@ -1061,27 +1061,44 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       </div>
 
       {!showHistory && audioUrl && !isRecording && !isProcessing && (
-        <div className="w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-4 mb-6 shadow-sm relative z-30 pointer-events-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="bg-[#1e293b] p-2 rounded-lg text-white shrink-0">
-              <Mic size={20} />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-sm font-bold text-[#1e293b] truncate">Recording Audio</span>
+        <div className={`w-full max-w-5xl bg-white border-2 border-[#cbd5e1] rounded-xl p-4 mb-6 shadow-sm relative z-30 pointer-events-auto flex ${audioUrl.hasVideo ? 'flex-col' : 'flex-col md:flex-row'} justify-between items-center gap-4`}>
+          <div className="flex items-center justify-between w-full md:w-auto">
+            <div className="flex items-center gap-3">
+              <div className="bg-[#1e293b] p-2 rounded-lg text-white shrink-0">
+                {audioUrl.hasVideo ? <Video size={20} /> : <Mic size={20} />}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm font-bold text-[#1e293b] truncate">{audioUrl.hasVideo ? "Video Recording" : "Recording Audio"}</span>
+              </div>
             </div>
           </div>
-          <audio 
-            ref={mainAudioRef}
-            controls 
-            src={audioUrl.url} 
-            className="h-10 w-full md:flex-1 max-w-xl" 
-            onLoadedData={(e) => { 
-              e.target.playbackRate = playbackSpeed; 
-              e.target.preservesPitch = preservePitch;
-              if ('webkitPreservesPitch' in e.target) e.target.webkitPreservesPitch = preservePitch;
-            }}
-            onRateChange={(e) => { if (e.target.playbackRate !== playbackSpeed) setPlaybackSpeed(e.target.playbackRate); }}
-          />
+          {audioUrl.hasVideo ? (
+            <video 
+              ref={mainAudioRef}
+              controls 
+              src={audioUrl.url} 
+              className="w-full max-h-[400px] bg-black rounded" 
+              onLoadedData={(e) => { 
+                e.target.playbackRate = playbackSpeed; 
+                e.target.preservesPitch = preservePitch;
+                if ('webkitPreservesPitch' in e.target) e.target.webkitPreservesPitch = preservePitch;
+              }}
+              onRateChange={(e) => { if (e.target.playbackRate !== playbackSpeed) setPlaybackSpeed(e.target.playbackRate); }}
+            />
+          ) : (
+            <audio 
+              ref={mainAudioRef}
+              controls 
+              src={audioUrl.url} 
+              className="h-10 w-full md:flex-1 max-w-xl" 
+              onLoadedData={(e) => { 
+                e.target.playbackRate = playbackSpeed; 
+                e.target.preservesPitch = preservePitch;
+                if ('webkitPreservesPitch' in e.target) e.target.webkitPreservesPitch = preservePitch;
+              }}
+              onRateChange={(e) => { if (e.target.playbackRate !== playbackSpeed) setPlaybackSpeed(e.target.playbackRate); }}
+            />
+          )}
           <div className="flex items-center gap-2 w-full md:w-auto justify-end">
             <button
               onClick={() => {
