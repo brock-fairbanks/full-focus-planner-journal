@@ -70,6 +70,7 @@ const GlobalCanvas = forwardRef(({
   };
 
   const syncToBackend = async (dataUrl, currentTexts) => {
+    if (!user?.email) return;
     const timestamp = Date.now();
     lastLocalUpdateTime.current = timestamp;
     localStorage.setItem(`planner_updated_at_${pageKey}`, timestamp.toString());
@@ -108,7 +109,7 @@ const GlobalCanvas = forwardRef(({
           updated_at: timestamp
         });
       } else {
-        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey, created_by: user?.email });
+        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey, created_by: user.email });
         if (records.length > 0) {
           syncIdRef.current = records[0].id;
           await base44.entities.PlannerSync.update(syncIdRef.current, {
@@ -305,8 +306,9 @@ const GlobalCanvas = forwardRef(({
 
     // Then load from remote
     const loadRemote = async () => {
+      if (!user?.email) return;
       try {
-        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey, created_by: user?.email });
+        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey, created_by: user.email });
         if (records.length > 0 && isSubscribed) {
           syncIdRef.current = records[0].id;
           if (records[0].updated_at && records[0].updated_at !== lastLocalUpdateTime.current) {
@@ -402,7 +404,7 @@ const GlobalCanvas = forwardRef(({
       isSubscribed = false;
       unsub();
     };
-  }, [pageKey]);
+  }, [pageKey, user?.email]);
 
   const updateTextsState = (action) => {
     setTexts(prev => {

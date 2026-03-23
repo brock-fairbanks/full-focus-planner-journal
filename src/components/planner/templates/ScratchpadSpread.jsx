@@ -22,10 +22,10 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
     useEffect(() => {
         loadNotes();
         setPortalTarget(document.getElementById("topbar-center-portal"));
-    }, []);
+    }, [user?.email]);
 
     const loadNotes = async () => {
-        if (!user) return;
+        if (!user?.email) return;
         try {
             const data = await base44.entities.ScratchpadNote.filter({ created_by: user.email });
             const sortedData = data.sort((a, b) => b.updated_at - a.updated_at);
