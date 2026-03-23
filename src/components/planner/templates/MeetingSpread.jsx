@@ -1226,7 +1226,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                 </div>
                 <h3 className="font-medium text-[#1e293b] mb-2 truncate" title={note.title}>{note.title}</h3>
                 <p className="text-sm text-slate-500 line-clamp-3">
-                  {note.summary || note.transcription || "No content"}
+                  {note.summary || note.transcription || "Record your audio/video, and AI will transcribe it for you."}
                 </p>
               </div>
             )) : (
