@@ -1240,6 +1240,15 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                   Record Mic
                 </button>
                 <button 
+                  onClick={startVideoRecording}
+                  disabled={isProcessing}
+                  title="Record video and audio from your camera"
+                  className="flex justify-center items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-full font-medium transition-all disabled:opacity-50 shadow-sm w-full sm:w-auto"
+                >
+                  <Video size={20} />
+                  Record Video
+                </button>
+                <button 
                   id="tour-record-system"
                   onClick={startSystemAudioRecording}
                   disabled={isProcessing}
