@@ -65,9 +65,9 @@ export default function Planner() {
       const uploadRes = await base44.integrations.Core.UploadFile({ file });
       
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: "You are a precise OCR layout parser. Analyze this image and transcribe the handwritten text.\n\nCRITICAL INSTRUCTIONS:\n1. Group text into distinct blocks. If words are separated by large horizontal or vertical spaces (e.g., a word on the far left and another on the far right), they MUST be returned as separate items.\n2. For each item, estimate its position relative to the entire image dimensions.\n3. 'x_percent': A float between 0.00 and 1.00 indicating the exact horizontal START (left edge) of the text block.\n4. 'y_percent': A float between 0.00 and 1.00 indicating the vertical CENTER of the text block.",
+        prompt: "Transcribe the handwritten text from the image. \n\nRULES:\n1. Return ONLY the text actually written. Do NOT describe the image.\n2. If the image is blank or contains no legible text, return an empty items array.\n3. Group text into distinct blocks based on physical location.\n4. For each block, return:\n   - 'text': The content.\n   - 'x_percent': Horizontal start position (0.0=left, 1.0=right).\n   - 'y_percent': Vertical center position (0.0=top, 1.0=bottom).\n\nIf you are unsure of a word, mark it with [?]. Do not hallucinate text.",
         file_urls: [uploadRes.file_url],
-        model: "automatic",
+        model: "gpt_5",
         response_json_schema: {
           type: "object",
           properties: {

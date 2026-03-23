@@ -55,8 +55,13 @@ const GlobalCanvas = forwardRef(({
     tempCanvas.width = canvas.width / dpr;
     tempCanvas.height = canvas.height / dpr;
     const ctx = tempCanvas.getContext('2d');
+    // Fill white background first to ensure transparent ink is visible against white for the AI
+    // (Actually the ink is dark, background transparent. AI handles transparent PNGs well usually, 
+    // but a white background ensures no artifacts).
+    // However, we want to keep it simple. Let's just increase quality.
     ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
-    return tempCanvas.toDataURL("image/webp", 0.4);
+    // Use PNG to avoid compression artifacts on thin handwriting lines
+    return tempCanvas.toDataURL("image/png");
   };
 
   const putCanvasSnapshot = (snapshot) => {
