@@ -485,7 +485,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
         : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
 
       while (!isCompleted) {
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 1500));
         const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
           action: 'transcribe_poll',
           fileName: startRes.data.fileName,
@@ -604,7 +604,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
         : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
 
       while (!isCompleted) {
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 1500));
         const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
           action: 'transcribe_poll',
           fileName: geminiFileName,
@@ -1025,7 +1025,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
         : "Please transcribe this meeting accurately. Exclude any advertisements or sponsored content.";
 
       while (!isCompleted) {
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 1500));
         const pollRes = await base44.functions.invoke('processMeetingWithGemini', {
           action: 'transcribe_poll',
           fileName: geminiFileName,
