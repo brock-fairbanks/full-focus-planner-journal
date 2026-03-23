@@ -1286,6 +1286,13 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
                     >
                       <Mic size={20} /> Record Mic
                     </button>
+                    <button 
+                      onClick={startVideoRecording}
+                      disabled={isProcessing}
+                      className="flex justify-center items-center gap-2 bg-pink-500 text-white px-4 py-3.5 rounded-full font-medium text-base disabled:opacity-50 shadow-sm w-full"
+                    >
+                      <Video size={20} /> Record Video
+                    </button>
                   </>
                 ) : (
                   <div className="flex flex-col gap-3 w-full">
