@@ -1296,6 +1296,15 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
                   </>
                 ) : (
                   <div className="flex flex-col gap-3 w-full">
+                    {streamRef.current?.getVideoTracks().length > 0 && (
+                      <video 
+                        ref={liveVideoRef}
+                        autoPlay 
+                        muted 
+                        playsInline 
+                        className="w-full max-h-[300px] bg-black rounded-lg shadow-sm" 
+                      />
+                    )}
                     <div className="flex gap-3 w-full">
                         <button 
                           onClick={togglePause}
