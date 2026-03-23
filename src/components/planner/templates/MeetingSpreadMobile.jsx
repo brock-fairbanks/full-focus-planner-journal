@@ -574,8 +574,8 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
       const extension = cleanExtension;
       const mimeType = file.type || 'audio/webm';
       
-      setAudioUrl({ url: uploadedFileUrl, extension });
-      await saveNote(null, null, uploadedFileUrl);
+      setAudioUrl({ url: uploadedFileUrl, extension, hasVideo: mimeType.includes('video') });
+      await saveNote(null, null, uploadedFileUrl, mimeType.includes('video'));
 
       if (user?.drive_connected) {
         const drivePrefix = titleRef.current || (rType === 'lecture' ? 'Lecture' : rType === 'dialog' ? 'Dialog' : 'Meeting');
@@ -629,10 +629,10 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
       
       setProcessingStatus("Saving...");
       setTranscription(finalTranscription);
-      saveNote(finalTranscription, null, uploadedFileUrl);
+      saveNote(finalTranscription, null, uploadedFileUrl, mimeType.includes('video'));
     } catch (err) {
       if (uploadedFileUrl) {
-        saveNote(null, null, uploadedFileUrl);
+        saveNote(null, null, uploadedFileUrl, mimeType.includes('video'));
       }
       console.error("Upload error", err);
       const errorMsg = err.response?.data?.error || err.message || "Unknown error";
