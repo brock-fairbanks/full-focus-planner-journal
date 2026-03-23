@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Trash2, MapPin, CloudSun, History, Compass, Sparkles, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function JournalSpread({ date, onSubSectionChange, onClearCanvas, journalMode = "DAILY" }) {
+  const { user } = useAuth();
   const currentDate = date || new Date();
   
   const [currentLocationName, setCurrentLocationName] = useState("");
@@ -15,7 +17,7 @@ export default function JournalSpread({ date, onSubSectionChange, onClearCanvas,
     const detectLocation = async () => {
       setIsLocating(true);
       try {
-        const locs = await base44.entities.Location.list();
+        const locs = user ? await base44.entities.Location.filter({ created_by: user.email }) : [];
         
         if ("geolocation" in navigator) {
           navigator.geolocation.getCurrentPosition(async (position) => {

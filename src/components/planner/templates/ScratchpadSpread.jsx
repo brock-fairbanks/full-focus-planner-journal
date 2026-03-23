@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Trash2, Save, Check, History, X, Eraser, Search, Pencil } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanvas }) {
+    const { user } = useAuth();
     const [notes, setNotes] = useState([]);
     const [activeNoteId, setActiveNoteId] = useState(null);
     const [title, setTitle] = useState("");
@@ -23,8 +25,9 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
     }, []);
 
     const loadNotes = async () => {
+        if (!user) return;
         try {
-            const data = await base44.entities.ScratchpadNote.list();
+            const data = await base44.entities.ScratchpadNote.filter({ created_by: user.email });
             const sortedData = data.sort((a, b) => b.updated_at - a.updated_at);
             setNotes(sortedData);
             if (sortedData.length > 0) {

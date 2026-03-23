@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, forwardRef, useImperativeHandle, useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 
 const GlobalCanvas = forwardRef(({ 
   onSave, 
@@ -28,6 +29,7 @@ const GlobalCanvas = forwardRef(({
   const drawingFrameRef = useRef(null);
   const lastDrawnIndexRef = useRef(0);
   const pendingRemoteDrawingRef = useRef(null);
+  const { user } = useAuth();
 
   const getCanvasSnapshot = () => {
     if (!canvasRef.current) return null;
@@ -106,7 +108,7 @@ const GlobalCanvas = forwardRef(({
           updated_at: timestamp
         });
       } else {
-        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey });
+        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey, created_by: user?.email });
         if (records.length > 0) {
           syncIdRef.current = records[0].id;
           await base44.entities.PlannerSync.update(syncIdRef.current, {
@@ -304,7 +306,7 @@ const GlobalCanvas = forwardRef(({
     // Then load from remote
     const loadRemote = async () => {
       try {
-        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey });
+        const records = await base44.entities.PlannerSync.filter({ page_key: pageKey, created_by: user?.email });
         if (records.length > 0 && isSubscribed) {
           syncIdRef.current = records[0].id;
           if (records[0].updated_at && records[0].updated_at !== lastLocalUpdateTime.current) {
@@ -351,6 +353,8 @@ const GlobalCanvas = forwardRef(({
             }
             if (!recordData) return;
         }
+
+        if (recordData.created_by && user && recordData.created_by !== user.email) return;
 
         if (recordData.page_key === pageKey || (event.id && syncIdRef.current === event.id)) {
             syncIdRef.current = event.id || recordData.id || syncIdRef.current;

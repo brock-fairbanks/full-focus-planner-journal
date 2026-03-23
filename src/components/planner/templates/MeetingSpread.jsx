@@ -147,8 +147,9 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   }, []);
 
   const fetchNotes = async () => {
+    if (!user) return;
     try {
-      const notes = await base44.entities.MeetingNote.list("-created_date", 50);
+      const notes = await base44.entities.MeetingNote.filter({ created_by: user.email }, "-created_date", 50);
       setSavedNotes(notes);
     } catch (e) {
       console.error("Failed to load history", e);
