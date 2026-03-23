@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addDays } from "date-fns";
-import { Mic, MessagesSquare, Eraser, Pen, Highlighter, Undo, FileEdit } from "lucide-react";
+import { Mic, MessagesSquare, Eraser, Pen, Highlighter, Undo, FileEdit, Type, Loader2, X, Copy, Check } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 import TabBar from "../components/planner/TabBar.jsx";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
@@ -43,6 +44,46 @@ export default function Planner() {
   const [highlighterColor, setHighlighterColor] = useState(() => localStorage.getItem('planner_highlighterColor') || 'rgba(253, 224, 71, 0.8)');
   const pointerStartRef = useRef(null);
   const lastPenTimeRef = useRef(0);
+
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [transcribedText, setTranscribedText] = useState("");
+  const [showTranscriptionModal, setShowTranscriptionModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleTranscribe = async () => {
+    if (!canvasRef.current) return;
+    const dataUrl = canvasRef.current.getDataUrl();
+    if (!dataUrl || dataUrl === "data:,") {
+      alert("No drawing found to transcribe.");
+      return;
+    }
+
+    setIsTranscribing(true);
+    setShowTranscriptionModal(true);
+    setTranscribedText("");
+    setCopied(false);
+
+    try {
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], 'handwriting.webp', { type: 'image/webp' });
+
+      const uploadRes = await base44.integrations.Core.UploadFile({ file });
+      
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt: "Please transcribe the handwritten text in this image. Only return the transcribed text, nothing else. Preserve line breaks. If there is no handwriting detected, simply reply with 'No handwriting detected.'",
+        file_urls: [uploadRes.file_url],
+        model: "gemini_3_flash"
+      });
+
+      setTranscribedText(res);
+    } catch (error) {
+      console.error(error);
+      setTranscribedText("Failed to transcribe handwriting. Please try again.");
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('planner_penWidth', penWidth.toString());
@@ -355,6 +396,14 @@ export default function Planner() {
                   >
                     <Undo size={20} />
                   </button>
+                  <button
+                    onClick={handleTranscribe}
+                    className="flex items-center gap-1.5 p-2 rounded-lg transition-colors text-slate-400 hover:text-orange-500 hover:bg-orange-50 font-medium text-sm"
+                    title="Transcribe Handwriting to Text"
+                  >
+                    <Type size={18} />
+                    <span className="hidden xl:inline">Transcribe</span>
+                  </button>
                 </div>
               </div>
             )}
@@ -391,6 +440,55 @@ export default function Planner() {
           )}
         </div>
       </div>
+
+      {/* Transcription Modal */}
+      {showTranscriptionModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl flex flex-col max-h-[80vh] overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between p-4 border-b border-slate-100">
+              <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800">
+                <Type size={20} className="text-orange-500" />
+                Handwriting Transcription
+              </h3>
+              <button 
+                onClick={() => setShowTranscriptionModal(false)}
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1 bg-slate-50">
+              {isTranscribing ? (
+                <div className="flex flex-col items-center justify-center h-40 gap-4 text-slate-500">
+                  <Loader2 size={32} className="animate-spin text-orange-500" />
+                  <p>Reading handwriting using AI...</p>
+                </div>
+              ) : (
+                <div className="bg-white border border-slate-200 rounded-lg p-4 whitespace-pre-wrap font-sans text-slate-700 min-h-[160px] text-sm md:text-base">
+                  {transcribedText}
+                </div>
+              )}
+            </div>
+            
+            {!isTranscribing && transcribedText && (
+              <div className="p-4 border-t border-slate-100 flex justify-end bg-white">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(transcribedText);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className="flex items-center gap-2 bg-slate-800 hover:bg-black text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
+                >
+                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                  {copied ? "Copied!" : "Copy to Clipboard"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -159,7 +159,8 @@ const GlobalCanvas = forwardRef(({
           syncToBackend(dataUrl, textsRef.current);
         }
       }
-    }
+    },
+    getDataUrl: () => getScaledDataUrl()
   }));
 
   useLayoutEffect(() => {
