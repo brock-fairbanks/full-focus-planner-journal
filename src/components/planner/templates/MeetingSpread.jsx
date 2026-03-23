@@ -980,7 +980,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         fileUrlToUse = uploadRes.file_url;
         
         // Save the note with the new URL right after uploading just to be safe
-        await saveNote(null, null, fileUrlToUse);
+        await saveNote(null, null, fileUrlToUse, mimeType.includes('video'));
       }
       
       setProcessingStatus("Sending to Gemini for transcription...");
