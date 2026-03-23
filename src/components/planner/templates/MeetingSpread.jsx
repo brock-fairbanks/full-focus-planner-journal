@@ -33,11 +33,37 @@ export default function MeetingSpread({ date, onClearCanvas }) {
   const [selectedModel, setSelectedModel] = useState(() => {
     return localStorage.getItem("planner_meeting_model") || "gemini-3-flash-preview";
   });
+  const [showModelConfirmModal, setShowModelConfirmModal] = useState(false);
+  const [pendingModel, setPendingModel] = useState(null);
+
   const selectedModelRef = useRef(selectedModel);
   useEffect(() => {
     selectedModelRef.current = selectedModel;
     localStorage.setItem("planner_meeting_model", selectedModel);
   }, [selectedModel]);
+
+  const handleModelChange = (e) => {
+    const newModel = e.target.value;
+    if (newModel === "gemini-3.1-pro-preview") {
+      setPendingModel(newModel);
+      setShowModelConfirmModal(true);
+    } else {
+      setSelectedModel(newModel);
+    }
+  };
+
+  const confirmModelSwitch = () => {
+    if (pendingModel) {
+      setSelectedModel(pendingModel);
+    }
+    setShowModelConfirmModal(false);
+    setPendingModel(null);
+  };
+
+  const cancelModelSwitch = () => {
+    setShowModelConfirmModal(false);
+    setPendingModel(null);
+  };
   const [title, setTitleState] = useState("");
   const titleRef = useRef("");
   const setTitle = (t) => {
@@ -967,7 +993,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
         <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0 items-center justify-center w-full sm:w-auto">
           <select
             value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value)}
+            onChange={handleModelChange}
             className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F97316] font-medium"
           >
             <option value="gemini-3-flash-preview">Gemini 3 Flash</option>
@@ -1422,6 +1448,32 @@ export default function MeetingSpread({ date, onClearCanvas }) {
       </div>
       )}
         </>
+      )}
+
+      {/* Model Switch Confirmation Modal */}
+      {showModelConfirmModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+            <h3 className="text-xl font-bold text-[#1e293b] mb-3">Switch to 3.1 Pro?</h3>
+            <p className="text-slate-600 mb-6 leading-relaxed">
+              3.1 Pro uses 4x more AI credits than 3 Flash. This costs the app developer so limit your use. Are you sure you want to switch?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={cancelModelSwitch}
+                className="px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmModelSwitch}
+                className="px-4 py-2 text-sm font-bold text-white bg-[#1e293b] hover:bg-black rounded-lg transition-colors shadow-sm"
+              >
+                Confirm Switch
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* File Upload Confirmation Modal */}
