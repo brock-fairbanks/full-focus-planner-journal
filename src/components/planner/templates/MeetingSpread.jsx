@@ -1146,6 +1146,22 @@ export default function MeetingSpread({ date, onClearCanvas }) {
               <option value="3">3x</option>
               <option value="4">4x</option>
             </select>
+            {audioUrl.hasVideo && (
+              <button
+                onClick={() => {
+                  const elem = mainAudioRef.current;
+                  if (!elem) return;
+                  if (elem.requestFullscreen) elem.requestFullscreen();
+                  else if (elem.webkitEnterFullscreen) elem.webkitEnterFullscreen();
+                  else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+                }}
+                className="flex justify-center items-center gap-2 text-sm font-medium text-[#1e293b] hover:text-[#F97316] bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg transition-colors"
+                title="Fullscreen"
+              >
+                <Maximize size={16} />
+                <span className="hidden sm:inline">Fullscreen</span>
+              </button>
+            )}
             <button 
               onClick={async (e) => {
                 e.preventDefault();
