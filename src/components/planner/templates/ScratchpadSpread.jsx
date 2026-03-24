@@ -156,7 +156,12 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
             case "dotted":
                 return { backgroundImage: "radial-gradient(#60a5fa 1.5px, transparent 1.5px)", backgroundSize: "24px 24px" };
             case "spreadsheet-wide":
-                return { backgroundImage: "linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px)", backgroundSize: "200px 48px" };
+                return { 
+                    backgroundImage: "linear-gradient(transparent 46px, #475569 46px, #475569 48px), linear-gradient(90deg, #94a3b8 2px, transparent 2px), linear-gradient(transparent 47px, #cbd5e1 47px, #cbd5e1 48px)", 
+                    backgroundSize: "100% 48px, 200px 100%, 100% 48px",
+                    backgroundRepeat: "no-repeat, repeat, repeat",
+                    backgroundAttachment: "local"
+                };
             default:
                 return {};
         }
