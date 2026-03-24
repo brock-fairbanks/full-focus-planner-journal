@@ -178,8 +178,6 @@ const GlobalCanvas = forwardRef(({
         // Clear all ink
         ctx.clearRect(0, 0, w, h);
         
-        // Let the system clear it but NOT draw back local image data from storage if there's none
-        // It's already clear, which is what we want for transparency
         const dpr = window.devicePixelRatio || 1;
         const rect = canvas.getBoundingClientRect();
         
