@@ -178,6 +178,7 @@ const GlobalCanvas = forwardRef(({
         // Clear all ink
         ctx.clearRect(0, 0, w, h);
         
+        // Ensure any pre-existing webp snapshots (like scratchpad backgrounds) are not permanently wiped out from the background canvas if they were part of the previous state
         const dpr = window.devicePixelRatio || 1;
         const rect = canvas.getBoundingClientRect();
         
