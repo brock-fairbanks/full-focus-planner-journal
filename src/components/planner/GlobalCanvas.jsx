@@ -1349,7 +1349,7 @@ const GlobalCanvas = forwardRef(({
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full global-canvas-container">
       <canvas
         ref={canvasRef} // FIXED: Changed from ref__
         onPointerDown={startDrawing}
