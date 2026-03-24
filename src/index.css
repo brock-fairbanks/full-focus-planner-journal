@@ -73,3 +73,7 @@ canvas {
   /* Prevents GPU artifacts on mobile */
   transform: translateZ(0); 
 }
+
+.global-canvas-container {
+  background: transparent !important;
+}
