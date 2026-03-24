@@ -220,6 +220,7 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                         <option value="grid-small">Grid (Small)</option>
                         <option value="grid-large">Grid (Large)</option>
                         <option value="dotted">Dotted</option>
+                        <option value="spreadsheet-wide">Spreadsheet (Wide)</option>
                     </select>
                 </div>
                 
