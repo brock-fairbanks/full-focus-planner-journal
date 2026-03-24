@@ -949,6 +949,29 @@ const GlobalCanvas = forwardRef(({
     ctxRef.current.lineJoin = 'round';
     ctxRef.current.beginPath();
     ctxRef.current.moveTo(x, y);
+
+    if (activeToolRef.current === 'eraser') {
+       const eraserRadius = (baseWidth / 2) || 15;
+       const textsToRemove = [];
+       for (const t of textsRef.current) {
+          const tWidth = parseInt(t.width) || 200;
+          const tLines = t.text ? t.text.split('\n').length : 1;
+          const tHeight = (t.lineHeight || 40) * tLines;
+          
+          const testX = Math.max(t.x, Math.min(x, t.x + tWidth));
+          const testY = Math.max(t.y, Math.min(y, t.y + tHeight));
+          
+          const distX = x - testX;
+          const distY = y - testY;
+          
+          if ((distX * distX) + (distY * distY) <= (eraserRadius * eraserRadius)) {
+             textsToRemove.push(t.id);
+          }
+       }
+       if (textsToRemove.length > 0) {
+          updateTextsState(prev => prev.filter(t => !textsToRemove.includes(t.id)));
+       }
+    }
   };
 
   const draw = (e) => {
