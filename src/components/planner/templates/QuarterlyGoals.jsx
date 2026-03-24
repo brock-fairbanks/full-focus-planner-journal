@@ -15,7 +15,7 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
   ];
 
   return (
-    <div id="tour-goals-grid" className="relative w-full min-h-full bg-[#FAF9F6] flex flex-col gap-12 pb-16">
+    <div id="tour-goals-grid" className="relative w-full min-h-full bg-[#FAF9F6] flex flex-col gap-12 p-8 md:p-12 pb-16">
       <button 
         onClick={onClearCanvas}
         className="absolute top-6 right-6 z-30 flex items-center gap-1.5 text-sm font-medium text-[#94a3b8] hover:text-red-500 transition-colors bg-white/80 backdrop-blur-sm border border-[#E2E8F0] px-3 py-1.5 rounded-md hover:bg-red-50 shadow-sm"
