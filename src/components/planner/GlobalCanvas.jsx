@@ -178,6 +178,11 @@ const GlobalCanvas = forwardRef(({
         // Clear all ink
         ctx.clearRect(0, 0, w, h);
         
+        // Let the clear render so it doesn't wipe out everything else permanently if we are using an overlay
+        requestAnimationFrame(() => {
+             // force a repaint
+        });
+        
         const dpr = window.devicePixelRatio || 1;
         const rect = canvas.getBoundingClientRect();
         
