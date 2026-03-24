@@ -413,6 +413,7 @@ export default function Planner() {
                     <Undo size={20} />
                   </button>
                   <button
+                    id="tour-handwriting-to-text"
                     onClick={handleTranscribe}
                     disabled={isTranscribing}
                     className="flex items-center gap-1.5 p-2 rounded-lg transition-colors text-slate-400 hover:text-orange-500 hover:bg-orange-50 font-medium text-sm disabled:opacity-50"

@@ -67,6 +67,11 @@ const TOUR_STEPS = [
     selector: '#tour-tools',
     text: "Use these tools to draw, highlight, or erase. You can also change the pen thickness or highlighter color!" 
   },
+  {
+    path: '/today',
+    selector: '#tour-handwriting-to-text',
+    text: "Wrote some notes by hand? Click here to magically convert your handwriting into text using AI!"
+  },
   { 
     path: '/today', 
     selector: '#tour-canvas',
@@ -81,6 +86,11 @@ const TOUR_STEPS = [
     path: '/meeting', 
     selector: '#tour-record-mic',
     text: "Hit 'Record Mic' to start recording audio from your device's microphone." 
+  },
+  {
+    path: '/meeting',
+    selector: '#tour-record-video',
+    text: "You can also record video alongside your audio! Perfect for recording your screen during a presentation or meeting."
   },
   { 
     path: '/meeting', 

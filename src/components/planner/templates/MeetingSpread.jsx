@@ -1342,6 +1342,7 @@ export default function MeetingSpread({ date, onClearCanvas }) {
                   Record Mic
                 </button>
                 <button 
+                  id="tour-record-video"
                   onClick={startVideoRecording}
                   disabled={isProcessing}
                   title="Record video and audio from your camera"
