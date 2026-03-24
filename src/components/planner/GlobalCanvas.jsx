@@ -182,6 +182,10 @@ const GlobalCanvas = forwardRef(({
         const dpr = window.devicePixelRatio || 1;
         const rect = canvas.getBoundingClientRect();
         
+        // Redraw transparent background to ensure template lines from CSS remain visible underneath
+        ctx.fillStyle = 'rgba(0,0,0,0)';
+        ctx.fillRect(0, 0, w, h);
+        
         const newTexts = [];
 
         // Ensure inputItems is an array (fallback if string was passed somehow)
