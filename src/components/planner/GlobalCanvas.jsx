@@ -44,21 +44,27 @@ const GlobalCanvas = forwardRef(({
     if (!canvasRef.current) return null;
     const canvas = canvasRef.current;
     const dpr = window.devicePixelRatio || 1;
-    
+
     if (dpr <= 1) {
-      return canvas.toDataURL("image/webp", 0.4);
+      // Force transparent background for the saved image so it doesn't cover templates
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const ctx = tempCanvas.getContext('2d');
+      ctx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+      ctx.drawImage(canvas, 0, 0);
+      return tempCanvas.toDataURL("image/webp", 0.4);
     }
-    
+
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = canvas.width / dpr;
     tempCanvas.height = canvas.height / dpr;
     const ctx = tempCanvas.getContext('2d');
-    
-    // Fill white background so webp compresses well
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+    // Don't fill with white, keep it transparent so templates show through
+    ctx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
     ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
-    
+
     // Use low-quality webp to drastically reduce size and upload/processing time
     return tempCanvas.toDataURL("image/webp", 0.4);
   };
