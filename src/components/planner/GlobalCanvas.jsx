@@ -364,12 +364,11 @@ const GlobalCanvas = forwardRef(({
       ctxRef.current = ctx;
 
       const localImageData = savedImageData || localStorage.getItem(`planner_drawing_${pageKey}`);
-      if (localImageData && localImageData !== "null") {
+      if (localImageData && localImageData !== "null" && localImageData.length > 50) { // Check length to avoid loading empty broken strings
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.onload = () => {
           if (canvasRef.current) {
-            const dpr = window.devicePixelRatio || 1;
             ctx.drawImage(img, 0, 0, img.width, img.height);
           }
         };
