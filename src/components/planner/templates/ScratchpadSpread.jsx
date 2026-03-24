@@ -155,6 +155,8 @@ export default function ScratchpadSpread({ date, onSubSectionChange, onClearCanv
                 return { backgroundImage: "linear-gradient(#93c5fd 1px, transparent 1px), linear-gradient(90deg, #93c5fd 1px, transparent 1px)", backgroundSize: "40px 40px" };
             case "dotted":
                 return { backgroundImage: "radial-gradient(#60a5fa 1.5px, transparent 1.5px)", backgroundSize: "24px 24px" };
+            case "spreadsheet-wide":
+                return { backgroundImage: "linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px)", backgroundSize: "200px 48px" };
             default:
                 return {};
         }
