@@ -678,6 +678,7 @@ const GlobalCanvas = forwardRef(({
   };
 
   const handleDoubleClickAction = (clientX, clientY, pointerType) => {
+    if (activeToolRef.current === 'eraser' || isErasingRef.current) return;
     if (pendingDoubleClickRef.current) clearTimeout(pendingDoubleClickRef.current);
     
     pendingDoubleClickRef.current = setTimeout(() => {
