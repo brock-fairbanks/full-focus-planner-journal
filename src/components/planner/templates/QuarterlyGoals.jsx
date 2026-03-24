@@ -25,6 +25,10 @@ export default function QuarterlyGoals({ date, onClearCanvas }) {
         <span>Clear Page</span>
       </button>
 
+      <h1 className="text-3xl font-serif font-bold" style={{ color: "#1e293b" }}>
+        Quarterly Goals
+      </h1>
+
       {Array.from({ length: 8 }).map((_, i) => (
         <div
           key={i}
