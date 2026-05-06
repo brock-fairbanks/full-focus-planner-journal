@@ -57,11 +57,11 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
       </div>
 
       {/* Right: User Email & Sync Status */}
-      <div className="flex items-center justify-between w-full min-w-0 pl-4 lg:pl-8 gap-4">
+      <div className="flex items-center justify-between w-full min-w-0 pl-4 lg:pl-8 gap-2 md:gap-4">
         <div className="flex-1 flex justify-end">
           <a 
             href="https://fairbanksbuilders.pro"
-            className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-orange-500 hover:text-orange-400 transition-colors border border-orange-500/50 hover:border-orange-400 px-3 py-1.5 rounded-full whitespace-nowrap"
+            className="flex items-center gap-1 md:gap-2 text-[10px] md:text-xs font-bold uppercase tracking-wider text-orange-500 hover:text-orange-400 transition-colors border border-orange-500/50 hover:border-orange-400 px-2 md:px-3 py-1.5 rounded-full whitespace-nowrap"
           >
             Back to Construct Logic
           </a>
