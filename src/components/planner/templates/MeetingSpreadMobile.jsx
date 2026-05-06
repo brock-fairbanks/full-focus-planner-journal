@@ -641,7 +641,7 @@ export default function MeetingSpreadMobile({ date, onClearCanvas }) {
       saveNote(finalTranscription, null, uploadedFileUrl, mimeType.includes('video'));
     } catch (err) {
       if (uploadedFileUrl) {
-        saveNote(null, null, uploadedFileUrl, mimeType.includes('video'));
+        saveNote(null, null, uploadedFileUrl, (file.type || 'audio/webm').includes('video'));
       }
       console.error("Upload error", err);
       const errorMsg = err.response?.data?.error || err.message || "Unknown error";
