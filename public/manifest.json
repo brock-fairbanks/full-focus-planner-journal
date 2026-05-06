@@ -1,0 +1,13 @@
+{
+  "name": "Planner",
+  "short_name": "Planner",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#0f172a",
+  "background_color": "#FAF9F6",
+  "launch_handler": {
+    "client_mode": "navigate-existing",
+    "route_to": "existing-client-navigate"
+  }
+}
