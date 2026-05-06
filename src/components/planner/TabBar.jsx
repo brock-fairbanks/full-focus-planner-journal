@@ -132,15 +132,17 @@ export default function TabBar({ activeTemplate, onTemplateChange, journalMode, 
             <Settings size={26} className="md:w-7 md:h-7" />
             <span className="text-xs md:text-sm font-bold tracking-wide uppercase">Settings</span>
           </a>
-          <button
-            onClick={() => { if (lastPointerRef.current === 'mouse') base44.auth.logout(); }}
-            onDoubleClick={() => base44.auth.logout()}
-            className="flex flex-col items-center justify-center w-full h-16 transition-all duration-200 gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/50"
-            title="Logout"
-          >
-            <LogOut size={26} className="md:w-7 md:h-7" />
-            <span className="text-xs md:text-sm font-bold tracking-wide uppercase">Logout</span>
-          </button>
+          {(!user?.email || !['brock@fairbanksbuilders.com', 'craig@fairbanksbuilders.com'].includes(user.email)) && (
+            <button
+              onClick={() => { if (lastPointerRef.current === 'mouse') base44.auth.logout(); }}
+              onDoubleClick={() => base44.auth.logout()}
+              className="flex flex-col items-center justify-center w-full h-16 transition-all duration-200 gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/50"
+              title="Logout"
+            >
+              <LogOut size={26} className="md:w-7 md:h-7" />
+              <span className="text-xs md:text-sm font-bold tracking-wide uppercase">Logout</span>
+            </button>
+          )}
         </div>
       </div>
 

@@ -59,12 +59,14 @@ export default function HeaderBar({ selectedDate, onDateChange, isSynced, active
       {/* Right: User Email & Sync Status */}
       <div className="flex items-center justify-between w-full min-w-0 pl-4 lg:pl-8 gap-2 md:gap-4">
         <div className="flex-1 flex justify-end">
-          <a 
-            href="https://fairbanksbuilders.pro"
-            className="flex items-center gap-1 md:gap-2 text-[10px] md:text-xs font-bold uppercase tracking-wider text-orange-500 hover:text-orange-400 transition-colors border border-orange-500/50 hover:border-orange-400 px-2 md:px-3 py-1.5 rounded-full whitespace-nowrap"
-          >
-            Back to Construct Logic
-          </a>
+          {user?.email && ['brock@fairbanksbuilders.com', 'craig@fairbanksbuilders.com'].includes(user.email) && (
+            <a 
+              href="https://fairbanksbuilders.pro"
+              className="flex items-center gap-1 md:gap-2 text-[10px] md:text-xs font-bold uppercase tracking-wider text-orange-500 hover:text-orange-400 transition-colors border border-orange-500/50 hover:border-orange-400 px-2 md:px-3 py-1.5 rounded-full whitespace-nowrap"
+            >
+              Back to Construct Logic
+            </a>
+          )}
         </div>
         
         <div className="flex items-center justify-end gap-2 min-h-[36px] shrink-0 bg-slate-800/50 px-4 py-1.5 rounded-full border border-slate-700/50 shadow-inner">
