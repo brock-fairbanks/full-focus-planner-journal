@@ -8,6 +8,7 @@ import Onboarding from './pages/Onboarding.jsx';
 import Settings from './pages/Settings.jsx';
 import GuidedTour from './components/GuidedTour.jsx';
 import AppUpdateManager from './components/app/AppUpdateManager.jsx';
+import PWAInstallPrompt from './components/app/PWAInstallPrompt.jsx';
 
 const AuthenticatedApp = () => {
   const { user } = useAuth();
@@ -45,6 +46,7 @@ export default function App() {
   return (
     <AuthProvider>
       <AppUpdateManager />
+      <PWAInstallPrompt />
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <AuthenticatedApp />
