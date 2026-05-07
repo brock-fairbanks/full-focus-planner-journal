@@ -1,10 +1,10 @@
 {
-  "id": "fairbanks-plan-v100",
+  "id": "fairbanks-planner-2026",
   "name": "Planner",
   "short_name": "Planner",
   "description": "Fairbanks Builders Planner",
   "start_url": "https://planner.fairbanksbuilders.pro/",
-  "scope": "./",
+  "scope": "/",
   "display": "standalone",
   "theme_color": "#0f172a",
   "background_color": "#FAF9F6",
