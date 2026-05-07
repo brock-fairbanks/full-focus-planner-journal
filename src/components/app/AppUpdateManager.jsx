@@ -18,7 +18,7 @@ export default function AppUpdateManager() {
 
     const registerServiceWorker = async () => {
       try {
-        swRegistration = await navigator.serviceWorker.register('/sw.js', {
+        swRegistration = await navigator.serviceWorker.register('/sw.js?v=2', {
           updateViaCache: 'none'
         });
 
