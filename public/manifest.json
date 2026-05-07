@@ -2,12 +2,23 @@
   "name": "Planner",
   "short_name": "Planner",
   "start_url": "/",
-  "scope": "/",
+  "scope": "https://fairbanksbuilders.pro/",
   "display": "standalone",
   "theme_color": "#0f172a",
   "background_color": "#FAF9F6",
   "launch_handler": {
     "client_mode": "navigate-existing",
     "route_to": "existing-client-navigate"
-  }
+  },
+  "scope_extensions": [
+    {
+      "origin": "https://fairbanksbuilders.pro"
+    },
+    {
+      "origin": "https://calculators.fairbanksbuilders.pro"
+    },
+    {
+      "origin": "https://planner.fairbanksbuilders.pro"
+    }
+  ]
 }
