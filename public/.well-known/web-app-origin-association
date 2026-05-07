@@ -4,9 +4,6 @@
       "manifest": "https://fairbanksbuilders.pro/manifest.json"
     },
     {
-      "manifest": "https://calculators.fairbanksbuilders.pro/manifest.json"
-    },
-    {
       "manifest": "https://planner.fairbanksbuilders.pro/manifest.json"
     }
   ]
