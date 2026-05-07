@@ -1,12 +1,14 @@
 {
+  "id": "fairbanks-planner",
   "name": "Planner",
   "short_name": "Planner",
   "description": "Fairbanks Builders Planner",
-  "start_url": "/",
-  "scope": "https://fairbanksbuilders.pro/",
+  "start_url": "https://planner.fairbanksbuilders.pro/",
+  "scope": "https://planner.fairbanksbuilders.pro/",
   "display": "standalone",
   "theme_color": "#0f172a",
   "background_color": "#FAF9F6",
+  "prefer_related_applications": false,
   "launch_handler": {
     "client_mode": "navigate-existing",
     "route_to": "existing-client-navigate"
@@ -17,9 +19,6 @@
     },
     {
       "origin": "https://calculators.fairbanksbuilders.pro"
-    },
-    {
-      "origin": "https://planner.fairbanksbuilders.pro"
     }
   ],
   "icons": [
