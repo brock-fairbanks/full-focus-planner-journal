@@ -3,9 +3,15 @@ import { Reorder } from "framer-motion";
 
 import { Trash2 } from "lucide-react";
 
-export default function DailySpread({ date, onSubSectionChange, onClearCanvas }) {
+export default function DailySpread({ date, onSubSectionChange, onClearCanvas, hideTabs, forceTab }) {
   const HOURS = Array.from({ length: 17 }, (_, i) => 5 + i); // 5 AM to 9 PM
-  const [activeSubSection, setActiveSubSection] = useState("Schedule");
+  const [activeSubSection, setActiveSubSection] = useState(forceTab || "Schedule");
+
+  useEffect(() => {
+    if (forceTab) {
+      setActiveSubSection(forceTab);
+    }
+  }, [forceTab]);
 
   const [tabs, setTabs] = useState(() => {
     const saved = localStorage.getItem("planner_daily_tabs_order");
@@ -31,6 +37,7 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
   return (
     <div className="flex flex-col w-full min-h-full bg-[#FAF9F6]">
       {/* Secondary Navigation Bar */}
+      {!hideTabs && (
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E2E8F0] px-12 h-[72px] shrink-0 bg-[#FAF9F6]">
         <Reorder.Group 
           axis="x" 
@@ -70,6 +77,7 @@ export default function DailySpread({ date, onSubSectionChange, onClearCanvas })
           </button>
         </div>
       </div>
+      )}
 
       {/* Content Area */}
       <div className="flex-1 p-10 flex justify-center">

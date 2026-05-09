@@ -286,7 +286,7 @@ export default function TodayWidget() {
 
         {/* Template Layer */}
         <div className="flex-1 w-full pointer-events-auto mx-auto relative max-w-5xl">
-          <TemplateRenderer template="DAILY" date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} />
+          <TemplateRenderer template="DAILY" date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} hideTabs={true} forceTab="Schedule" />
         </div>
         
         {/* Drawing Layer (z-20) */}

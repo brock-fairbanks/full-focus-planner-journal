@@ -11,12 +11,12 @@ import ChatSpread from "./templates/ChatSpread.jsx";
 import ScratchpadSpread from "./templates/ScratchpadSpread.jsx";
 import { useIsMobile, useIsSmallPhone } from "@/hooks/use-mobile.jsx";
 
-export default function TemplateRenderer({ template, date, onSubSectionChange, onClearCanvas, journalMode }) {
+export default function TemplateRenderer({ template, date, onSubSectionChange, onClearCanvas, journalMode, hideTabs, forceTab }) {
   const isMobile = useIsMobile();
   const isSmallPhone = useIsSmallPhone();
 
   const templates = {
-    DAILY: <DailySpread date={date} onSubSectionChange={onSubSectionChange} onClearCanvas={onClearCanvas} />,
+    DAILY: <DailySpread date={date} onSubSectionChange={onSubSectionChange} onClearCanvas={onClearCanvas} hideTabs={hideTabs} forceTab={forceTab} />,
     IDEAL_WEEK: <IdealWeek date={date} onClearCanvas={onClearCanvas} />,
     QUARTERLY_GOALS: <QuarterlyGoals date={date} onClearCanvas={onClearCanvas} />,
     RITUALS: <Rituals date={date} onClearCanvas={onClearCanvas} />,
