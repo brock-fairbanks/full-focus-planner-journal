@@ -288,10 +288,10 @@ export default function TodayWidget() {
         <div className="flex-1 w-full pointer-events-auto mx-auto relative max-w-5xl">
           <TemplateRenderer template="DAILY" date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} hideTabs={true} forceTab="Schedule" />
           
-          {/* Drawing Layer (z-20) - Shifted by -72px to match Planner's canvas alignment which expects the hidden 72px tab header */}
+          {/* Drawing Layer (z-20) - Shifted by -79px to match Planner's exact relative canvas alignment */}
           <div 
             className="absolute bottom-0 z-20 pointer-events-none mx-auto inset-x-0 w-full" 
-            style={{ top: "-72px" }}
+            style={{ top: "-79px" }}
           >
             <div className="pointer-events-auto w-full h-full">
               <GlobalCanvas 
