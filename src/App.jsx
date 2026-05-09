@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientInstance } from '@/lib/query-client';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import Planner from './pages/Planner.jsx';
+import TodayWidget from './pages/TodayWidget.jsx';
 import Onboarding from './pages/Onboarding.jsx';
 import Settings from './pages/Settings.jsx';
 import GuidedTour from './components/GuidedTour.jsx';
@@ -35,6 +36,7 @@ const AuthenticatedApp = () => {
       <Route path="/meeting" element={<Planner />} />
       <Route path="/chat" element={<Planner />} />
       <Route path="/scratchpad" element={<Planner />} />
+      <Route path="/today-widget" element={<TodayWidget />} />
       {/* Safety Fallback */}
       <Route path="*" element={<div className="h-screen w-screen bg-[#F4EFE4] flex items-center justify-center font-serif">Path Not Found</div>} />
     </Routes>
