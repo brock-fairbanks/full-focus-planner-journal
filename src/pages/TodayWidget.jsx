@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Eraser, Pen, Highlighter, Undo, Type, Loader2 } from "lucide-react";
+import { Eraser, Pen, Highlighter, Undo, Type, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { format, addDays } from "date-fns";
 import { base44 } from "@/api/base44Client";
 import TemplateRenderer from "../components/planner/TemplateRenderer.jsx";
 import GlobalCanvas from "../components/planner/GlobalCanvas.jsx";
@@ -157,21 +158,46 @@ export default function TodayWidget() {
     >
       <div className="relative min-h-full w-full flex flex-col min-w-[1024px]">
         {/* Fullscreen Toggle & Tools */}
-        <div className="w-full flex justify-end items-center p-3 shrink-0 z-50 pointer-events-auto sticky top-0 left-0 bg-[#FAF9F6] border-b border-black/5">
-          <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] p-1.5 rounded-xl shadow-sm">
+        <div className="w-full flex justify-between items-center p-2 shrink-0 z-50 pointer-events-auto sticky top-0 left-0 bg-[#FAF9F6] border-b border-black/5">
+          {/* Date Changer */}
+          <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] p-1 rounded-lg shadow-sm">
+            <button 
+              onClick={() => setSelectedDate(prev => addDays(prev, -1))}
+              className="p-1 hover:bg-slate-100 rounded text-slate-500 hover:text-slate-800 transition-colors"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <div className="flex flex-col items-center justify-center min-w-[90px] select-none">
+              <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider leading-none">
+                {format(selectedDate, "EEEE")}
+              </span>
+              <span className="text-sm font-semibold text-slate-800 leading-tight mt-0.5">
+                {format(selectedDate, "MMM d, yyyy")}
+              </span>
+            </div>
+            <button 
+              onClick={() => setSelectedDate(prev => addDays(prev, 1))}
+              className="p-1 hover:bg-slate-100 rounded text-slate-500 hover:text-slate-800 transition-colors"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+
+          {/* Tools */}
+          <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm border border-[#E2E8F0] p-1 rounded-lg shadow-sm">
             <button
               onClick={() => setActiveTool('pen')}
-              className={`p-2.5 rounded-lg transition-colors ${(activeTool === 'pen' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-md transition-colors ${(activeTool === 'pen' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
               title="Pen"
             >
-              <Pen size={20} />
+              <Pen size={16} />
             </button>
             <button
               onClick={() => setActiveTool('highlighter')}
-              className={`p-2.5 rounded-lg transition-colors ${(activeTool === 'highlighter' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-md transition-colors ${(activeTool === 'highlighter' && !isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
               title="Highlighter"
             >
-              <Highlighter size={20} />
+              <Highlighter size={16} />
             </button>
             <button
               onClick={() => setActiveTool('eraser')}
@@ -180,19 +206,19 @@ export default function TodayWidget() {
               onPointerLeave={() => setIsEraserMode(false)}
               onPointerCancel={() => setIsEraserMode(false)}
               onContextMenu={(e) => e.preventDefault()}
-              className={`p-2.5 rounded-lg transition-colors select-none ${(activeTool === 'eraser' || isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-md transition-colors select-none ${(activeTool === 'eraser' || isEraserMode) ? 'bg-slate-200 text-[#1e293b]' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
               title="Eraser (Tap to select, Hold to quick-erase)"
               style={{ touchAction: 'none' }}
             >
-              <Eraser size={20} />
+              <Eraser size={16} />
             </button>
-            <div className="flex items-center ml-2 gap-2 border-l border-slate-200 pl-2">
+            <div className="flex items-center ml-1 gap-1 border-l border-slate-200 pl-1">
               {(() => {
                 const currentTool = isEraserMode ? 'eraser' : activeTool;
                 if (currentTool === 'pen') {
                   return [1.5, 3, 5].map(w => (
-                    <button key={w} onClick={() => setPenWidth(w)} className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${penWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Thickness: ${w}`}>
-                      <div className="bg-[#1e293b] rounded-full" style={{ width: w + 2, height: w + 2 }}></div>
+                    <button key={w} onClick={() => setPenWidth(w)} className={`w-6 h-6 flex items-center justify-center rounded-md transition-colors ${penWidth === w ? 'bg-slate-200' : 'hover:bg-slate-100'}`} title={`Thickness: ${w}`}>
+                      <div className="bg-[#1e293b] rounded-full" style={{ width: w + 1, height: w + 1 }}></div>
                     </button>
                   ));
                 }
@@ -202,21 +228,21 @@ export default function TodayWidget() {
                       <select 
                         value={highlighterWidth} 
                         onChange={(e) => setHighlighterWidth(Number(e.target.value))}
-                        className="h-8 px-2 rounded-md bg-slate-100 hover:bg-slate-200 text-sm text-[#1e293b] outline-none cursor-pointer border-none font-medium"
+                        className="h-6 px-1.5 rounded-md bg-slate-100 hover:bg-slate-200 text-xs text-[#1e293b] outline-none cursor-pointer border-none font-medium"
                         title="Highlighter Size"
                       >
                         {[10, 14, 18, 24, 30, 40, 50, 60, 80, 100].map(w => (
                           <option key={w} value={w}>Size {w}</option>
                         ))}
                       </select>
-                      <div className="w-px h-6 bg-slate-200 mx-1"></div>
+                      <div className="w-px h-4 bg-slate-200 mx-1"></div>
                       {[
                         { c: 'rgba(253, 224, 71, 0.8)', bg: '#fef08a' },
                         { c: 'rgba(167, 243, 208, 0.8)', bg: '#a7f3d0' },
                         { c: 'rgba(251, 207, 232, 0.8)', bg: '#fbcfe8' },
                         { c: 'rgba(191, 219, 254, 0.8)', bg: '#bfdbfe' }
                       ].map(item => (
-                        <button key={item.c} onClick={() => setHighlighterColor(item.c)} className={`w-7 h-7 rounded-full border border-slate-200 ${highlighterColor === item.c ? 'ring-2 ring-offset-2 ring-slate-400' : ''}`} style={{ backgroundColor: item.bg }} title="Color" />
+                        <button key={item.c} onClick={() => setHighlighterColor(item.c)} className={`w-5 h-5 rounded-full border border-slate-200 ${highlighterColor === item.c ? 'ring-2 ring-offset-2 ring-slate-400' : ''}`} style={{ backgroundColor: item.bg }} title="Color" />
                       ))}
                     </>
                   );
@@ -226,7 +252,7 @@ export default function TodayWidget() {
                     <select 
                       value={eraserWidth} 
                       onChange={(e) => setEraserWidth(Number(e.target.value))}
-                      className="h-8 px-2 rounded-md bg-slate-100 hover:bg-slate-200 text-sm text-[#1e293b] outline-none cursor-pointer border-none font-medium"
+                      className="h-6 px-1.5 rounded-md bg-slate-100 hover:bg-slate-200 text-xs text-[#1e293b] outline-none cursor-pointer border-none font-medium"
                       title="Eraser Size"
                     >
                       {[10, 20, 30, 40, 50, 60, 80, 100, 150, 200].map(w => (
@@ -237,21 +263,21 @@ export default function TodayWidget() {
                 }
               })()}
             </div>
-            <div className="flex items-center ml-2 gap-2 border-l border-slate-200 pl-2">
+            <div className="flex items-center ml-1 gap-1 border-l border-slate-200 pl-1">
               <button
                 onClick={() => canvasRef.current?.undo && canvasRef.current.undo()}
-                className="p-2.5 rounded-lg transition-colors text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                className="p-1.5 rounded-md transition-colors text-slate-400 hover:bg-slate-100 hover:text-slate-600"
                 title="Undo"
               >
-                <Undo size={20} />
+                <Undo size={16} />
               </button>
               <button
                 onClick={handleTranscribe}
                 disabled={isTranscribing}
-                className="flex items-center gap-1.5 p-2 rounded-lg transition-colors text-slate-400 hover:text-orange-500 hover:bg-orange-50 font-medium text-sm disabled:opacity-50"
+                className="flex items-center gap-1 p-1.5 rounded-md transition-colors text-slate-400 hover:text-orange-500 hover:bg-orange-50 font-medium text-xs disabled:opacity-50"
                 title="Convert Handwriting to Text"
               >
-                {isTranscribing ? <Loader2 size={18} className="animate-spin text-orange-500" /> : <Type size={18} />}
+                {isTranscribing ? <Loader2 size={14} className="animate-spin text-orange-500" /> : <Type size={14} />}
                 <span className="hidden xl:inline">{isTranscribing ? "Converting..." : "To Text"}</span>
               </button>
             </div>
