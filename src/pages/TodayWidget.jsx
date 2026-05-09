@@ -284,28 +284,30 @@ export default function TodayWidget() {
           </div>
         </div>
 
-        {/* Template Layer */}
+        {/* Template & Drawing Layer */}
         <div className="flex-1 w-full pointer-events-auto mx-auto relative max-w-5xl">
           <TemplateRenderer template="DAILY" date={selectedDate} onSubSectionChange={setSubSection} onClearCanvas={handleClearCanvas} hideTabs={true} forceTab="Schedule" />
-        </div>
-        
-        {/* Drawing Layer (z-20) */}
-        <div 
-          className="absolute bottom-0 z-20 pointer-events-auto mx-auto inset-x-0 w-full max-w-5xl" 
-          style={{ top: "72px" }}
-        >
-          <GlobalCanvas 
-            key={pageKey}
-            ref={canvasRef} 
-            pageKey={pageKey} 
-            activeTemplate="DAILY" 
-            activeTool={activeTool}
-            isEraserMode={isEraserMode} 
-            penWidth={penWidth}
-            eraserWidth={eraserWidth}
-            highlighterWidth={highlighterWidth}
-            highlighterColor={highlighterColor}
-          />
+          
+          {/* Drawing Layer (z-20) - Shifted by -72px to match Planner's canvas alignment which expects the hidden 72px tab header */}
+          <div 
+            className="absolute bottom-0 z-20 pointer-events-none mx-auto inset-x-0 w-full" 
+            style={{ top: "-72px" }}
+          >
+            <div className="pointer-events-auto w-full h-full">
+              <GlobalCanvas 
+                key={pageKey}
+                ref={canvasRef} 
+                pageKey={pageKey} 
+                activeTemplate="DAILY" 
+                activeTool={activeTool}
+                isEraserMode={isEraserMode} 
+                penWidth={penWidth}
+                eraserWidth={eraserWidth}
+                highlighterWidth={highlighterWidth}
+                highlighterColor={highlighterColor}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
