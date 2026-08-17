@@ -1,0 +1,45 @@
+{
+  "name": "AnnualVision",
+  "type": "object",
+  "properties": {
+    "year": {
+      "type": "number",
+      "description": "Calendar year e.g. 2026"
+    },
+    "headline": {
+      "type": "string",
+      "description": "One sentence vision statement for the year"
+    },
+    "pillar_1_name": {
+      "type": "string"
+    },
+    "pillar_1_description": {
+      "type": "string"
+    },
+    "pillar_2_name": {
+      "type": "string"
+    },
+    "pillar_2_description": {
+      "type": "string"
+    },
+    "pillar_3_name": {
+      "type": "string"
+    },
+    "pillar_3_description": {
+      "type": "string"
+    },
+    "word_of_year": {
+      "type": "string"
+    },
+    "core_values": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "year",
+    "headline"
+  ]
+}

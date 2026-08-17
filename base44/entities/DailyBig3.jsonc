@@ -1,0 +1,50 @@
+{
+  "name": "DailyBig3",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "task_1": {
+      "type": "string"
+    },
+    "task_1_goal_id": {
+      "type": "string",
+      "description": "Linked QuarterlyGoal id (required)"
+    },
+    "task_2": {
+      "type": "string"
+    },
+    "task_2_goal_id": {
+      "type": "string"
+    },
+    "task_3": {
+      "type": "string"
+    },
+    "task_3_goal_id": {
+      "type": "string"
+    },
+    "startup_ritual_done": {
+      "type": "boolean",
+      "default": false
+    },
+    "shutdown_ritual_done": {
+      "type": "boolean",
+      "default": false
+    },
+    "reflection": {
+      "type": "string"
+    },
+    "energy_level": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    }
+  },
+  "required": [
+    "date",
+    "task_1",
+    "task_1_goal_id"
+  ]
+}

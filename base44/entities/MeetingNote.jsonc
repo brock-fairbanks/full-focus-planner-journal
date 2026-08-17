@@ -1,0 +1,42 @@
+{
+  "name": "MeetingNote",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "Auto-generated or custom title"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "meeting",
+        "lecture",
+        "dialog"
+      ]
+    },
+    "transcription": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "audio_url": {
+      "type": "string",
+      "description": "URL of the uploaded audio file for playback"
+    },
+    "has_video": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "date",
+    "type"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "name": "QuarterlyGoal",
+  "type": "object",
+  "properties": {
+    "year": {
+      "type": "number"
+    },
+    "quarter": {
+      "type": "number",
+      "enum": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "title": {
+      "type": "string",
+      "description": "Goal title"
+    },
+    "description": {
+      "type": "string"
+    },
+    "pillar": {
+      "type": "string",
+      "description": "Which content pillar this maps to"
+    },
+    "key_results": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "3-5 measurable outcomes"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed",
+        "dropped"
+      ],
+      "default": "not_started"
+    },
+    "annual_vision_id": {
+      "type": "string",
+      "description": "FK to AnnualVision"
+    }
+  },
+  "required": [
+    "year",
+    "quarter",
+    "title"
+  ]
+}

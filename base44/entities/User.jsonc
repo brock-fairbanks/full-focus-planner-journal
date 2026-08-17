@@ -1,0 +1,18 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "phone_number": {
+      "type": "string",
+      "description": "User's phone number"
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has completed the onboarding wizard"
+    }
+  },
+  "required": [
+    "phone_number"
+  ]
+}

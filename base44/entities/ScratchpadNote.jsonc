@@ -1,0 +1,35 @@
+{
+  "name": "ScratchpadNote",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "page_key": {
+      "type": "string"
+    },
+    "background": {
+      "type": "string",
+      "enum": [
+        "none",
+        "lined-narrow",
+        "lined-wide",
+        "grid-small",
+        "grid-large",
+        "dotted",
+        "spreadsheet-wide"
+      ],
+      "default": "none"
+    },
+    "created_at": {
+      "type": "number"
+    },
+    "updated_at": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "title",
+    "page_key"
+  ]
+}

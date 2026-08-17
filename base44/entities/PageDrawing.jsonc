@@ -1,0 +1,31 @@
+{
+  "name": "PageDrawing",
+  "type": "object",
+  "properties": {
+    "page_key": {
+      "type": "string",
+      "description": "Unique key for each page, e.g. today_2026-03-16, weekly_2026-W12, monthly_2026-03"
+    },
+    "tab": {
+      "type": "string",
+      "enum": [
+        "today",
+        "weekly",
+        "monthly"
+      ],
+      "description": "Which tab this drawing belongs to"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL of the uploaded PNG drawing from UploadFile integration"
+    },
+    "date_label": {
+      "type": "string",
+      "description": "Human-readable date label"
+    }
+  },
+  "required": [
+    "page_key",
+    "tab"
+  ]
+}

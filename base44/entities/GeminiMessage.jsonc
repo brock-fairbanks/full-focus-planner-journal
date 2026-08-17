@@ -1,0 +1,23 @@
+{
+  "name": "GeminiMessage",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "model"
+      ]
+    },
+    "content": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "role",
+    "content"
+  ]
+}

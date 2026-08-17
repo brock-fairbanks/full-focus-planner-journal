@@ -1,0 +1,54 @@
+{
+  "name": "WeeklyPreview",
+  "type": "object",
+  "properties": {
+    "week_label": {
+      "type": "string",
+      "description": "e.g. 2026-W12"
+    },
+    "year": {
+      "type": "number"
+    },
+    "week_number": {
+      "type": "number"
+    },
+    "big_wins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Top wins from last week"
+    },
+    "after_action_review": {
+      "type": "string",
+      "description": "What went well / what to improve"
+    },
+    "what_to_improve": {
+      "type": "string"
+    },
+    "top_priorities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Up to 5 priorities for the coming week"
+    },
+    "quarterly_goal_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Goals this week serves"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when wizard is finished"
+    }
+  },
+  "required": [
+    "week_label",
+    "year",
+    "week_number"
+  ]
+}

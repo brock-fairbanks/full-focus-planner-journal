@@ -1,0 +1,34 @@
+{
+  "name": "Memory",
+  "type": "object",
+  "properties": {
+    "fact": {
+      "type": "string",
+      "description": "A specific fact, detail, or preference to remember about the user"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "personal",
+        "work",
+        "preference",
+        "goal",
+        "relationship",
+        "other"
+      ],
+      "default": "other"
+    },
+    "importance": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    }
+  },
+  "required": [
+    "fact"
+  ]
+}

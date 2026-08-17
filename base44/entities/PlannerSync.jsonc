@@ -1,0 +1,21 @@
+{
+  "name": "PlannerSync",
+  "type": "object",
+  "properties": {
+    "page_key": {
+      "type": "string"
+    },
+    "drawing_data": {
+      "type": "string"
+    },
+    "texts_data": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "page_key"
+  ]
+}
